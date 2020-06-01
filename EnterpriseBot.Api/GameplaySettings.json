@@ -1,0 +1,94 @@
+{
+  "GameplaySettings": {
+    "Player": {
+      "DefaultUnits": 10000
+    },
+
+    "Company": {
+      "DefaultUnits": 0,
+      "MaxOutputItems": 3,
+      "CreationPrice": 1000000
+    },
+
+    "Shop": {
+      "DefaultUnits": 0,
+      "CreationPrice": 100000
+    },
+
+    "Job": {
+      "DefaultSpeedModifier": 1,
+      "MinSalary": 250000,
+      "MinSpeedModifier": 0.1,
+      "DiminishModifierStep": 0.05,
+      "DiminishModifierSalaryIncrease": 5000,
+      "MaxWorkingHoursPlayer": 2,
+      "MaxWorkingHoursBot": 168,
+      "BotMaintenanceSalary": 5000
+    },
+
+    "Truck": {
+      "MinTime": 60,
+      "DefaultTime": 600
+    },
+
+    "TruckGarage": {
+      "MaxCapacity": 30,
+      "DefaultCapacity": 5
+    },
+
+    "Storages": {
+      "Income": {
+        "MaxCapacity": 7500,
+        "DefaultCapacity": 500
+      },
+      "Outcome": {
+        "MaxCapacity": 7500,
+        "DefaultCapacity": 500
+      },
+      "Worker": {
+        "MaxCapacity": 10000,
+        "DefaultCapacity": 1000
+      },
+      "Showcase": {
+        "MaxCapacity": 10000,
+        "DefaultCapacity": 1000
+      },
+      "Personal": {
+        "MaxCapacity": 500,
+        "DefaultCapacity": 10
+      },
+      "Trunk": {
+        "MaxCapacity": 1000,
+        "DefaultCapacity": 50
+      }
+    },
+
+    "Government": {
+      "CompanyPrice": 1000000,
+      "PlotCellPrice": 1000,
+      "BasePlotPrice": 5000
+    },
+
+    "Plot": {
+      "MaxWidth": 100,
+      "MaxHeight": 100,
+      "DefaultWidth": 2,
+      "DefaultHeight": 2
+    },
+
+    "Prices": {
+      "Truck": {
+        "DefaultPrice": 50000
+      },
+      "Bot": {
+        "DefaultPrice": 100000
+      },
+      "Company": {
+        "DefaultPrice": 1000000
+      },
+      "Shop": {
+        "DefaultPrice": 100000
+      }
+    }
+  }
+}

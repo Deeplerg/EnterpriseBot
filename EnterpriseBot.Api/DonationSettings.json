@@ -1,0 +1,12 @@
+{
+  "DonationSettings": {
+    "BusinessPriceMultipliers": {
+      "NoDonation": 1,
+      "Pro": 0.95,
+      "VIP": 0.9,
+      "Premium": 0.8,
+      "Mega": 0.65,
+      "Gold": 0.5
+    }
+  }
+}

@@ -19,7 +19,7 @@ namespace EnterpriseBot.VK.Models.MenuResults
         public ReturnBackKeyboardResult(string message, IMenuResult previousResult, string returnButtonText = defaultReturnButtonText)
         {
             this.message = message;
-            this.previousResult = previousResult;
+            this.previousResult = (IMenuResult)previousResult.Clone();
             this.returnButtonText = returnButtonText;
 
             var builder = new LocalKeyboardBuilder();
@@ -28,7 +28,7 @@ namespace EnterpriseBot.VK.Models.MenuResults
                 Text = this.returnButtonText,
                 Next = new NextAction
                 {
-                    PlainAction = _ => previousResult
+                    PlainAction = _ => this.previousResult
                 }
             });
 
@@ -36,7 +36,7 @@ namespace EnterpriseBot.VK.Models.MenuResults
         }
 
         public ReturnBackKeyboardResult(string message, MenuContext context, string returnButtonText = defaultReturnButtonText)
-            : this(message, (IMenuResult)context.LocalPlayer.PreviousResult.Clone(), returnButtonText) { }
+            : this(message, context.LocalPlayer.PreviousResult, returnButtonText) { }
 
         public VkMessage GetMessage()
         {
@@ -57,7 +57,7 @@ namespace EnterpriseBot.VK.Models.MenuResults
                     MenuAction = Constants.PayloadEmptyMenuAction,
                     Parameters = new MenuParameter[]
                     {
-                        new MenuParameter((IMenuResult)previousResult.Clone())
+                        new MenuParameter(previousResult)
                     }
                 };
             }

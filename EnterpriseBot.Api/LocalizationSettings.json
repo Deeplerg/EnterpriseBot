@@ -3,17 +3,37 @@
     "UserInputRequirements": {
       "Name": {
         "English": "The name should not be empty or contain only spaces, and the length should not exceed {0}",
-        "Russian": "Имя не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        "Russian": "Имя или название не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
       },
 
       "BusinessName": {
         "English": "The facility name should not be empty or contain only spaces, and the length should not exceed {0}",
-        "Russian": "Имя предприятия не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        "Russian": "Название предприятия не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
       },
 
       "Description": {
         "English": "The description should not be empty or contain only spaces, and the length should not exceed {0}",
         "Russian": "Описание не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+      },
+
+      "ReviewText": {
+        "English": "The review text should not be empty or contain only spaces, and the length should not exceed {0}",
+        "Russian": "Текст отзыва не должен быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+      },
+
+      "Resume": {
+        "English": "The resume should not be empty or contain only spaces, and the length should not exceed {0}",
+        "Russian": "Резюме не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+      },
+
+      "Password": {
+        "English": "The password must not be empty or contain only spaces, its length must not be lower than {0} and it must contain at least one digit",
+        "Russian": "Пароль не должен быть пустым или содержать только пробелы, его длина не должна быть ниже {0} и он должен содержать как минимум одну цифру"
+      },
+
+      "PlayerStatus": {
+        "English": "The status should not be empty or contain only spaces, and the length should not exceed {0}",
+        "Russian": "Статус не должен быть пустым или содержать только пробелы, а длина не должна превышать {0}"
       }
     },
 

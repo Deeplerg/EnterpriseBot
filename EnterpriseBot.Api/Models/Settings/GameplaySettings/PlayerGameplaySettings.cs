@@ -3,5 +3,6 @@
     public class PlayerGameplaySettings
     {
         public decimal DefaultUnits { get; set; }
+        public decimal DefaultBusinessCoins { get; set; }
     }
 }

@@ -51,5 +51,16 @@
     <ProjectReference Include="..\EnterpriseBot.BackgroundJobs\EnterpriseBot.BackgroundJobs.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\ApiCreationParams\Business\" />
+    <Folder Include="Models\ApiCreationParams\Crafting\" />
+    <Folder Include="Models\ApiCreationParams\Essences\" />
+    <Folder Include="Models\ApiCreationParams\Money\" />
+    <Folder Include="Models\ApiCreationParams\Localization\" />
+    <Folder Include="Models\ApiCreationParams\Storages\" />
+    <Folder Include="Models\ApiCreationParams\Reputation\" />
+    <Folder Include="Areas\" />
+  </ItemGroup>
+
 
 </Project>

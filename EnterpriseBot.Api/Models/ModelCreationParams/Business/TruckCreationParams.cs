@@ -1,20 +1,17 @@
-using EnterpriseBot.Api.Models.Common.Storages;
+using EnterpriseBot.Api.Game.Business.Company;
+using EnterpriseBot.Api.Game.Storages;
 
 namespace EnterpriseBot.Api.Models.ModelCreationParams.Business
 {
     public class TruckCreationParams
     {
-        public long TruckGarageId { get; set; }
+        public TruckGarage TruckGarage { get; set; }
 
         /// <summary>
-        /// <see cref="TrunkStorage"/> capacity. <br/>
-        /// If null, default value will be assigned.
+        /// <see cref="TrunkStorage"/> capacity
         /// </summary>
-        public int? Capacity { get; set; }
+        public int Capacity { get; set; }
 
-        /// <summary>
-        /// If null, default value will be assigned.
-        /// </summary>
-        public ushort? DeliveringSpeedInSeconds { get; set; }
+        public uint DeliveringSpeedInSeconds { get; set; }
     }
 }

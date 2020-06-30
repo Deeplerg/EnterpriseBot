@@ -1,11 +1,11 @@
+using EnterpriseBot.Api.Game.Business.Company;
+
 namespace EnterpriseBot.Api.Models.ModelCreationParams.Storages
 {
     public class ShowcaseStorageCreationParams
     {
-        //public int CellsAmount { get; set; }
-        //public int CellsCapacity { get; set; }
-        public int Capacity { get; set; }
+        public decimal Capacity { get; set; }
 
-        public long OwningShopId { get; set; }
+        public Company OwningCompany { get; set; }
     }
 }

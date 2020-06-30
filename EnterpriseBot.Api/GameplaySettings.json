@@ -1,65 +1,39 @@
 {
   "GameplaySettings": {
     "Player": {
-      "DefaultUnits": 10000
+      "DefaultUnits": 10000,
+      "DefaultBusinessCoins": 0
     },
 
-    "Company": {
-      "DefaultUnits": 0,
-      "MaxOutputItems": 3,
-      "CreationPrice": 1000000
-    },
-
-    "Shop": {
-      "DefaultUnits": 0,
-      "CreationPrice": 100000
-    },
-
-    "Job": {
-      "DefaultSpeedModifier": 1,
-      "MinSalary": 250000,
-      "MinSpeedModifier": 0.1,
-      "DiminishModifierStep": 0.05,
-      "DiminishModifierSalaryIncrease": 5000,
-      "MaxWorkingHoursPlayer": 2,
-      "MaxWorkingHoursBot": 168,
-      "BotMaintenanceSalary": 5000
-    },
-
-    "Truck": {
-      "MinTime": 60,
-      "DefaultTime": 600
-    },
-
-    "TruckGarage": {
-      "MaxCapacity": 30,
-      "DefaultCapacity": 5
-    },
-
-    "Storages": {
-      "Income": {
-        "MaxCapacity": 7500,
-        "DefaultCapacity": 500
+    "Storage": {
+      "Inventory": {
+        "MaxCapacity": 100,
+        "DefaultCapacity": 10,
+        "UpgradePrice": {
+          "Currency": "Units",
+          "Amount": 100
+        },
+        "UpgradeStep": 10
       },
-      "Outcome": {
-        "MaxCapacity": 7500,
-        "DefaultCapacity": 500
-      },
-      "Worker": {
-        "MaxCapacity": 10000,
-        "DefaultCapacity": 1000
-      },
-      "Showcase": {
-        "MaxCapacity": 10000,
-        "DefaultCapacity": 1000
-      },
-      "Personal": {
-        "MaxCapacity": 500,
-        "DefaultCapacity": 10
-      },
+
       "Trunk": {
-        "MaxCapacity": 1000,
-        "DefaultCapacity": 50
+        "MaxCapacity": 2500,
+        "DefaultCapacity": 100,
+        "UpgradePrice": {
+          "Currency": "BusinessCoins",
+          "Amount": 0.1
+        },
+        "UpgradeStep": 10
+      },
+
+      "Company": {
+        "MaxCapacity": 10000,
+        "DefaultCapacity": 500,
+        "UpgradePrice": {
+          "Currency": "BusinessCoins",
+          "Amount": 0.1
+        },
+        "UpgradeStep": 10
       }
     },
 
@@ -74,21 +48,6 @@
       "MaxHeight": 100,
       "DefaultWidth": 2,
       "DefaultHeight": 2
-    },
-
-    "Prices": {
-      "Truck": {
-        "DefaultPrice": 50000
-      },
-      "Bot": {
-        "DefaultPrice": 100000
-      },
-      "Company": {
-        "DefaultPrice": 1000000
-      },
-      "Shop": {
-        "DefaultPrice": 100000
-      }
     }
   }
 }

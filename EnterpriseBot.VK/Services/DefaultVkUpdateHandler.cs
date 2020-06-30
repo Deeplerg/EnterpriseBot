@@ -62,6 +62,11 @@ namespace EnterpriseBot.VK.Services
             this.menuMapper = menuMapper;
         }
 
+        public DefaultVkUpdateHandler(ILocalPlayerManager playerManager)
+        {
+            playerManager.Get(9999999, PlayerManagerFilter.LocalId);
+        }
+
         public async Task<HandleUpdateResult> HandleUpdateAsync(GroupUpdate update)
         {
             VkGroupSetting group = vkSettings.Groups.FirstOrDefault(g => g.GroupId == update.GroupId.Value);

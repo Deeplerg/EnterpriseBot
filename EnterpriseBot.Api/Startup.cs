@@ -1,5 +1,8 @@
 using EnterpriseBot.Api.Models.Contexts;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings.MarketSettings;
+using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings;
+using EnterpriseBot.Api.Models.Settings.BusinessSettings;
 using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.MvcInputFormatters;
@@ -17,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
+using EnterpriseBot.Api.Models.Settings.DonationSettings;
 
 namespace EnterpriseBot.Api
 {
@@ -28,8 +32,7 @@ namespace EnterpriseBot.Api
 
             builder.AddConfiguration(configuration);
 
-            builder.AddJsonFile("GameplaySettings.json")
-                   .AddJsonFile("LocalizationSettings.json");
+            builder.AddJsonFile("*.json", optional: false, reloadOnChange: true);
 
             Configuration = builder.Build();
         }
@@ -42,12 +45,16 @@ namespace EnterpriseBot.Api
             #region Options
             services.Configure<GameplaySettings>(Configuration.GetSection("GameplaySettings"));
             services.Configure<LocalizationSettings>(Configuration.GetSection("LocalizationSettings"));
+            services.Configure<BusinessPricesSettings>(Configuration.GetSection("BusinessPricesSettings"));
+            services.Configure<BusinessSettings>(Configuration.GetSection("BusinessSettings"));
+            services.Configure<MarketSettings>(Configuration.GetSection("MarketSettings"));
+            services.Configure<DonationSettings>(Configuration.GetSection("DonationSettings"));
             #endregion
 
             services.AddSingleton<PostgresTransactionLimiter>();
 
             #region Database
-            int poolSize = 256;
+            int poolSize = 128;
             services.AddDbContextPool<ApplicationContext>(opt =>
             {
                 opt.UseNpgsql(Configuration.GetConnectionString("GameDb"));
@@ -93,30 +100,32 @@ namespace EnterpriseBot.Api
 
             //app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
 
-                endpoints.MapAreaControllerRoute(
-                    name: "business_area",
-                    areaName: nameof(Areas.Business),
-                    pattern: "{area:exists}/{controller}/{action}/{id?}");
+            //    endpoints.MapAreaControllerRoute(
+            //        name: "business_area",
+            //        areaName: nameof(Areas.Business),
+            //        pattern: "{area:exists}/{controller}/{action}/{id?}");
 
-                endpoints.MapAreaControllerRoute(
-                    name: "crafting_area",
-                    areaName: nameof(Areas.Crafting),
-                    pattern: "{area:exists}/{controller}/{action}/{id?}");
+            //    endpoints.MapAreaControllerRoute(
+            //        name: "crafting_area",
+            //        areaName: nameof(Areas.Crafting),
+            //        pattern: "{area:exists}/{controller}/{action}/{id?}");
 
-                endpoints.MapAreaControllerRoute(
-                    name: "essences_area",
-                    areaName: nameof(Areas.Essences),
-                    pattern: "{area:exists}/{controller}/{action}/{id?}");
+            //    endpoints.MapAreaControllerRoute(
+            //        name: "essences_area",
+            //        areaName: nameof(Areas.Essences),
+            //        pattern: "{area:exists}/{controller}/{action}/{id?}");
 
-                endpoints.MapAreaControllerRoute(
-                    name: "storages_area",
-                    areaName: nameof(Areas.Storages),
-                    pattern: "{area:exists}/{controller}/{action}/{id?}");
-            });
+            //    endpoints.MapAreaControllerRoute(
+            //        name: "storages_area",
+            //        areaName: nameof(Areas.Storages),
+            //        pattern: "{area:exists}/{controller}/{action}/{id?}");
+            //});
+
+            app.Run(async (req) => await req.Response.WriteAsync("API is under construction..."));
         }
 
         private async Task ExceptionHandler(HttpContext ctx)

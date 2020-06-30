@@ -1,0 +1,41 @@
+{
+  "BusinessSettings": {
+    "Company": {
+      "DefaultUnits": 0,
+      "DefaultBusinessCoins": 0,
+
+      "Job": {
+        "DefaultSpeedModifier": 1,
+        "MinSalary": 250000,
+        "MinSpeedModifier": 0.1,
+        "DiminishModifierStep": 0.05,
+        "DiminishModifierSalaryIncrease": 5000,
+        "MaxWorkingHoursPlayer": 2,
+        "MaxWorkingHoursBot": 168,
+        "BotMaintenanceSalary": 5000
+      },
+
+      "Truck": {
+        "MinTime": 300,
+        "DefaultTime": 3600
+      },
+
+      "TruckGarage": {
+        "MaxCapacity": 30,
+        "DefaultCapacity": 2
+      },
+
+      "Worker": {
+        "MaxMultiplier": 0.1,
+        "DefaultMultiplier": 1,
+        "DefaultItemsPerProduction": 5,
+        "MaxItemsPerProduction": 25
+      },
+
+      "Contract": {
+        "MaxContractsByDefault": 3,
+        "MaxTimeInDays": 7
+      }
+    }
+  }
+}

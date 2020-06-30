@@ -1,13 +1,14 @@
+using EnterpriseBot.Api.Game.Crafting;
+using EnterpriseBot.Api.Game.Localization;
+
 namespace EnterpriseBot.Api.Models.ModelCreationParams.Crafting
 {
     public class ItemCreationParams
     {
-        public long Id { get; set; }
+        public LocalizedString Name { get; set; }
 
-        public string Name { get; set; }
+        public CraftingSubCategory Category { get; set; }
 
-        public string Category { get; set; }
-
-        public int Space { get; set; }
+        public decimal Space { get; set; }
     }
 }

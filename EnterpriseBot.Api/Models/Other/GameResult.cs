@@ -26,6 +26,17 @@ namespace EnterpriseBot.Api.Models.Other
             };
         }
 
+        public static implicit operator T(GameResult<T> result)
+        {
+            return result.Result;
+        }
+
+        public static implicit operator EmptyGameResult(GameResult<T> result)
+        {
+            if (result.LocalizedError != null) return result.LocalizedError;
+            return new EmptyGameResult();
+        }
+
         //public static explicit operator T(GameResult<T> result)
         //{
         //    return result.Result;

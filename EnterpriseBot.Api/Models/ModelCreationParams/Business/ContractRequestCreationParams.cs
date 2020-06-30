@@ -1,4 +1,6 @@
-﻿using EnterpriseBot.Api.Models.Common.Enums;
+﻿using EnterpriseBot.Api.Game.Business.Company;
+using EnterpriseBot.Api.Game.Crafting;
+using EnterpriseBot.Api.Models.Common.Enums;
 
 namespace EnterpriseBot.Api.Models.ModelCreationParams.Business
 {
@@ -7,13 +9,13 @@ namespace EnterpriseBot.Api.Models.ModelCreationParams.Business
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public BusinessType IncomeBusinessType { get; set; }
-        public long IncomeBusinessId { get; set; }
+        public Company RequestedCompany { get; set; }
+        public Company RequestingCompany { get; set; }
+        public CompanyContractIssuer RequestingCompanyRelationSide { get; set; }
 
-        public long OutcomeCompanyId { get; set; }
+        public Item ContractItem { get; set; }
+        public int ContractItemQuantity { get; set; }
 
-        public long ContractItemId { get; set; }
-        public uint ContractItemQuantity { get; set; }
         public decimal ContractOverallCost { get; set; }
         public sbyte TerminationTermInWeeks { get; set; }
     }

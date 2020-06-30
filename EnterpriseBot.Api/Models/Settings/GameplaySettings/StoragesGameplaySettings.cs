@@ -2,11 +2,8 @@
 {
     public class StoragesGameplaySettings
     {
-        public IncomeStorageGameplaySettings Income { get; set; }
-        public OutcomeStorageGameplaySettings Outcome { get; set; }
-        public WorkerStorageGameplaySettings Worker { get; set; }
-        public ShowcaseStorageGameplaySettings Showcase { get; set; }
-        public PersonalStorageGameplaySettings Personal { get; set; }
-        public TrunkStorageGameplaySettings Trunk { get; set; }
+        public StorageSetting Inventory { get; set; }
+        public StorageSetting Trunk { get; set; }
+        public StorageSetting Company { get; set; }
     }
 }

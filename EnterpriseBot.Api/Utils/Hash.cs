@@ -6,13 +6,13 @@ namespace EnterpriseBot.Api.Utils
 {
     public static class Hash
     {
-        private const int saltSize = 128 / 8;
-        private const int hashSize = 256 / 8;
-        private const int iterations = 10000;
+        private const int SaltSize = 128 / 8;
+        private const int HashSize = 256 / 8;
+        private const int Iterations = 10000;
 
         public static byte[] CreateSalt()
         {
-            byte[] salt = new byte[saltSize];
+            byte[] salt = new byte[SaltSize];
             using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(salt);
@@ -26,8 +26,8 @@ namespace EnterpriseBot.Api.Utils
                 password: input,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: iterations,
-                numBytesRequested: hashSize));
+                iterationCount: Iterations,
+                numBytesRequested: HashSize));
         }
 
         public static bool Verify(string input, byte[] salt, string hash)

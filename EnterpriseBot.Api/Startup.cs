@@ -66,13 +66,13 @@ namespace EnterpriseBot.Api
             int poolSize = 128;
             services.AddDbContextPool<ApplicationContext>(opt =>
             {
-                opt.UseNpgsql(Configuration.GetConnectionString("GameDb"));
+                opt.UseNpgsql(Configuration.GetConnectionString("Game"));
                 opt.UseLazyLoadingProxies();
             }, poolSize);
             #endregion
 
             #region Hangfire
-            string hangfireConnection = Configuration.GetConnectionString("HangfireDb");
+            string hangfireConnection = Configuration.GetConnectionString("Hangfire");
             services.AddHangfire(configuration => configuration
                                  .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                                  .UseDefaultActivator()

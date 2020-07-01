@@ -3,6 +3,6 @@
     public class GameplaySettings
     {
         public PlayerGameplaySettings Player { get; set; }
-        public StoragesGameplaySettings Storages { get; set; }
+        public StoragesGameplaySettings Storage { get; set; }
     }
 }

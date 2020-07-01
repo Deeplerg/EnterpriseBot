@@ -2,13 +2,12 @@
 {
     public class StoragesLocalizationSettings
     {
-        public LocalizationSetting IncomeStorage { get; set; }
-        public LocalizationSetting OutcomeStorage { get; set; }
-        public LocalizationSetting PersonalStorage { get; set; }
+        public LocalizationSetting CompanyStorage { get; set; }
+        public LocalizationSetting InventoryStorage { get; set; }
+        public LocalizationSetting ItemPrice { get; set; }
         public LocalizationSetting ShowcaseStorage { get; set; }
+        public LocalizationSetting Storage { get; set; }
         public LocalizationSetting StorageItem { get; set; }
-        public LocalizationSetting StorageItemWithPrice { get; set; }
         public LocalizationSetting TrunkStorage { get; set; }
-        public LocalizationSetting WorkerStorage { get; set; }
     }
 }

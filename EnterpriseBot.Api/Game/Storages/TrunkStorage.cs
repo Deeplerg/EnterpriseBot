@@ -175,10 +175,10 @@ namespace EnterpriseBot.Api.Game.Storages
                 return Errors.DoesNotHavePermission();
             }
 
-            var upgradePrice = settings.Storages.Trunk.UpgradePrice;
-            decimal step = settings.Storages.Trunk.UpgradeStep;
+            var upgradePrice = settings.Storage.Trunk.UpgradePrice;
+            decimal step = settings.Storage.Trunk.UpgradeStep;
 
-            if (Capacity >= settings.Storages.Company.MaxCapacity)
+            if (Capacity >= settings.Storage.Company.MaxCapacity)
             {
                 return Errors.StorageCapacityIsMax;
             }

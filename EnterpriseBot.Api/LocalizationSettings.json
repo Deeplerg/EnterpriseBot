@@ -1,162 +1,222 @@
-{
+п»ї{
   "LocalizationSettings": {
     "UserInputRequirements": {
       "Name": {
         "English": "The name should not be empty or contain only spaces, and the length should not exceed {0}",
-        "Russian": "Имя или название не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        "Russian": "РРјСЏ РёР»Рё РЅР°Р·РІР°РЅРёРµ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј РёР»Рё СЃРѕРґРµСЂР¶Р°С‚СЊ С‚РѕР»СЊРєРѕ РїСЂРѕР±РµР»С‹, Р° РґР»РёРЅР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРµРІС‹С€Р°С‚СЊ {0}"
       },
 
       "BusinessName": {
         "English": "The facility name should not be empty or contain only spaces, and the length should not exceed {0}",
-        "Russian": "Название предприятия не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        "Russian": "РќР°Р·РІР°РЅРёРµ РїСЂРµРґРїСЂРёСЏС‚РёСЏ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј РёР»Рё СЃРѕРґРµСЂР¶Р°С‚СЊ С‚РѕР»СЊРєРѕ РїСЂРѕР±РµР»С‹, Р° РґР»РёРЅР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРµРІС‹С€Р°С‚СЊ {0}"
       },
 
       "Description": {
         "English": "The description should not be empty or contain only spaces, and the length should not exceed {0}",
-        "Russian": "Описание не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        "Russian": "РћРїРёСЃР°РЅРёРµ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј РёР»Рё СЃРѕРґРµСЂР¶Р°С‚СЊ С‚РѕР»СЊРєРѕ РїСЂРѕР±РµР»С‹, Р° РґР»РёРЅР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРµРІС‹С€Р°С‚СЊ {0}"
       },
 
       "ReviewText": {
         "English": "The review text should not be empty or contain only spaces, and the length should not exceed {0}",
-        "Russian": "Текст отзыва не должен быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        "Russian": "РўРµРєСЃС‚ РѕС‚Р·С‹РІР° РЅРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј РёР»Рё СЃРѕРґРµСЂР¶Р°С‚СЊ С‚РѕР»СЊРєРѕ РїСЂРѕР±РµР»С‹, Р° РґР»РёРЅР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРµРІС‹С€Р°С‚СЊ {0}"
       },
 
       "Resume": {
         "English": "The resume should not be empty or contain only spaces, and the length should not exceed {0}",
-        "Russian": "Резюме не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        "Russian": "Р РµР·СЋРјРµ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј РёР»Рё СЃРѕРґРµСЂР¶Р°С‚СЊ С‚РѕР»СЊРєРѕ РїСЂРѕР±РµР»С‹, Р° РґР»РёРЅР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРµРІС‹С€Р°С‚СЊ {0}"
       },
 
       "Password": {
         "English": "The password must not be empty or contain only spaces, its length must not be lower than {0} and it must contain at least one digit",
-        "Russian": "Пароль не должен быть пустым или содержать только пробелы, его длина не должна быть ниже {0} и он должен содержать как минимум одну цифру"
+        "Russian": "РџР°СЂРѕР»СЊ РЅРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј РёР»Рё СЃРѕРґРµСЂР¶Р°С‚СЊ С‚РѕР»СЊРєРѕ РїСЂРѕР±РµР»С‹, РµРіРѕ РґР»РёРЅР° РЅРµ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РЅРёР¶Рµ {0} Рё РѕРЅ РґРѕР»Р¶РµРЅ СЃРѕРґРµСЂР¶Р°С‚СЊ РєР°Рє РјРёРЅРёРјСѓРј РѕРґРЅСѓ С†РёС„СЂСѓ"
       },
 
       "PlayerStatus": {
         "English": "The status should not be empty or contain only spaces, and the length should not exceed {0}",
-        "Russian": "Статус не должен быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        "Russian": "РЎС‚Р°С‚СѓСЃ РЅРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј РёР»Рё СЃРѕРґРµСЂР¶Р°С‚СЊ С‚РѕР»СЊРєРѕ РїСЂРѕР±РµР»С‹, Р° РґР»РёРЅР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРµРІС‹С€Р°С‚СЊ {0}"
       }
     },
 
     "Business": {
-      "CandidateForJob": {
-        "English": "Candidate for job",
-        "Russian": "Кандидат на работу"
-      },
-
       "Company": {
-        "English": "Company",
-        "Russian": "Компания"
-      },
+        "Company": {
+          "English": "Company",
+          "Russian": "РљРѕРјРїР°РЅРёСЏ"
+        },
 
-      "Contract": {
-        "English": "Contract",
-        "Russian": "Контракт"
-      },
+        "CompanyContract": {
+          "English": "Contract",
+          "Russian": "РљРѕРЅС‚СЂР°РєС‚"
+        },
 
-      "ContractInfo": {
-        "English": "Contract info",
-        "Russian": "Информация о контракте"
-      },
+        "CompanyContractRequest": {
+          "English": "Contract request",
+          "Russian": "Р—Р°РїСЂРѕСЃ РЅР° СЃРѕР·РґР°РЅРёРµ РєРѕРЅС‚СЂР°РєС‚Р°"
+        },
 
-      "ContractRequest": {
-        "English": "Contract request",
-        "Russian": "Запрос на создание контракта"
-      },
+        "CompanyJob": {
+          "English": "Job",
+          "Russian": "Р Р°Р±РѕС‚Р°"
+        },
 
-      "Job": {
-        "English": "Job",
-        "Russian": "Работа"
-      },
+        "CompanyJobApplication": {
+          "English": "Job application",
+          "Russian": "Р—Р°СЏРІРєР° РЅР° СЂР°Р±РѕС‚Сѓ"
+        },
 
-      "Shop": {
-        "English": "Shop",
-        "Russian": "Магазин"
-      },
+        "CompanyWorker": {
+          "English": "Working entity",
+          "Russian": "Р Р°Р±РѕС‚Р°СЋС‰Р°СЏ СЃСѓС‰РЅРѕСЃС‚СЊ"
+        },
 
-      "Truck": {
-        "English": "Truck",
-        "Russian": "Грузовик"
-      },
+        "ProductionRobot": {
+          "English": "Machine tool",
+          "Russian": "РЎС‚Р°РЅРѕРє"
+        },
 
-      "TruckGarage": {
-        "English": "Truck garage",
-        "Russian": "Гараж для грузовиков"
+        "Truck": {
+          "English": "Truck",
+          "Russian": "Р“СЂСѓР·РѕРІРёРє"
+        },
+
+        "TruckGarage": {
+          "English": "Truck garage",
+          "Russian": "Р“Р°СЂР°Р¶ РґР»СЏ РіСЂСѓР·РѕРІРёРєРѕРІ"
+        }
       }
     },
 
     "Crafting": {
       "CraftingCategory": {
-        "English": "Crafting category",
-        "Russian": "Категория крафта"
+        "English": "Item category",
+        "Russian": "РљР°С‚РµРіРѕСЂРёСЏ РїСЂРµРґРјРµС‚РѕРІ"
+      },
+
+      "CraftingSubCategory": {
+        "English": "Item subcategory",
+        "Russian": "РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ РїСЂРµРґРјРµС‚РѕРІ"
       },
 
       "Ingredient": {
         "English": "Ingredient",
-        "Russian": "Ингредиент"
+        "Russian": "РРЅРіСЂРµРґРёРµРЅС‚"
       },
 
       "Item": {
         "English": "Item",
-        "Russian": "Предмет"
+        "Russian": "РџСЂРµРґРјРµС‚"
       },
 
       "Recipe": {
         "English": "Recipe",
-        "Russian": "Рецепт"
+        "Russian": "Р РµС†РµРїС‚"
+      }
+    },
+
+    "Donation": {
+      "Donation": {
+        "English": "Donation",
+        "Russian": "Р”РѕРЅР°С‚"
+      },
+
+      "DonationPriceCurrency": {
+        "English": "Currency",
+        "Russian": "Р’Р°Р»СЋС‚Р°"
+      },
+
+      "DonationPurchase": {
+        "English": "Donation purchase",
+        "Russian": "РџРѕРєСѓРїРєР° РґРѕРЅР°С‚Р°"
+      },
+
+      "Privilege": {
+        "English": "Privilege",
+        "Russian": "РџСЂРёРІРёР»РµРіРёСЏ"
       }
     },
 
     "Essences": {
-      "Bot": {
-        "English": "Bot",
-        "Russian": "Бот"
-      },
-
       "Player": {
         "English": "Player",
-        "Russian": "Игрок"
+        "Russian": "РРіСЂРѕРє"
+      }
+    },
+
+    "Localization": {
+      "LocalizationLanguage": {
+        "English": "Translation language",
+        "Russian": "РЇР·С‹Рє РїРµСЂРµРІРѕРґР°"
+      },
+
+      "LocalizedString": {
+        "English": "Localized string",
+        "Russian": "Р›РѕРєР°Р»РёР·РѕРІР°РЅРЅР°СЏ СЃС‚СЂРѕРєР°"
+      },
+
+      "StringLocalization": {
+        "English": "String localization",
+        "Russian": "Р›РѕРєР°Р»РёР·Р°С†РёСЏ СЃС‚СЂРѕРєРё"
+      }
+    },
+
+    "Money": {
+      "Money": {
+        "English": "Money",
+        "Russian": "Р”РµРЅСЊРіРё"
+      },
+
+      "Purse": {
+        "English": "Purse",
+        "Russian": "РљРѕС€РµР»С‘Рє"
+      }
+    },
+
+    "Reputation": {
+      "Reputation": {
+        "English": "Reputation",
+        "Russian": "Р РµРїСѓС‚Р°С†РёСЏ"
+      },
+
+      "Review": {
+        "English": "Review",
+        "Russian": "РћС‚Р·С‹РІ"
       }
     },
 
     "Storages": {
-      "IncomeStorage": {
-        "English": "Income storage",
-        "Russian": "Склад поступления"
+      "CompanyStorage": {
+        "English": "Company storage",
+        "Russian": "РЎРєР»Р°Рґ РєРѕРјРїР°РЅРёРё"
       },
 
-      "OutcomeStorage": {
-        "English": "Outcome storage",
-        "Russian": "Исходящий склад"
-      },
-
-      "PersonalStorage": {
+      "InventoryStorage": {
         "English": "Inventory",
-        "Russian": "Инвентарь"
+        "Russian": "РРЅРІРµРЅС‚Р°СЂСЊ"
+      },
+
+      "ItemPrice": {
+        "English": "Price for item",
+        "Russian": "Р¦РµРЅР° Р·Р° РїСЂРµРґРјРµС‚"
       },
 
       "ShowcaseStorage": {
         "English": "Showcase",
-        "Russian": "Витрина"
+        "Russian": "Р’РёС‚СЂРёРЅР°"
+      },
+
+      "Storage": {
+        "English": "Storage",
+        "Russian": "РҐСЂР°РЅРёР»РёС‰Рµ"
       },
 
       "StorageItem": {
         "English": "Storage item",
-        "Russian": "Предмет на складе"
-      },
-
-      "StorageItemWithPrice": {
-        "English": "Storage item with price",
-        "Russian": "Предмет на складе с ценой"
+        "Russian": "РџСЂРµРґРјРµС‚ РЅР° СЃРєР»Р°РґРµ"
       },
 
       "TrunkStorage": {
         "English": "Truck body",
-        "Russian": "Кузов"
-      },
-
-      "WorkerStorage": {
-        "English": "Worker storage",
-        "Russian": "Производственный склад"
+        "Russian": "РљСѓР·РѕРІ"
       }
     }
   }

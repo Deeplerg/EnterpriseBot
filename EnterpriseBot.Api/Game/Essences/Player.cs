@@ -142,7 +142,7 @@ namespace EnterpriseBot.Api.Game.Essences
 
             var storageCreationResult = InventoryStorage.Create(new InventoryStorageCreationParams
             {
-                Capacity = gameplaySettings.Storages.Inventory.DefaultCapacity,
+                Capacity = gameplaySettings.Storage.Inventory.DefaultCapacity,
                 OwningPlayer = player
             });
             if (storageCreationResult.LocalizedError != null) return storageCreationResult.LocalizedError;

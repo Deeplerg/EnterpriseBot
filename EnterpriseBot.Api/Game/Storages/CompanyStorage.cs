@@ -226,10 +226,10 @@ namespace EnterpriseBot.Api.Game.Storages
                 return Errors.DoesNotHavePermission();
             }
 
-            var upgradePrice = settings.Storages.Company.UpgradePrice;
-            decimal step = settings.Storages.Company.UpgradeStep;
+            var upgradePrice = settings.Storage.Company.UpgradePrice;
+            decimal step = settings.Storage.Company.UpgradeStep;
 
-            if (Capacity >= settings.Storages.Company.MaxCapacity)
+            if (Capacity >= settings.Storage.Company.MaxCapacity)
             {
                 return Errors.StorageCapacityIsMax;
             }

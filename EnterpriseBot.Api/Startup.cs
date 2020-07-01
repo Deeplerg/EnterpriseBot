@@ -21,6 +21,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
+using Microsoft.Extensions.Options;
+using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api
 {
@@ -32,7 +34,14 @@ namespace EnterpriseBot.Api
 
             builder.AddConfiguration(configuration);
 
-            builder.AddJsonFile("*.json", optional: false, reloadOnChange: true);
+            bool optional = false;
+            bool reloadOnChange = true;
+            builder.AddJsonFile("BusinessPricesSettings.json",     optional, reloadOnChange);
+            builder.AddJsonFile("BusinessSettings.json",           optional, reloadOnChange);
+            builder.AddJsonFile("DonationSettings.json",           optional, reloadOnChange);
+            builder.AddJsonFile("GameplaySettings.json",           optional, reloadOnChange);
+            builder.AddJsonFile("LocalizationSettings.json",       optional, reloadOnChange);
+            builder.AddJsonFile("MarketSettings.json",             optional, reloadOnChange);
 
             Configuration = builder.Build();
         }
@@ -95,8 +104,6 @@ namespace EnterpriseBot.Api
             });
 
             app.UseHttpsRedirection();
-
-            app.UseRouting();
 
             //app.UseAuthorization();
 

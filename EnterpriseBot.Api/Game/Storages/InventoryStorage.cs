@@ -121,10 +121,10 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public GameResult<decimal> UpgradeCapacity(GameplaySettings settings, DonationSettings donationSettings)
         {
-            var upgradePrice = settings.Storages.Inventory.UpgradePrice;
-            decimal step = settings.Storages.Inventory.UpgradeStep;
+            var upgradePrice = settings.Storage.Inventory.UpgradePrice;
+            decimal step = settings.Storage.Inventory.UpgradeStep;
 
-            if (Capacity >= settings.Storages.Company.MaxCapacity)
+            if (Capacity >= settings.Storage.Company.MaxCapacity)
             {
                 return Errors.StorageCapacityIsMax;
             }

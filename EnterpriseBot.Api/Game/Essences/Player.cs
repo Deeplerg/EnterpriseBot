@@ -33,8 +33,8 @@ namespace EnterpriseBot.Api.Game.Essences
         public long Id { get; protected set; }
 
         public string Name { get; protected set; }
-        public LocalizedString Status { get; protected set; }
-        public LocalizedString About { get; protected set; }
+        public virtual LocalizedString Status { get; protected set; }
+        public virtual LocalizedString About { get; protected set; }
 
         public virtual InventoryStorage Inventory { get; protected set; }
 
@@ -61,7 +61,7 @@ namespace EnterpriseBot.Api.Game.Essences
         
         public DateTime RegistrationDate { get; protected set; }
 
-        public Reputation.Reputation Reputation { get; protected set; }
+        public virtual Reputation.Reputation Reputation { get; protected set; }
 
 
         [JsonIgnore]

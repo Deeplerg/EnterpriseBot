@@ -38,7 +38,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public long Id { get; protected set; }
 
         public string Name { get; protected set; }
-        public LocalizedString Description { get; protected set; }
+        public virtual LocalizedString Description { get; protected set; }
 
         public virtual Player Owner { get; protected set; }
 

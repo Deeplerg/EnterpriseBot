@@ -18,11 +18,11 @@ namespace EnterpriseBot.Api.Game.Crafting
 
         #region model
         public long Id { get; protected set; }
-        public LocalizedString Name { get; protected set; }
-        public LocalizedString Description { get; protected set; }
-        public CraftingCategory MainCategory { get; protected set; }
+        public virtual LocalizedString Name { get; protected set; }
+        public virtual LocalizedString Description { get; protected set; }
+        public virtual CraftingCategory MainCategory { get; protected set; }
 
-        public IReadOnlyCollection<Item> Items
+        public virtual IReadOnlyCollection<Item> Items
         {
             get => new ReadOnlyCollection<Item>(items);
             protected set => items = value.ToList();

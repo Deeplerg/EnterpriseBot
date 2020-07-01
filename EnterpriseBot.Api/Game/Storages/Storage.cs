@@ -31,7 +31,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public decimal Capacity { get; protected set; }
 
-        public IReadOnlyCollection<StorageItem> Items 
+        public virtual IReadOnlyCollection<StorageItem> Items 
         {
             get => new ReadOnlyCollection<StorageItem>(items);
             protected set => items = value.ToList();

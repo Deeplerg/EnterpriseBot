@@ -20,14 +20,13 @@ namespace EnterpriseBot.Api.Game.Reputation
         #region model
         public long Id { get; protected set; }
 
-        public IReadOnlyCollection<Review> Reviews 
+        public virtual IReadOnlyCollection<Review> Reviews 
         {
             get => new ReadOnlyCollection<Review>(reviews); 
             protected set => reviews = value.ToList();
         }
         private List<Review> reviews = new List<Review>();
 
-        [NotMapped]
         public int Rating
         {
             get => (int)Reviews.Average(r => r.Rating);

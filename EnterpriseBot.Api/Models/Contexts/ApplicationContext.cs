@@ -84,9 +84,6 @@ namespace EnterpriseBot.Api.Models.Contexts
 
             BindingFlags nonPublicFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
-            //b.Property(m => m.Price)
-            // .HasColumnType<decimal>(decimalTypeName);
-
             #region business
             #region company
             builder.Entity<Company>(b =>
@@ -168,8 +165,8 @@ namespace EnterpriseBot.Api.Models.Contexts
                  .HasForeignKey<CompanyContract>($"{nameof(CompanyContract.ContractItem)}Id")
                  .OnDelete(DeleteBehavior.Cascade);
 
-                b.Property(m => m.ContractOverallCost)
-                 .HasColumnName(decimalTypeName);
+                //b.Property(m => m.ContractOverallCost)
+                // .HasColumnType(decimalTypeName);
 
                 b.Ignore(m => m.IsCompleted);
             });
@@ -193,8 +190,8 @@ namespace EnterpriseBot.Api.Models.Contexts
                  .HasForeignKey<CompanyContractRequest>($"{nameof(CompanyContractRequest.ContractItem)}Id")
                  .OnDelete(DeleteBehavior.Restrict);
 
-                b.Property(m => m.ContractOverallCost)
-                 .HasColumnName(decimalTypeName);
+                //b.Property(m => m.ContractOverallCost)
+                // .HasColumnType(decimalTypeName);
             });
 
             builder.Entity<CompanyJob>(b =>
@@ -273,8 +270,8 @@ namespace EnterpriseBot.Api.Models.Contexts
                  .HasForeignKey<CompanyWorker>($"{nameof(CompanyWorker.WorkingStorage)}Id")
                  .OnDelete(DeleteBehavior.Restrict);
 
-                b.Property(m => m.SpeedMultiplier)
-                 .HasColumnName(decimalTypeName);
+                //b.Property(m => m.SpeedMultiplier)
+                // .HasColumnName(decimalTypeName);
 
                 b.Ignore(m => m.LeadTimeInSeconds);
             });
@@ -414,8 +411,8 @@ namespace EnterpriseBot.Api.Models.Contexts
                  .HasForeignKey($"{nameof(Item.Category)}Id")
                  .OnDelete(DeleteBehavior.Restrict); //already configured in CraftingSubCategory
 
-                b.Property(m => m.Space)
-                 .HasColumnName(decimalTypeName);
+                //b.Property(m => m.Space)
+                // .HasColumnType(decimalTypeName);
             });
 
             builder.Entity<Recipe>(b =>
@@ -535,6 +532,8 @@ namespace EnterpriseBot.Api.Models.Contexts
                  .WithOne()
                  .HasForeignKey($"{nameof(Reputation)}Id")
                  .OnDelete(DeleteBehavior.Cascade);
+
+                b.Ignore(m => m.Rating);
             });
             #endregion
 
@@ -593,8 +592,8 @@ namespace EnterpriseBot.Api.Models.Contexts
             {
                 b.HasKey(m => m.Id);
 
-                b.Property(m => m.Price)
-                 .HasColumnType(decimalTypeName);
+                //b.Property(m => m.Price)
+                // .HasColumnType(decimalTypeName);
 
                 b.HasOne(m => m.Item)
                  .WithOne()
@@ -641,8 +640,8 @@ namespace EnterpriseBot.Api.Models.Contexts
             {
                 b.HasKey(m => m.Id);
 
-                b.Property(m => m.Capacity)
-                 .HasColumnName(decimalTypeName);
+                //b.Property(m => m.Capacity)
+                // .HasColumnName(decimalTypeName);
 
                 b.HasMany(m => m.Items)
                  .WithOne()

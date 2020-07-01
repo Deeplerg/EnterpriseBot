@@ -17,7 +17,7 @@ namespace EnterpriseBot.Api.Game.Money
         #region model
         public long Id { get; protected set; }
 
-        public IReadOnlyCollection<Money> Money 
+        public virtual IReadOnlyCollection<Money> Money 
         {
             get => new ReadOnlyCollection<Money>(money);
             protected set => money = value.ToList(); 

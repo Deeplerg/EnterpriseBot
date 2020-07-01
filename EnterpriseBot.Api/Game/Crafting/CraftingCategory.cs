@@ -19,10 +19,10 @@ namespace EnterpriseBot.Api.Game.Crafting
 
         #region model
         public long Id { get; protected set; }
-        public LocalizedString Name { get; protected set; }
-        public LocalizedString Description { get; protected set; }
+        public virtual LocalizedString Name { get; protected set; }
+        public virtual LocalizedString Description { get; protected set; }
 
-        public IReadOnlyCollection<CraftingSubCategory> SubCategories
+        public virtual IReadOnlyCollection<CraftingSubCategory> SubCategories
         {
             get => new ReadOnlyCollection<CraftingSubCategory>(subCategories);
             protected set => subCategories = value.ToList();

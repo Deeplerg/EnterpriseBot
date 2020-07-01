@@ -34,7 +34,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
         protected virtual Storage Storage { get; set; }
 
-        #region errorrs
+        #region errors
         #endregion
         #endregion
 

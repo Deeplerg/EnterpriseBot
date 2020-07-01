@@ -7,7 +7,7 @@ namespace EnterpriseBot.Api.Models.Settings.BusinessSettings.Company
 {
     public class CompanyContractSettings
     {
-        public int MaxContractsByDefault { get; set; }
+        public int MaxContracts { get; set; }
         public int MaxTimeInDays { get; set; }
     }
 }

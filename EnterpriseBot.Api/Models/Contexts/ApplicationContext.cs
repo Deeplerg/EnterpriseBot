@@ -221,6 +221,19 @@ namespace EnterpriseBot.Api.Models.Contexts
                  .HasForeignKey($"{nameof(CompanyJobApplication.Job)}Id")
                  .OnDelete(DeleteBehavior.Cascade);
 
+                b.HasOne(m => m.Name)
+                 .WithOne()
+                 .HasForeignKey<CompanyJob>($"{nameof(CompanyJob.Name)}Id")
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(m => m.Description)
+                 .WithOne()
+                 .HasForeignKey<CompanyJob>($"{nameof(CompanyJob.Description)}Id")
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                //b.Property(m => m.Salary)
+                // .HasColumnType(decimalTypeName);
+
                 b.Ignore(m => m.IsOccupied);
 
                 b.Ignore(m => m.Recipe);

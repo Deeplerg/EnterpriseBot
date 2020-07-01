@@ -52,9 +52,9 @@ namespace EnterpriseBot.Api.Game.Money
         {
             foreach (var m in range)
             {
-                var addingResult = Add(m.Amount, m.Currency);
-                if (addingResult.LocalizedError != null)
-                    return addingResult.LocalizedError;
+                var addResult = Add(m.Amount, m.Currency);
+                if (addResult.LocalizedError != null)
+                    return addResult.LocalizedError;
             }
 
             return new EmptyGameResult();
@@ -71,9 +71,9 @@ namespace EnterpriseBot.Api.Game.Money
         {
             foreach (var m in range)
             {
-                var reducingResult = Reduce(m.Amount, m.Currency);
-                if (reducingResult.LocalizedError != null)
-                    return reducingResult.LocalizedError;
+                var reduceResult = Reduce(m.Amount, m.Currency);
+                if (reduceResult.LocalizedError != null)
+                    return reduceResult.LocalizedError;
             }
 
             return new EmptyGameResult();

@@ -18,6 +18,9 @@ using EnterpriseBot.Api.Game.Crafting;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
+using EnterpriseBot.Api.Game.Localization;
+using Microsoft.CodeAnalysis.Differencing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -28,8 +31,8 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #region model
         public long Id { get; protected set; }
 
-        public string Name { get; protected set; }
-        public string Description { get; protected set; }
+        public LocalizedString Name { get; protected set; }
+        public LocalizedString Description { get; protected set; }
 
         public virtual Player Employee { get; protected set; }
 
@@ -37,9 +40,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public CompanyJobPermissions Permissions { get; protected set; }
 
+        public decimal Salary { get; protected set; }
+
 
         protected virtual CompanyWorker Worker { get; set; }
-
 
         public virtual IReadOnlyCollection<CompanyJobApplication> Applications
         {
@@ -69,6 +73,18 @@ namespace EnterpriseBot.Api.Game.Business.Company
             get => Worker.StopWorkingJobId;
             set => Worker.StopWorkingJobId = value;
         }
+
+        [JsonIgnore]
+        public string PaySalaryJobId { get; set; }
+
+        #region errors
+        private static readonly LocalizedError recipeCantBeDoneByPlayerError = new LocalizedError
+        {
+            ErrorSeverity = ErrorSeverity.Normal,
+            EnglishMessage = "The recipe can't be done by player",
+            RussianMessage = "Рецепт не может быть выполнен игроком"
+        };
+        #endregion
         #endregion
 
         #region actions
@@ -80,7 +96,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         /// <param name="invoker"></param>
         /// <returns></returns>
         public static GameResult<CompanyJob> Create(CompanyJobCreationParams pars, 
-            UserInputRequirements inputRequirements, Player invoker)
+            UserInputRequirements inputRequirements, CompanyJobSettings jobSettings, Player invoker)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.CreateJob, pars.Company))
             {
@@ -96,7 +112,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            return CreateBase(pars, inputRequirements);
+            return CreateBase(pars, inputRequirements, jobSettings);
         }
 
         /// <summary>
@@ -108,21 +124,21 @@ namespace EnterpriseBot.Api.Game.Business.Company
         /// <param name="invoker"></param>
         /// <returns></returns>
         public static GameResult<CompanyJob> Create(CompanyJobCreationParams pars,
-            UserInputRequirements inputRequirements, CompanyWorkerSettings workerSettings, Player invoker)
+            UserInputRequirements inputRequirements, CompanyWorkerSettings workerSettings, CompanyJobSettings jobSettings, Player invoker)
         {
             if (!invoker.HasPermission(CompanyJobPermissions.CreateJob, pars.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            var jobCreationResult = CreateBase(pars, inputRequirements);
+            var jobCreationResult = CreateBase(pars, inputRequirements, jobSettings);
             if (jobCreationResult.LocalizedError != null) return jobCreationResult.LocalizedError;
 
             CompanyJob job = jobCreationResult;
 
             if (!pars.Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
             {
-                return RecipeCantBeDoneByPlayerError();
+                return recipeCantBeDoneByPlayerError;
             }
 
             var workerCreationResult = CompanyWorker.Create(new CompanyWorkerCreationParams
@@ -139,7 +155,8 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return job;
         }
 
-        public GameResult<string> SetDescription(string newDescription, UserInputRequirements inputRequirements, Player invoker)
+        public GameResult<StringLocalization> SetDescription(string newDescription, LocalizationLanguage language,
+            UserInputRequirements inputRequirements, Player invoker)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.ChangeJobParameters, Company))
             {
@@ -152,21 +169,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             if (!CheckDescription(newDescription))
             {
-                var req = inputRequirements;
-
-                return new LocalizedError
-                {
-                    ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = string.Format(req.Description.English,
-                                                   DescriptionMaxLength),
-                    RussianMessage = string.Format(req.Description.Russian,
-                                                   DescriptionMaxLength)
-                };
+                return Errors.IncorrectDescriptionInput(inputRequirements);
             }
 
-            Description = newDescription;
-
-            return Description;
+            return Description.Edit(newDescription, language);
         }
 
         public EmptyGameResult StartWorking()
@@ -189,7 +195,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             if(!Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
             {
-                return RecipeCantBeDoneByPlayerError();
+                return recipeCantBeDoneByPlayerError;
             }
 
             return Worker.StartWorking();
@@ -242,7 +248,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             if (!Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
             {
-                return RecipeCantBeDoneByPlayerError();
+                return recipeCantBeDoneByPlayerError;
             }
 
             return Worker.SetRecipe(recipe);
@@ -256,6 +262,70 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 Applicant = applicant,
                 Resume = resume
             }, inputReq);
+        }
+
+        public EmptyGameResult Hire(CompanyJobApplication application, Player invoker)
+        {
+            if (!invoker.HasPermission(CompanyJobPermissions.Hire, Company))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+
+            if (IsOccupied)
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Normal,
+                    EnglishMessage = "This job is already occupied",
+                    RussianMessage = "Это рабочее место уже занято"
+                };
+            }
+
+            if(application.Job != this)
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Critical,
+                    EnglishMessage = $"Job {(application.Job != null ? application.Job.Id.ToString() : "[is null]")} " +
+                                     $"in application {application.Id} does not match hiring job {Id}",
+                    RussianMessage = $"Работа {(application.Job != null ? application.Job.Id.ToString() : "[является null]")} " +
+                                     $"в заявке {application.Id} не совпадает с нанимаемой работой {Id}"
+                };
+            }
+
+            Employee = application.Applicant;
+
+            return new EmptyGameResult();
+        }
+
+        public EmptyGameResult Fire(Player invoker = null)
+        {
+            if (invoker != null)
+            {
+                if (!invoker.HasPermission(CompanyJobPermissions.Fire, Company))
+                {
+                    return Errors.DoesNotHavePermission();
+                }
+                if(ThisJobHasPermission(CompanyJobPermissions.Fire))
+                {
+                    return Errors.DoesNotHavePermission();
+                }
+            }
+
+            Employee = null;
+
+            return new EmptyGameResult();
+        }
+
+        public EmptyGameResult PaySalary()
+        {
+            var reduceResult = Company.Purse.Reduce(Salary, Currency.Units);
+            if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
+
+            var addResult = Employee.Purse.Add(Salary, Currency.Units);
+            if (addResult.LocalizedError != null) return addResult.LocalizedError;
+
+            return new EmptyGameResult();
         }
 
         public EmptyGameResult AddPermissions(CompanyJobPermissions permissions, Player invoker)
@@ -306,6 +376,24 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return new EmptyGameResult();
         }
 
+        public GameResult<decimal> SetSalary(decimal newSalary, 
+            CompanyJobSettings jobSettings, Player invoker)
+        {
+            if(!invoker.HasPermission(CompanyJobPermissions.ChangeJobParameters, Company))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+
+            if(newSalary < jobSettings.MinSalary)
+            {
+                return SalaryBelowTheMinimumError(jobSettings.MinSalary);
+            }
+
+            Salary = newSalary;
+
+            return Salary;
+        }
+
         public EmptyGameResult ResetItemsAmountMadeThisWeek()
         {
             return Worker.ResetItemsAmountMadeThisWeek();
@@ -344,31 +432,43 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
 
         private static GameResult<CompanyJob> CreateBase(CompanyJobCreationParams pars, 
-            UserInputRequirements inputRequirements)
+            UserInputRequirements inputRequirements, CompanyJobSettings jobSettings)
         {
             var req = inputRequirements;
 
-            if (!CheckName(pars.Name))
+            foreach (var str in pars.Name.Localizations)
             {
-                return new LocalizedError
+                if (!CheckName(str.Text))
                 {
-                    ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = string.Format(req.Name.English,
-                                                   NameMaxLength),
-                    RussianMessage = string.Format(req.Name.Russian,
-                                                   NameMaxLength)
-                };
+                    return new LocalizedError
+                    {
+                        ErrorSeverity = ErrorSeverity.Normal,
+                        EnglishMessage = string.Format(req.Name.English,
+                                                       NameMaxLength),
+                        RussianMessage = string.Format(req.Name.Russian,
+                                                       NameMaxLength)
+                    };
+                }
             }
-            if (!CheckDescription(pars.Name))
+
+            foreach (var str in pars.Description.Localizations)
             {
-                return new LocalizedError
+                if (!CheckDescription(str.Text))
                 {
-                    ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = string.Format(req.Description.English,
-                                                   DescriptionMaxLength),
-                    RussianMessage = string.Format(req.Description.Russian,
-                                                   DescriptionMaxLength)
-                };
+                    return new LocalizedError
+                    {
+                        ErrorSeverity = ErrorSeverity.Normal,
+                        EnglishMessage = string.Format(req.Description.English,
+                                                       DescriptionMaxLength),
+                        RussianMessage = string.Format(req.Description.Russian,
+                                                       DescriptionMaxLength)
+                    };
+                }
+            }
+
+            if (pars.Salary < jobSettings.MinSalary)
+            {
+                return SalaryBelowTheMinimumError(jobSettings.MinSalary);
             }
 
             return new CompanyJob
@@ -382,13 +482,13 @@ namespace EnterpriseBot.Api.Game.Business.Company
             };
         }
 
-        private static LocalizedError RecipeCantBeDoneByPlayerError()
+        private static LocalizedError SalaryBelowTheMinimumError(decimal minimum)
         {
             return new LocalizedError
             {
                 ErrorSeverity = ErrorSeverity.Normal,
-                EnglishMessage = "The recipe can't be done by player",
-                RussianMessage = "Рецепт не может быть выполнен игроком"
+                EnglishMessage = $"The salary can't be below the {minimum}u minimum",
+                RussianMessage = $"Зарплата не может быть ниже минимума в {minimum}u"
             };
         }
         #endregion

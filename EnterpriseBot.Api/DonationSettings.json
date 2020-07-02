@@ -7,6 +7,24 @@
       "Premium": 0.8,
       "Mega": 0.65,
       "Gold": 0.5
+    },
+
+    "MaxContracts": {
+      "NoDonation": null,
+      "Pro": null,
+      "VIP": null,
+      "Premium": 5,
+      "Mega": 10,
+      "Gold": 30
+    },
+
+    "ContractMaxTimeInDays": {
+      "NoDonation": null,
+      "Pro": null,
+      "VIP": null,
+      "Premium": 14,
+      "Mega": 30,
+      "Gold": 60
     }
   }
 }

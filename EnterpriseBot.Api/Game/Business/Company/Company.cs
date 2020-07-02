@@ -216,11 +216,17 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<decimal> ReduceBusinessCoins(decimal amount, DonationSettings donationSettings, Player invoker = null)
         {
-            decimal priceMultiplier = Owner.Donation.GetBusinessPriceMultiplier(donationSettings);
+            var ownerMultiplierResult = Owner.Donation.GetBusinessPriceMultiplier(donationSettings);
+            if (ownerMultiplierResult.LocalizedError != null) return ownerMultiplierResult.LocalizedError;
+
+            decimal priceMultiplier = ownerMultiplierResult;
 
             if (invoker != null && invoker.HasDonation)
             {
-                decimal employeeMultiplier = invoker.Donation.GetBusinessPriceMultiplier(donationSettings);
+                var invokerMultiplierResult = invoker.Donation.GetBusinessPriceMultiplier(donationSettings);
+                if (invokerMultiplierResult.LocalizedError != null) return invokerMultiplierResult.LocalizedError;
+
+                decimal employeeMultiplier = invokerMultiplierResult;
 
                 if (employeeMultiplier < priceMultiplier)
                     priceMultiplier = employeeMultiplier;
@@ -279,6 +285,55 @@ namespace EnterpriseBot.Api.Game.Business.Company
             ContractsCompleted++;
 
             return new EmptyGameResult();
+        }
+
+        public GameResult<bool> CanConcludeOneMoreContract(DonationSettings donationSettings, CompanyContractSettings contractSettings, Player invoker = null)
+        {
+            var maxContractsOwnerResult = Owner.Donation.GetMaximumContracts(donationSettings, contractSettings);
+            if (maxContractsOwnerResult.LocalizedError != null) return maxContractsOwnerResult.LocalizedError;
+
+            uint maxContracts = maxContractsOwnerResult;
+
+            if (invoker != null && invoker.HasDonation)
+            {
+                var maxContractsInvokerResult = invoker.Donation.GetMaximumContracts(donationSettings, contractSettings);
+                if (maxContractsInvokerResult.LocalizedError != null) return maxContractsInvokerResult.LocalizedError;
+
+                if (maxContractsInvokerResult > maxContracts)
+                {
+                    maxContracts = maxContractsInvokerResult;
+                }
+            }
+
+            if(IncomeContracts.Count() + OutcomeContracts.Count() >= maxContracts)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public GameResult<uint> GetContractMaxTimeInDays(DonationSettings donationSettings, CompanyContractSettings contractSettings, Player invoker = null)
+        {
+            var maxTimeOwnerResult = Owner.Donation.GetContractMaxTimeInDays(donationSettings, contractSettings);
+            if (maxTimeOwnerResult.LocalizedError != null) return maxTimeOwnerResult.LocalizedError;
+
+            uint maxTime = maxTimeOwnerResult;
+
+            if (invoker != null && invoker.HasDonation)
+            {
+                var maxTimeInvokerResult = invoker.Donation.GetContractMaxTimeInDays(donationSettings, contractSettings);
+                if (maxTimeInvokerResult.LocalizedError != null) return maxTimeInvokerResult.LocalizedError;
+
+                if (maxTimeInvokerResult > maxTime)
+                {
+                    maxTime = maxTimeInvokerResult;
+                }
+            }
+
+            return maxTime;
         }
 
 

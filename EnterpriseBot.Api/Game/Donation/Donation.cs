@@ -1,8 +1,10 @@
 ﻿using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.ModelCreationParams.Donation;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Utils;
+using EnterpriseBot.ApiWrapper.Models.Common.Business;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -78,10 +80,76 @@ namespace EnterpriseBot.Api.Game.Donation
             return GetBusinessPriceMultiplierForPrivelege(Privilege, donationSettings);
         }
 
-        //public GameResult<Privilege> MakePurchase(Privilege privilege, DonationPurchaseCreationParams pars)
-        //{
-            
-        //}
+        public static GameResult<uint> GetMaximumContractsForPrivelege(Privilege privilege,
+            DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        {
+            var max = donationSettings.MaxContracts;
+            uint @default = contractSettings.MaxContracts;
+
+            switch(privilege)
+            {
+                case Privilege.NoDonation:
+                    return max.NoDonation ?? @default;
+
+                case Privilege.Pro:
+                    return max.Pro ?? @default;
+
+                case Privilege.VIP:
+                    return max.VIP ?? @default;
+
+                case Privilege.Premium:
+                    return max.Premium ?? @default;
+
+                case Privilege.Mega:
+                    return max.Mega ?? @default;
+
+                case Privilege.Gold:
+                    return max.Gold ?? @default;
+
+                default:
+                    return Errors.UnknownEnumValue(privilege);
+            }
+        }
+
+        public GameResult<uint> GetMaximumContracts(DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        {
+            return GetMaximumContractsForPrivelege(Privilege, donationSettings, contractSettings);
+        }
+
+        public static GameResult<uint> GetContractMaxTimeInDaysForPrivilege(Privilege privilege, DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        {
+            var max = donationSettings.ContractMaxTimeInDays;
+            uint @default = contractSettings.MaxTimeInDays;
+
+            switch (privilege)
+            {
+                case Privilege.NoDonation:
+                    return max.NoDonation ?? @default;
+
+                case Privilege.Pro:
+                    return max.Pro ?? @default;
+
+                case Privilege.VIP:
+                    return max.VIP ?? @default;
+
+                case Privilege.Premium:
+                    return max.Premium ?? @default;
+
+                case Privilege.Mega:
+                    return max.Mega ?? @default;
+
+                case Privilege.Gold:
+                    return max.Gold ?? @default;
+
+                default:
+                    return Errors.UnknownEnumValue(privilege);
+            }
+        }
+
+        public GameResult<uint> GetContractMaxTimeInDays(DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        {
+            return GetContractMaxTimeInDaysForPrivilege(Privilege, donationSettings, contractSettings);
+        }
 
         public GameResult<Privilege> UpgradePrivilege(Privilege to)
         {

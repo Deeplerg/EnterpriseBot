@@ -10,6 +10,11 @@ using static EnterpriseBot.Api.Utils.Constants;
 using EnterpriseBot.Api.Utils;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
+using EnterpriseBot.ApiWrapper.Models.Common.Business;
+using EnterpriseBot.Api.Models.Settings.DonationSettings;
+using EnterpriseBot.Api.Game.Essences;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -46,10 +51,30 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         #region actions
         public static GameResult<CompanyContract> Create(ContractCreationParams creationPars, 
-            UserInputRequirements inputRequirements)
+            UserInputRequirements inputRequirements, DonationSettings donationSettings, CompanyContractSettings contractSettings)
         {
             var cp = creationPars;
             var req = inputRequirements;
+
+            var incomeCompanyCanConcludeResult = cp.IncomeCompany.CanConcludeOneMoreContract(donationSettings, contractSettings);
+            if (incomeCompanyCanConcludeResult.LocalizedError != null) return incomeCompanyCanConcludeResult.LocalizedError;
+
+            var outcomeCompanyCanConcludeResult = cp.OutcomeCompany.CanConcludeOneMoreContract(donationSettings, contractSettings);
+            if (outcomeCompanyCanConcludeResult.LocalizedError != null) return outcomeCompanyCanConcludeResult.LocalizedError;
+
+            if (!incomeCompanyCanConcludeResult
+            || !outcomeCompanyCanConcludeResult)
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Normal,
+                    EnglishMessage = "Another company (in the context of this contract) has reached its maximum contracts limit",
+                    RussianMessage = "Другая компания (в контексте данного контракта) достигла лимита на максимальное количество контрактов"
+                };
+            }
+
+            var checkMaxTimeResult = CheckMaxTime(cp.IncomeCompany, cp.OutcomeCompany, donationSettings, contractSettings);
+            if (checkMaxTimeResult.LocalizedError != null) return checkMaxTimeResult.LocalizedError;
 
             if (!CheckName(cp.Name))
             {
@@ -122,9 +147,14 @@ namespace EnterpriseBot.Api.Game.Business.Company
         }
 
         public static GameResult<CompanyContract> Conclude(CompanyContractRequest contractRequest,
-            UserInputRequirements inputRequirements)
+            UserInputRequirements inputRequirements, DonationSettings donationSettings, CompanyContractSettings contractSettings, Player invoker = null)
         {
             var cReq = contractRequest;
+
+            if (invoker != null && !invoker.HasPermission(CompanyJobPermissions.SignContracts, cReq.RequestedCompany))
+            {
+                return Errors.DoesNotHavePermission();
+            }
 
             Company incomeCompany;
             Company outcomeCompany;
@@ -146,6 +176,9 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             CompanyContractIssuer issuer = cReq.RequestingCompanyRelationSide;
 
+            var checkMaxTimeResult = CheckMaxTime(incomeCompany, outcomeCompany, donationSettings, contractSettings, invoker);
+            if (checkMaxTimeResult.LocalizedError != null) return checkMaxTimeResult.LocalizedError;
+
             return Create(new ContractCreationParams
             {
                 Name = cReq.Name,
@@ -161,7 +194,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
                 ContractOverallCost = cReq.ContractOverallCost,
                 TerminationTermInWeeks = cReq.TerminationTermInWeeks
-            }, inputRequirements);
+            }, inputRequirements, donationSettings, contractSettings);
         }
 
         public GameResult<bool> CheckCompletion()
@@ -196,6 +229,41 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             var outcomeCompleteResult = OutcomeCompany.CompleteAndRemoveContract(this);
             if (outcomeCompleteResult.LocalizedError != null) return outcomeCompleteResult.LocalizedError;
+
+            return new EmptyGameResult();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="incomeCompany"></param>
+        /// <param name="outcomeCompany"></param>
+        /// <param name="donationSettings"></param>
+        /// <param name="contractSettings"></param>
+        /// <param name="invoker"></param>
+        /// <returns>If max time check wasn't passed, returns <see cref="LocalizedError"/>, otherwise, empty</returns>
+        private static EmptyGameResult CheckMaxTime(Company incomeCompany, Company outcomeCompany, 
+            DonationSettings donationSettings, CompanyContractSettings contractSettings, Player invoker = null)
+        {
+            var incomeMaxTimeResult = incomeCompany.GetContractMaxTimeInDays(donationSettings, contractSettings, invoker);
+            if (incomeMaxTimeResult.LocalizedError != null) return incomeMaxTimeResult.LocalizedError;
+
+            var outcomeMaxTimeResult = outcomeCompany.GetContractMaxTimeInDays(donationSettings, contractSettings, invoker);
+            if (outcomeMaxTimeResult.LocalizedError != null) return outcomeMaxTimeResult.LocalizedError;
+
+            uint maxTime = incomeMaxTimeResult;
+            if (outcomeMaxTimeResult > maxTime)
+                maxTime = outcomeMaxTimeResult;
+
+            if (maxTime > contractSettings.MaxTimeInDays)
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Normal,
+                    EnglishMessage = $"Contract term can't be more than {contractSettings.MaxTimeInDays} days",
+                    RussianMessage = $"Срок контракта не может быть больше чем {contractSettings.MaxTimeInDays} дней"
+                };
+            }
 
             return new EmptyGameResult();
         }

@@ -23,6 +23,8 @@ using System.Threading.Tasks;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using Microsoft.Extensions.Options;
 using EnterpriseBot.Api.Models.Settings;
+using Microsoft.AspNetCore.Mvc.Razor;
+using EnterpriseBot.Api.Routing;
 
 namespace EnterpriseBot.Api
 {
@@ -58,6 +60,11 @@ namespace EnterpriseBot.Api
             services.Configure<BusinessSettings>(Configuration.GetSection("BusinessSettings"));
             services.Configure<MarketSettings>(Configuration.GetSection("MarketSettings"));
             services.Configure<DonationSettings>(Configuration.GetSection("DonationSettings"));
+
+            services.Configure<RazorViewEngineOptions>(opt =>
+            {
+                opt.ViewLocationExpanders.Add(new SubAreaViewLocationExpander());
+            });
             #endregion
 
             services.AddSingleton<PostgresTransactionLimiter>();
@@ -107,32 +114,22 @@ namespace EnterpriseBot.Api
 
             //app.UseAuthorization();
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
+            app.UseRouting();
 
-            //    endpoints.MapAreaControllerRoute(
-            //        name: "business_area",
-            //        areaName: nameof(Areas.Business),
-            //        pattern: "{area:exists}/{controller}/{action}/{id?}");
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
 
-            //    endpoints.MapAreaControllerRoute(
-            //        name: "crafting_area",
-            //        areaName: nameof(Areas.Crafting),
-            //        pattern: "{area:exists}/{controller}/{action}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "game_areas",
+                    pattern: "{area:exists}/{controller}/{action}/{id?}");
 
-            //    endpoints.MapAreaControllerRoute(
-            //        name: "essences_area",
-            //        areaName: nameof(Areas.Essences),
-            //        pattern: "{area:exists}/{controller}/{action}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "game_subareas",
+                    pattern: "{area:exists}/{subarea:exists}/{controller}/{action}/{id?}");
 
-            //    endpoints.MapAreaControllerRoute(
-            //        name: "storages_area",
-            //        areaName: nameof(Areas.Storages),
-            //        pattern: "{area:exists}/{controller}/{action}/{id?}");
-            //});
-
-            app.Run(async (req) => await req.Response.WriteAsync("API is under construction..."));
+                endpoints.MapDefaultControllerRoute();
+            });
         }
 
         private async Task ExceptionHandler(HttpContext ctx)

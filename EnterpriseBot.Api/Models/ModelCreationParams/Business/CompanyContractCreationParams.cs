@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Models.ModelCreationParams.Business
 {
-    public class ContractCreationParams
+    public class CompanyContractCreationParams
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -19,9 +19,9 @@ namespace EnterpriseBot.Api.Models.ModelCreationParams.Business
 
         public CompanyContractIssuer Issuer { get; set; }
 
-        public Item ContractItem { get; set; }
-        public int ContractItemQuantity { get; set; }
-        public decimal ContractOverallCost { get; set; }
+        public Item Item { get; set; }
+        public int ItemQuantity { get; set; }
+        public decimal OverallCost { get; set; }
         public sbyte TerminationTermInWeeks { get; set; }
     }
 }

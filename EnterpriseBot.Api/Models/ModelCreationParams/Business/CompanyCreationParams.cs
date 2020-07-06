@@ -9,7 +9,7 @@ namespace EnterpriseBot.Api.Models.ModelCreationParams.Business
         public string Name { get; set; }
         public LocalizedString Description { get; set; }
 
-        public Player GeneralManager { get; set; }
+        public Player Owner { get; set; }
 
         public CompanyExtensions Extensions { get; set; }
     }

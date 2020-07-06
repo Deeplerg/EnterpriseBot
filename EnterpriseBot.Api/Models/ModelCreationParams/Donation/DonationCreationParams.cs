@@ -9,7 +9,7 @@ namespace EnterpriseBot.Api.Models.ModelCreationParams.Donation
 {
     public class DonationCreationParams
     {
-        public Privilege Privilege { get; set; }
         public Player Player { get; set; }
+        public Privilege Privilege { get; set; }
     }
 }

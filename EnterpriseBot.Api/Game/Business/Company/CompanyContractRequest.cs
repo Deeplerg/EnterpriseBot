@@ -35,13 +35,13 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        public static GameResult<CompanyContractRequest> Create(ContractRequestCreationParams creationPars,
+        public static GameResult<CompanyContractRequest> Create(CompanyContractRequestCreationParams creationPars,
             UserInputRequirements inputRequirements)
         {
             return CreateBase(creationPars, inputRequirements);
         }
 
-        public static GameResult<CompanyContractRequest> Create(ContractRequestCreationParams creationPars,
+        public static GameResult<CompanyContractRequest> Create(CompanyContractRequestCreationParams creationPars,
             UserInputRequirements inputRequirements, Player invoker)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.SignContracts, creationPars.RequestingCompany))
@@ -77,7 +77,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         }
 
 
-        private static GameResult<CompanyContractRequest> CreateBase(ContractRequestCreationParams cp,
+        private static GameResult<CompanyContractRequest> CreateBase(CompanyContractRequestCreationParams cp,
             UserInputRequirements req)
         {
             if (!UserInputUtils.CheckName(cp.Name))
@@ -89,7 +89,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 return Errors.IncorrectDescriptionInput(req);
             }
 
-            if (cp.ContractItemQuantity < 1)
+            if (cp.ItemQuantity < 1)
             {
                 return new LocalizedError
                 {
@@ -99,7 +99,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if (cp.ContractOverallCost < 1)
+            if (cp.OverallCost < 1)
             {
                 return new LocalizedError
                 {
@@ -137,10 +137,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 RequestedCompany = cp.RequestedCompany,
                 RequestingCompany = cp.RequestingCompany,
 
-                ContractItem = cp.ContractItem,
-                ContractItemQuantity = cp.ContractItemQuantity,
+                ContractItem = cp.Item,
+                ContractItemQuantity = cp.ItemQuantity,
 
-                ContractOverallCost = cp.ContractOverallCost,
+                ContractOverallCost = cp.OverallCost,
                 TerminationTermInWeeks = cp.TerminationTermInWeeks
             };
         }

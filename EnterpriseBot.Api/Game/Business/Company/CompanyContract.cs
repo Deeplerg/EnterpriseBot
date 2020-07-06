@@ -50,7 +50,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        public static GameResult<CompanyContract> Create(ContractCreationParams creationPars, 
+        public static GameResult<CompanyContract> Create(CompanyContractCreationParams creationPars, 
             UserInputRequirements inputRequirements, DonationSettings donationSettings, CompanyContractSettings contractSettings)
         {
             var cp = creationPars;
@@ -85,7 +85,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 return Errors.IncorrectDescriptionInput(req);
             }
 
-            if (cp.ContractItemQuantity < 1)
+            if (cp.ItemQuantity < 1)
             {
                 return new LocalizedError
                 {
@@ -95,7 +95,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if (cp.ContractOverallCost < 1)
+            if (cp.OverallCost < 1)
             {
                 return new LocalizedError
                 {
@@ -115,7 +115,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if(cp.IncomeCompany.Purse.GetMoneyAmount(Currency.Units) < cp.ContractOverallCost)
+            if(cp.IncomeCompany.Purse.GetMoneyAmount(Currency.Units) < cp.OverallCost)
             {
                 return new LocalizedError
                 {
@@ -123,7 +123,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                     EnglishMessage = "Income company does not have enough units to sign a contract"
                 };
             }
-            var reducingResult = cp.IncomeCompany.Purse.Reduce(cp.ContractOverallCost, Currency.Units);
+            var reducingResult = cp.IncomeCompany.Purse.Reduce(cp.OverallCost, Currency.Units);
             if (reducingResult.LocalizedError != null) return reducingResult.LocalizedError;
 
             return new CompanyContract
@@ -133,9 +133,9 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
                 DeliveredAmount = 0,
                 ConclusionDate = DateTime.Now,
-                ContractItem = cp.ContractItem,
-                ContractItemQuantity = cp.ContractItemQuantity,
-                ContractOverallCost = cp.ContractOverallCost,
+                ContractItem = cp.Item,
+                ContractItemQuantity = cp.ItemQuantity,
+                ContractOverallCost = cp.OverallCost,
 
                 Issuer = cp.Issuer,
                 
@@ -179,7 +179,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             var checkMaxTimeResult = CheckMaxTime(incomeCompany, outcomeCompany, donationSettings, contractSettings, invoker);
             if (checkMaxTimeResult.LocalizedError != null) return checkMaxTimeResult.LocalizedError;
 
-            return Create(new ContractCreationParams
+            return Create(new CompanyContractCreationParams
             {
                 Name = cReq.Name,
                 Description = cReq.Description,
@@ -189,10 +189,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
                 Issuer = issuer,
 
-                ContractItem = cReq.ContractItem,
-                ContractItemQuantity = cReq.ContractItemQuantity,
+                Item = cReq.ContractItem,
+                ItemQuantity = cReq.ContractItemQuantity,
 
-                ContractOverallCost = cReq.ContractOverallCost,
+                OverallCost = cReq.ContractOverallCost,
                 TerminationTermInWeeks = cReq.TerminationTermInWeeks
             }, inputRequirements, donationSettings, contractSettings);
         }

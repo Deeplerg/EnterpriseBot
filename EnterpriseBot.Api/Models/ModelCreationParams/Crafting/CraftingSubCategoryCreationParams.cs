@@ -12,6 +12,7 @@ namespace EnterpriseBot.Api.Models.ModelCreationParams.Crafting
         public LocalizedString Name { get; set; }
         public LocalizedString Description { get; set; }
         public CraftingCategory MainCategory { get; set; }
+
         /// <summary>
         /// Optional
         /// </summary>

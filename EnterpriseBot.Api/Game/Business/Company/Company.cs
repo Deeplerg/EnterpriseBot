@@ -108,7 +108,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public static GameResult<Company> Create(CompanyCreationParams pars, 
             UserInputRequirements inputRequirements, CompanyBusinessSettings companySettings)
         {
-            if (pars.GeneralManager.Donation.Privilege == Privilege.Gold)
+            if (pars.Owner.Donation.Privilege == Privilege.Gold)
             {
                 pars.Extensions |= CompanyExtensions.CanRobotsWorkInfinitely;
             }
@@ -343,7 +343,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             var p = pars;
             var e = p.Extensions;
             var req = inputRequirements;
-            var owner = pars.GeneralManager;
+            var owner = pars.Owner;
 
             if (!CheckBusinessName(p.Name))
             {

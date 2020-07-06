@@ -8,6 +8,7 @@ namespace EnterpriseBot.Api.Models.ModelCreationParams.Crafting
     {
         public LocalizedString Name { get; set; }
         public LocalizedString Description { get; set; }
+
         /// <summary>
         /// Optional
         /// </summary>

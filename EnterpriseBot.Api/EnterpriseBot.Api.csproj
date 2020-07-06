@@ -33,14 +33,15 @@
 
   <ItemGroup>
     <Folder Include="Areas\Business\Company\Controllers\" />
+    <Folder Include="Areas\Business\Controllers\" />
+    <Folder Include="Areas\Crafting\" />
+    <Folder Include="Areas\Donation\" />
+    <Folder Include="Areas\Essences\" />
+    <Folder Include="Areas\Localization\" />
+    <Folder Include="Areas\Money\" />
+    <Folder Include="Areas\Storages\" />
+    <Folder Include="Areas\Reputation\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Models\ApiCreationParams\Business\" />
-    <Folder Include="Models\ApiCreationParams\Crafting\" />
-    <Folder Include="Models\ApiCreationParams\Essences\" />
-    <Folder Include="Models\ApiCreationParams\Money\" />
-    <Folder Include="Models\ApiCreationParams\Localization\" />
-    <Folder Include="Models\ApiCreationParams\Storages\" />
-    <Folder Include="Models\ApiCreationParams\Reputation\" />
   </ItemGroup>
 
 

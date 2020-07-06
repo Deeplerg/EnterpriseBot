@@ -36,14 +36,7 @@ namespace EnterpriseBot.Api
 
             builder.AddConfiguration(configuration);
 
-            bool optional = false;
-            bool reloadOnChange = true;
-            builder.AddJsonFile("BusinessPricesSettings.json",     optional, reloadOnChange);
-            builder.AddJsonFile("BusinessSettings.json",           optional, reloadOnChange);
-            builder.AddJsonFile("DonationSettings.json",           optional, reloadOnChange);
-            builder.AddJsonFile("GameplaySettings.json",           optional, reloadOnChange);
-            builder.AddJsonFile("LocalizationSettings.json",       optional, reloadOnChange);
-            builder.AddJsonFile("MarketSettings.json",             optional, reloadOnChange);
+            builder.AddJsonFile("GameSettings.json", optional: false, reloadOnChange: true);
 
             Configuration = builder.Build();
         }
@@ -54,12 +47,7 @@ namespace EnterpriseBot.Api
         public void ConfigureServices(IServiceCollection services)
         {
             #region Options
-            services.Configure<GameplaySettings>(Configuration.GetSection("GameplaySettings"));
-            services.Configure<LocalizationSettings>(Configuration.GetSection("LocalizationSettings"));
-            services.Configure<BusinessPricesSettings>(Configuration.GetSection("BusinessPricesSettings"));
-            services.Configure<BusinessSettings>(Configuration.GetSection("BusinessSettings"));
-            services.Configure<MarketSettings>(Configuration.GetSection("MarketSettings"));
-            services.Configure<DonationSettings>(Configuration.GetSection("DonationSettings"));
+            services.Configure<GameSettings>(Configuration.GetSection("GameSettings"));
 
             services.Configure<RazorViewEngineOptions>(opt =>
             {

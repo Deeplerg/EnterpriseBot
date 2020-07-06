@@ -58,7 +58,9 @@ namespace EnterpriseBot.Api
             services.AddSingleton<PostgresTransactionLimiter>();
 
             #region Database
-            int poolSize = 128;
+            //int poolSize = Configuration.GetValue<int>("DbContextPoolSize"); //this won't throw an exception while getting invalid value
+            int poolSize = int.Parse(Configuration.GetValue<string>("DbContextPoolSize")); //but this will
+
             services.AddDbContextPool<ApplicationContext>(opt =>
             {
                 opt.UseNpgsql(Configuration.GetConnectionString("Game"));

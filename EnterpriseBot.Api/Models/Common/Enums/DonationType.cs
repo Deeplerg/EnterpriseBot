@@ -1,4 +1,4 @@
-﻿namespace EnterpriseBot.Api.Game.Donation
+﻿namespace EnterpriseBot.Api.Models.Common.Enums
 {
     public enum DonationType
     {

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using EnterpriseBot.Api.Models.Common.Enums;
 
 namespace EnterpriseBot.Api.Game.Donation
 {

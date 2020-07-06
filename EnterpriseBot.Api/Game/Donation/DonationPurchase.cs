@@ -1,6 +1,7 @@
 ﻿using EnterpriseBot.Api.Models.ModelCreationParams.Donation;
 using EnterpriseBot.Api.Models.Other;
 using System;
+using EnterpriseBot.Api.Models.Common.Enums;
 
 namespace EnterpriseBot.Api.Game.Donation
 {

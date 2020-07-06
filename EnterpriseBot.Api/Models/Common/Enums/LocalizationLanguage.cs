@@ -1,4 +1,4 @@
-﻿namespace EnterpriseBot.Api.Game.Localization
+﻿namespace EnterpriseBot.Api.Models.Common.Enums
 {
     public enum LocalizationLanguage
     {

@@ -183,7 +183,7 @@
 
 
 
-    "LocalizationSettings": {
+    "Localization": {
       "UserInputRequirements": {
         "Name": {
           "English": "The name should not be empty or contain only spaces, and the length should not exceed {0}",

@@ -11,6 +11,7 @@ using Hangfire.Server;
 using EnterpriseBot.Api.Game.Crafting;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -45,27 +46,26 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        public static GameResult<CompanyWorker> Create(CompanyWorkerCreationParams pars,
-            CompanyWorkerSettings workerSettings)
+        public static GameResult<CompanyWorker> Create(CompanyWorkerCreationParams pars, GameSettings gameSettings)
         {
-            var workerCreationResult = CreateBase(pars, pars.Company, workerSettings);
+            var workerCreationResult = CreateBase(pars, gameSettings);
             if (workerCreationResult.LocalizedError != null) return workerCreationResult.LocalizedError;
 
             var worker = workerCreationResult.Result;
 
-            var workingStorageSetResult = worker.SetWorkingStorage(pars.Storage);
-            if (workingStorageSetResult.LocalizedError != null) return workingStorageSetResult.LocalizedError;
+            if (pars.Storage != null)
+            {
+                var workingStorageSetResult = worker.SetWorkingStorage(pars.Storage);
+                if (workingStorageSetResult.LocalizedError != null) return workingStorageSetResult.LocalizedError;
+            }
 
-            var recipeSetResult = worker.SetRecipe(pars.Recipe);
-            if (recipeSetResult.LocalizedError != null) return recipeSetResult.LocalizedError;
+            if (pars.Recipe != null)
+            {
+                var recipeSetResult = worker.SetRecipe(pars.Recipe);
+                if (recipeSetResult.LocalizedError != null) return recipeSetResult.LocalizedError;
+            }
 
             return worker;
-        }
-
-        public static GameResult<CompanyWorker> Create(CompanyWorkerCreationParams pars,
-            Company company, CompanyWorkerSettings workerSettings)
-        {
-            return CreateBase(pars, company, workerSettings);
         }
 
         public EmptyGameResult StartWorking()
@@ -196,9 +196,9 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return new EmptyGameResult();
         }
 
-        public EmptyGameResult UpgradeSpeedMultiplier(decimal step, CompanyWorkerSettings workerSettings)
+        public EmptyGameResult UpgradeSpeedMultiplier(decimal step, GameSettings gameSettings)
         {
-            if(SpeedMultiplier - step >= workerSettings.MaxMultiplier)
+            if(SpeedMultiplier - step >= gameSettings.Business.Company.Worker.MaxMultiplier)
             {
                 return new LocalizedError
                 {
@@ -225,14 +225,13 @@ namespace EnterpriseBot.Api.Game.Business.Company
         }
 
 
-        private static GameResult<CompanyWorker> CreateBase(CompanyWorkerCreationParams pars,
-            Company company, CompanyWorkerSettings workerSettings)
+        private static GameResult<CompanyWorker> CreateBase(CompanyWorkerCreationParams pars, GameSettings gameSettings)
         {
             var worker = new CompanyWorker
             {
-                Company = company,
+                Company = pars.Company,
 
-                SpeedMultiplier = workerSettings.DefaultMultiplier,
+                SpeedMultiplier = gameSettings.Business.Company.Worker.DefaultMultiplier,
 
                 ItemsAmountMadeThisWeek = 0,
                 IsWorkingNow = false

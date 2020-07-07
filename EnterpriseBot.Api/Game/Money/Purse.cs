@@ -1,6 +1,7 @@
 ﻿using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Money;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.MarketSettings;
 using System;
 using System.Collections.Generic;
@@ -117,12 +118,12 @@ namespace EnterpriseBot.Api.Game.Money
             return Money.Single(m => m.Currency == currency).Amount;
         }
 
-        public EmptyGameResult BuyBusinessCoins(decimal amount, MarketSettings marketSettings)
+        public EmptyGameResult BuyBusinessCoins(decimal amount, GameSettings gameSettings)
         {
             var units = Money.Single(m => m.Currency == Currency.Units);
             var bc    = Money.Single(m => m.Currency == Currency.BusinessCoins);
 
-            var bcPrice = marketSettings.BusinessCoinPricePerUnit;
+            var bcPrice = gameSettings.Market.BusinessCoinPricePerUnit;
             var overallPrice = bcPrice * amount;
 
             if (units.Amount < overallPrice)

@@ -4,6 +4,7 @@ using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Utils;
@@ -168,24 +169,26 @@ namespace EnterpriseBot.Api.Game.Storages
             return Storage.GetItem(item);
         }
 
-        public GameResult<decimal> UpgradeCapacity(GameplaySettings settings, DonationSettings donationSettings, Player invoker = null)
+        public GameResult<decimal> UpgradeCapacity(GameSettings gameSettings, Player invoker = null)
         {
+            var storageGameplaySettings = gameSettings.Gameplay.Storage;
+
             if (!HasPermission(CompanyJobPermissions.UpgradeStorages, invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            var upgradePrice = settings.Storage.Trunk.UpgradePrice;
-            decimal step = settings.Storage.Trunk.UpgradeStep;
+            var upgradePrice = storageGameplaySettings.Trunk.UpgradePrice;
+            decimal step = storageGameplaySettings.Trunk.UpgradeStep;
 
-            if (Capacity >= settings.Storage.Company.MaxCapacity)
+            if (Capacity >= storageGameplaySettings.Company.MaxCapacity)
             {
                 return Errors.StorageCapacityIsMax;
             }
 
             if (upgradePrice.Currency == Currency.BusinessCoins)
             {
-                var reduceResult = OwningTruck.TruckGarage.Company.ReduceBusinessCoins(upgradePrice.Amount, donationSettings);
+                var reduceResult = OwningTruck.TruckGarage.Company.ReduceBusinessCoins(upgradePrice.Amount, gameSettings);
                 if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
             }
             else

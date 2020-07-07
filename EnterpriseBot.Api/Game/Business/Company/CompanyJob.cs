@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using EnterpriseBot.Api.Game.Localization;
 using Microsoft.CodeAnalysis.Differencing;
 using System.Diagnostics.CodeAnalysis;
+using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -84,6 +85,12 @@ namespace EnterpriseBot.Api.Game.Business.Company
             EnglishMessage = "The recipe can't be done by player",
             RussianMessage = "Рецепт не может быть выполнен игроком"
         };
+        private static readonly LocalizedError cantAllowProduceItemsError = new LocalizedError
+        {
+            ErrorSeverity = ErrorSeverity.Normal,
+            EnglishMessage = "Can't allow produce items, as working storage and/or recipe are not specified",
+            RussianMessage = "Нельзя разрешить производить предметы, так как рабочее хранилище и/или рецепт не указаны"
+        };
         #endregion
         #endregion
 
@@ -92,71 +99,48 @@ namespace EnterpriseBot.Api.Game.Business.Company
         /// Creates <see cref="CompanyJob"/> instance. Used when the job <b>does NOT</b> have <see cref="CompanyJobPermissions.ProduceItems"/>
         /// </summary>
         /// <param name="pars"></param>
-        /// <param name="inputRequirements"></param>
         /// <param name="invoker"></param>
         /// <returns></returns>
-        public static GameResult<CompanyJob> Create(CompanyJobCreationParams pars, 
-            UserInputRequirements inputRequirements, CompanyJobSettings jobSettings, Player invoker)
+        public static GameResult<CompanyJob> Create(CompanyJobCreationParams pars, GameSettings gameSettings, Player invoker)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.CreateJob, pars.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
-            if(pars.Permissions.HasFlag(CompanyJobPermissions.ProduceItems))
-            {
-                return new LocalizedError
-                {
-                    ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = "Can't allow produce items, as working storage and/or recipe are not specified",
-                    RussianMessage = "Нельзя разрешить производить предметы, так как рабочее хранилище и/или рецепт не указаны"
-                };
-            }
 
-            return CreateBase(pars, inputRequirements, jobSettings);
-        }
-
-        /// <summary>
-        /// Creates <see cref="CompanyJob"/> instance. Used when the job <b>does</b> have <see cref="CompanyJobPermissions.ProduceItems"/>
-        /// </summary>
-        /// <param name="pars"></param>
-        /// <param name="inputRequirements"></param>
-        /// <param name="workerSettings"></param>
-        /// <param name="invoker"></param>
-        /// <returns></returns>
-        public static GameResult<CompanyJob> Create(CompanyJobCreationParams pars,
-            UserInputRequirements inputRequirements, CompanyWorkerSettings workerSettings, CompanyJobSettings jobSettings, Player invoker)
-        {
-            if (!invoker.HasPermission(CompanyJobPermissions.CreateJob, pars.Company))
-            {
-                return Errors.DoesNotHavePermission();
-            }
-
-            var jobCreationResult = CreateBase(pars, inputRequirements, jobSettings);
+            var jobCreationResult = CreateBase(pars, gameSettings);
             if (jobCreationResult.LocalizedError != null) return jobCreationResult.LocalizedError;
 
             CompanyJob job = jobCreationResult;
 
-            if (!pars.Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
+            if (pars.Permissions.HasFlag(CompanyJobPermissions.ProduceItems))
             {
-                return recipeCantBeDoneByPlayerError;
+                if(pars.Recipe == null || pars.Storage == null)
+                {
+                    return cantAllowProduceItemsError;
+                }
+
+                if (!pars.Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
+                {
+                    return recipeCantBeDoneByPlayerError;
+                }
+
+                var workerCreationResult = CompanyWorker.Create(new CompanyWorkerCreationParams
+                {
+                    Company = pars.Company,
+                    Recipe = pars.Recipe,
+                    Storage = pars.Storage
+                }, gameSettings);
+                if (workerCreationResult.LocalizedError != null) return workerCreationResult.LocalizedError;
+
+
+                job.Worker = workerCreationResult;
             }
-
-            var workerCreationResult = CompanyWorker.Create(new CompanyWorkerCreationParams
-            {
-                Company = pars.Company,
-                Recipe = pars.Recipe,
-                Storage = pars.Storage
-            }, workerSettings);
-            if (workerCreationResult.LocalizedError != null) return workerCreationResult.LocalizedError;
-
-
-            job.Worker = workerCreationResult;
 
             return job;
         }
 
-        public GameResult<StringLocalization> SetDescription(string newDescription, LocalizationLanguage language,
-            UserInputRequirements inputRequirements, Player invoker)
+        public GameResult<StringLocalization> SetDescription(string newDescription, LocalizationLanguage language, GameSettings gameSettings, Player invoker)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.ChangeJobParameters, Company))
             {
@@ -169,7 +153,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             if (!CheckDescription(newDescription))
             {
-                return Errors.IncorrectDescriptionInput(inputRequirements);
+                return Errors.IncorrectDescriptionInput(gameSettings.Localization.UserInputRequirements);
             }
 
             return Description.Edit(newDescription, language);
@@ -254,14 +238,14 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Worker.SetRecipe(recipe);
         }
 
-        public GameResult<CompanyJobApplication> Apply(Player applicant, string resume, UserInputRequirements inputReq)
+        public GameResult<CompanyJobApplication> Apply(Player applicant, string resume, GameSettings gameSettings)
         {
             return CompanyJobApplication.Create(new CompanyJobApplicationCreationParams
             {
                 Job = this,
                 Applicant = applicant,
                 Resume = resume
-            }, inputReq);
+            }, gameSettings);
         }
 
         public EmptyGameResult Hire(CompanyJobApplication application, Player invoker)
@@ -338,7 +322,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             if(permissions.HasFlag(CompanyJobPermissions.ProduceItems) 
                 && (Worker == null || Worker.Recipe == null || Worker.WorkingStorage == null))
             {
-                return CantAllowProduceItemsError();
+                return cantAllowProduceItemsError;
             }
 
             Permissions |= permissions;
@@ -368,7 +352,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             if (permissions.HasFlag(CompanyJobPermissions.ProduceItems)
                 && (Worker == null || Worker.Recipe == null || Worker.WorkingStorage == null))
             {
-                return CantAllowProduceItemsError();
+                return cantAllowProduceItemsError;
             }
 
             Permissions = permissions;
@@ -420,34 +404,17 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return true;
         }
 
-        private LocalizedError CantAllowProduceItemsError()
-        {
-            return new LocalizedError
-            {
-                ErrorSeverity = ErrorSeverity.Normal,
-                EnglishMessage = "Can't allow produce items, as working storage and/or recipe are not specified",
-                RussianMessage = "Нельзя разрешить производить предметы, так как рабочее хранилище и/или рецепт не указаны"
-            };
-        }
 
-
-        private static GameResult<CompanyJob> CreateBase(CompanyJobCreationParams pars, 
-            UserInputRequirements inputRequirements, CompanyJobSettings jobSettings)
+        private static GameResult<CompanyJob> CreateBase(CompanyJobCreationParams pars, GameSettings gameSettings)
         {
-            var req = inputRequirements;
+            var req = gameSettings.Localization.UserInputRequirements;
+            var jobSettings = gameSettings.Business.Company.Job;
 
             foreach (var str in pars.Name.Localizations)
             {
                 if (!CheckName(str.Text))
                 {
-                    return new LocalizedError
-                    {
-                        ErrorSeverity = ErrorSeverity.Normal,
-                        EnglishMessage = string.Format(req.Name.English,
-                                                       NameMaxLength),
-                        RussianMessage = string.Format(req.Name.Russian,
-                                                       NameMaxLength)
-                    };
+                    return Errors.IncorrectNameInput(req);
                 }
             }
 
@@ -455,14 +422,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             {
                 if (!CheckDescription(str.Text))
                 {
-                    return new LocalizedError
-                    {
-                        ErrorSeverity = ErrorSeverity.Normal,
-                        EnglishMessage = string.Format(req.Description.English,
-                                                       DescriptionMaxLength),
-                        RussianMessage = string.Format(req.Description.Russian,
-                                                       DescriptionMaxLength)
-                    };
+                    return Errors.IncorrectDescriptionInput(req);
                 }
             }
 

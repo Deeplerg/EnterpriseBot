@@ -15,6 +15,7 @@ using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings.Company;
 using System.ComponentModel.DataAnnotations.Schema;
 using EnterpriseBot.Api.Game.Crafting;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
+using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -48,10 +49,17 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
         #endregion
 
-        public static GameResult<ProductionRobot> Create(ProductionRobotCreationParams pars,
-            UserInputRequirements inputRequirements, CompanyWorkerSettings workerSettings)
+        public static GameResult<ProductionRobot> Create(ProductionRobotCreationParams pars, GameSettings gameSettings, Player invoker = null)
         {
-            var robotCreationResult = CreateBase(pars, pars.Company, inputRequirements, workerSettings);
+            var req = gameSettings.Localization.UserInputRequirements;
+            var workerSettings = gameSettings.Business.Company.Worker;
+
+            if (!invoker.HasPermission(CompanyJobPermissions.BuyRobots, pars.Company))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+
+            var robotCreationResult = CreateBase(pars, gameSettings);
             if (robotCreationResult.LocalizedError != null) return robotCreationResult.LocalizedError;
 
             var robot = robotCreationResult.Result;
@@ -68,15 +76,17 @@ namespace EnterpriseBot.Api.Game.Business.Company
                     Company = robot.Company,
                     Recipe = pars.Recipe,
                     Storage = pars.Storage
-                }, workerSettings);
+                }, gameSettings);
             }
 
             return robot;
         }
 
-        public static EmptyGameResult Buy(Company company, CompanyFeaturesPricesSettings pricesSettings, DonationSettings donationSettings)
+        public static EmptyGameResult Buy(Company company, GameSettings gameSettings)
         {
-            return company.ReduceBusinessCoins(pricesSettings.NewRobotSetup, donationSettings);
+            decimal price = gameSettings.BusinessPrices.CompanyFeatures.NewRobotSetup;
+
+            return company.ReduceBusinessCoins(price, gameSettings);
         }
 
 
@@ -140,40 +150,31 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Worker.ResetItemsAmountMadeThisWeek();
         }
 
-        public EmptyGameResult Upgrade(CompanyFeaturesPricesSettings pricesSettings, CompanyWorkerSettings workerSettings)
+        public EmptyGameResult Upgrade(GameSettings gameSettings)
         {
-            decimal step = pricesSettings.WorkerModifierUpgrade.Step;
-            decimal price = pricesSettings.WorkerModifierUpgrade.Price;
+            var prices = gameSettings.BusinessPrices.CompanyFeatures;
+
+            decimal step = prices.WorkerModifierUpgrade.Step;
+            decimal price = prices.WorkerModifierUpgrade.Price;
 
             var buyingUpgradeResult = Company.Purse.Reduce(price, Currency.BusinessCoins);
             if (buyingUpgradeResult.LocalizedError != null) return buyingUpgradeResult.LocalizedError;
 
-            return Worker.UpgradeSpeedMultiplier(step, workerSettings);
+            return Worker.UpgradeSpeedMultiplier(step, gameSettings);
         }
 
 
-        private static GameResult<ProductionRobot> CreateBase(ProductionRobotCreationParams pars,
-            Company company, UserInputRequirements inputRequirements, CompanyWorkerSettings workerSettings)
+        private static GameResult<ProductionRobot> CreateBase(ProductionRobotCreationParams pars, GameSettings gameSettings)
         {
             if (!UserInputUtils.CheckName(pars.Name))
             {
-                var req = inputRequirements;
-
-                return new LocalizedError
-                {
-                    ErrorSeverity = ErrorSeverity.Normal,
-
-                    EnglishMessage = string.Format(req.Name.English,
-                                                   Constants.NameMaxLength),
-                    RussianMessage = string.Format(req.Name.Russian,
-                                                   Constants.NameMaxLength)
-                };
+                return Errors.IncorrectNameInput(gameSettings.Localization.UserInputRequirements);
             }
 
             return new ProductionRobot
             {
                 Name = pars.Name,
-                Company = company
+                Company = pars.Company
             };
         }
     }

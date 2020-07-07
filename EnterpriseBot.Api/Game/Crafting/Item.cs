@@ -11,6 +11,7 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 using EnterpriseBot.Api.Models.Common.Enums;
 using static EnterpriseBot.Api.Utils.UserInputUtils;
+using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api.Game.Crafting
 {
@@ -37,9 +38,10 @@ namespace EnterpriseBot.Api.Game.Crafting
         #endregion
 
         #region actions
-        public static GameResult<Item> Create(ItemCreationParams pars,
-        UserInputRequirements req)
+        public static GameResult<Item> Create(ItemCreationParams pars, GameSettings gameSettings)
         {
+            var req = gameSettings.Localization.UserInputRequirements;
+
             foreach (var str in pars.Name.Localizations)
             {
                 if (!CheckName(str.Text))
@@ -61,9 +63,10 @@ namespace EnterpriseBot.Api.Game.Crafting
             };
         }
 
-        public GameResult<StringLocalization> EditName(string newName, LocalizationLanguage language,
-            UserInputRequirements req)
+        public GameResult<StringLocalization> EditName(string newName, LocalizationLanguage language, GameSettings gameSettings)
         {
+            var req = gameSettings.Localization.UserInputRequirements;
+
             if (!CheckName(newName))
             {
                 return Errors.IncorrectNameInput(req);

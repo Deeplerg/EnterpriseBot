@@ -27,6 +27,7 @@ using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Game.Localization;
 using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -105,23 +106,20 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        public static GameResult<Company> Create(CompanyCreationParams pars, 
-            UserInputRequirements inputRequirements, CompanyBusinessSettings companySettings)
+        public static GameResult<Company> Create(CompanyCreationParams pars, GameSettings gameSettings)
         {
             if (pars.Owner.Donation.Privilege == Privilege.Gold)
             {
                 pars.Extensions |= CompanyExtensions.CanRobotsWorkInfinitely;
             }
 
-            return CreateBase(pars,
-                inputRequirements, companySettings);
+            return CreateBase(pars, gameSettings);
         }
 
-        public static EmptyGameResult Buy(CompanyExtensions exts, Player owner, 
-            CompanyFeaturesPricesSettings featuresPrices, DonationSettings donationSettings)
+        public static EmptyGameResult Buy(CompanyExtensions exts, GameSettings gameSettings, Player owner)
         {
             //in business coins
-            var overallPrice = GetOverallCreationPrice(exts, featuresPrices, donationSettings, owner);
+            var overallPrice = GetOverallCreationPrice(exts, gameSettings, owner);
             if (overallPrice.LocalizedError != null) return overallPrice.LocalizedError;
 
             decimal currentBusinessCoinsQuantity = owner.Purse.GetMoneyAmount(Currency.BusinessCoins);
@@ -138,21 +136,18 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            var reducingResult = owner.Purse.Reduce(overallPrice, Currency.BusinessCoins);
-            if (reducingResult.LocalizedError != null) return reducingResult.LocalizedError;
+            var reduceResult = owner.Purse.Reduce(overallPrice, Currency.BusinessCoins);
+            if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
             return new EmptyGameResult();
         }
 
-        public static GameResult<decimal> GetOverallCreationPrice(CompanyExtensions extensions, 
-                                                                  CompanyFeaturesPricesSettings featuresPrices,
-                                                                  DonationSettings donationSettings,
-                                                                  Player owner) //for business price multiplier based on donations
+        public static GameResult<decimal> GetOverallCreationPrice(CompanyExtensions extensions, GameSettings gameSettings, Player owner)
         {
-            var priceMultiplier = Donation.Donation.GetBusinessPriceMultiplierForPrivelege(owner.Donation.Privilege, donationSettings);
+            var priceMultiplier = Donation.Donation.GetBusinessPriceMultiplierForPrivelege(owner.Donation.Privilege, gameSettings);
             if (priceMultiplier.LocalizedError != null) return priceMultiplier.LocalizedError;
 
-            var p = featuresPrices; //'p' stands for 'prices'
+            var p = gameSettings.BusinessPrices.CompanyFeatures; //'p' stands for 'prices'
 
             decimal overallPrice = 0;
 
@@ -214,16 +209,16 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Storages.Any(s => s.AvailableSpace >= space && s.Type == storageType);
         }
 
-        public GameResult<decimal> ReduceBusinessCoins(decimal amount, DonationSettings donationSettings, Player invoker = null)
+        public GameResult<decimal> ReduceBusinessCoins(decimal amount, GameSettings gameSettings, Player invoker = null)
         {
-            var ownerMultiplierResult = Owner.Donation.GetBusinessPriceMultiplier(donationSettings);
+            var ownerMultiplierResult = Owner.Donation.GetBusinessPriceMultiplier(gameSettings);
             if (ownerMultiplierResult.LocalizedError != null) return ownerMultiplierResult.LocalizedError;
 
             decimal priceMultiplier = ownerMultiplierResult;
 
             if (invoker != null && invoker.HasDonation)
             {
-                var invokerMultiplierResult = invoker.Donation.GetBusinessPriceMultiplier(donationSettings);
+                var invokerMultiplierResult = invoker.Donation.GetBusinessPriceMultiplier(gameSettings);
                 if (invokerMultiplierResult.LocalizedError != null) return invokerMultiplierResult.LocalizedError;
 
                 decimal employeeMultiplier = invokerMultiplierResult;
@@ -235,12 +230,11 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Purse.Reduce(amount * priceMultiplier, Currency.BusinessCoins);
         }
 
-        public GameResult<StringLocalization> EditDescription(string newDescription, LocalizationLanguage language,
-            UserInputRequirements inputRequirements)
+        public GameResult<StringLocalization> EditDescription(string newDescription, LocalizationLanguage language, GameSettings gameSettings)
         {
             if (!CheckDescription(newDescription))
             {
-                return Errors.IncorrectDescriptionInput(inputRequirements);
+                return Errors.IncorrectDescriptionInput(gameSettings.Localization.UserInputRequirements);
             }
 
             var editResult = Description.Edit(newDescription, language);
@@ -287,16 +281,16 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return new EmptyGameResult();
         }
 
-        public GameResult<bool> CanConcludeOneMoreContract(DonationSettings donationSettings, CompanyContractSettings contractSettings, Player invoker = null)
+        public GameResult<bool> CanConcludeOneMoreContract(GameSettings gameSettings, Player invoker = null)
         {
-            var maxContractsOwnerResult = Owner.Donation.GetMaximumContracts(donationSettings, contractSettings);
+            var maxContractsOwnerResult = Owner.Donation.GetMaximumContracts(gameSettings);
             if (maxContractsOwnerResult.LocalizedError != null) return maxContractsOwnerResult.LocalizedError;
 
             uint maxContracts = maxContractsOwnerResult;
 
             if (invoker != null && invoker.HasDonation)
             {
-                var maxContractsInvokerResult = invoker.Donation.GetMaximumContracts(donationSettings, contractSettings);
+                var maxContractsInvokerResult = invoker.Donation.GetMaximumContracts(gameSettings);
                 if (maxContractsInvokerResult.LocalizedError != null) return maxContractsInvokerResult.LocalizedError;
 
                 if (maxContractsInvokerResult > maxContracts)
@@ -315,16 +309,16 @@ namespace EnterpriseBot.Api.Game.Business.Company
             }
         }
 
-        public GameResult<uint> GetContractMaxTimeInDays(DonationSettings donationSettings, CompanyContractSettings contractSettings, Player invoker = null)
+        public GameResult<uint> GetContractMaxTimeInDays(GameSettings gameSettings, Player invoker = null)
         {
-            var maxTimeOwnerResult = Owner.Donation.GetContractMaxTimeInDays(donationSettings, contractSettings);
+            var maxTimeOwnerResult = Owner.Donation.GetContractMaxTimeInDays(gameSettings);
             if (maxTimeOwnerResult.LocalizedError != null) return maxTimeOwnerResult.LocalizedError;
 
             uint maxTime = maxTimeOwnerResult;
 
             if (invoker != null && invoker.HasDonation)
             {
-                var maxTimeInvokerResult = invoker.Donation.GetContractMaxTimeInDays(donationSettings, contractSettings);
+                var maxTimeInvokerResult = invoker.Donation.GetContractMaxTimeInDays(gameSettings);
                 if (maxTimeInvokerResult.LocalizedError != null) return maxTimeInvokerResult.LocalizedError;
 
                 if (maxTimeInvokerResult > maxTime)
@@ -337,38 +331,26 @@ namespace EnterpriseBot.Api.Game.Business.Company
         }
 
 
-        private static GameResult<Company> CreateBase(CompanyCreationParams pars, 
-            UserInputRequirements inputRequirements, CompanyBusinessSettings companySettings)
+        private static GameResult<Company> CreateBase(CompanyCreationParams pars, GameSettings gameSettings)
         {
             var p = pars;
             var e = p.Extensions;
-            var req = inputRequirements;
+
+            var req = gameSettings.Localization.UserInputRequirements;
+            var companySettings = gameSettings.Business.Company;
+
             var owner = pars.Owner;
 
             if (!CheckBusinessName(p.Name))
             {
-                return new LocalizedError
-                {
-                    ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = "Company name has not passed verification. " + string.Format(req.Name.English,
-                                                                                                  BusinessNameMaxLength),
-                    RussianMessage = "Название компании не прошло проверку. " + string.Format(req.Name.Russian,
-                                                                                              BusinessNameMaxLength)
-                };
+                return Errors.IncorrectBusinessNameInput(req);
             }
 
             foreach (var str in pars.Description.Localizations)
             {
                 if (!CheckDescription(str.Text))
                 {
-                    return new LocalizedError
-                    {
-                        ErrorSeverity = ErrorSeverity.Normal,
-                        EnglishMessage = "Company description has not passed verification. " + string.Format(req.Description.English,
-                                                                                                             DescriptionMaxLength),
-                        RussianMessage = "Описание компании не прошло проверку. " + string.Format(req.Description.Russian,
-                                                                                                  DescriptionMaxLength)
-                    };
+                    return Errors.IncorrectDescriptionInput(req);
                 }
             }
 

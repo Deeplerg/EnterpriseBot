@@ -4,6 +4,7 @@ using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Models.Settings.GameplaySettings;
@@ -69,17 +70,16 @@ namespace EnterpriseBot.Api.Game.Storages
             };
         }
 
-        public static EmptyGameResult Buy(Company company, 
-            BusinessPricesSettings pricesSettings, DonationSettings donationSettings, Player invoker = null)
+        public static EmptyGameResult Buy(Company company, GameSettings gameSettings, Player invoker = null)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.BuyStorages, company))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            decimal price = pricesSettings.CompanyFeatures.NewStoragePrices.Showcase;
+            decimal price = gameSettings.BusinessPrices.CompanyFeatures.NewStoragePrices.Showcase;
 
-            var reduceResult = company.ReduceBusinessCoins(price, donationSettings, invoker);
+            var reduceResult = company.ReduceBusinessCoins(price, gameSettings, invoker);
             if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
             return new EmptyGameResult();
@@ -279,24 +279,26 @@ namespace EnterpriseBot.Api.Game.Storages
             return TransferTo(buyer.Inventory, item, quantity);
         }
 
-        public GameResult<decimal> UpgradeCapacity(GameplaySettings settings, DonationSettings donationSettings, Player invoker = null)
+        public GameResult<decimal> UpgradeCapacity(GameSettings gameSettings, Player invoker = null)
         {
+            var storageGameplaySettings = gameSettings.Gameplay.Storage;
+
             if (!HasPermission(CompanyJobPermissions.UpgradeStorages, invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            var upgradePrice = settings.Storage.Trunk.UpgradePrice;
-            decimal step = settings.Storage.Trunk.UpgradeStep;
+            var upgradePrice = storageGameplaySettings.Trunk.UpgradePrice;
+            decimal step = storageGameplaySettings.Trunk.UpgradeStep;
 
-            if (Capacity >= settings.Storage.Company.MaxCapacity)
+            if (Capacity >= storageGameplaySettings.Company.MaxCapacity)
             {
                 return Errors.StorageCapacityIsMax;
             }
 
             if (upgradePrice.Currency == Currency.BusinessCoins)
             {
-                var reduceResult = OwningCompany.ReduceBusinessCoins(upgradePrice.Amount, donationSettings);
+                var reduceResult = OwningCompany.ReduceBusinessCoins(upgradePrice.Amount, gameSettings);
                 if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
             }
             else

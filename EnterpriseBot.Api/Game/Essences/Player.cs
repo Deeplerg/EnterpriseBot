@@ -10,6 +10,7 @@ using EnterpriseBot.Api.Models.ModelCreationParams.Essences;
 using EnterpriseBot.Api.Models.ModelCreationParams.Money;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
@@ -83,9 +84,11 @@ namespace EnterpriseBot.Api.Game.Essences
         #endregion
 
         #region actions
-        public static GameResult<Player> Create(PlayerCreationParams pars,
-            GameplaySettings gameplaySettings, UserInputRequirements req)
+        public static GameResult<Player> Create(PlayerCreationParams pars, GameSettings gameSettings)
         {
+            var req = gameSettings.Localization.UserInputRequirements;
+            var gameplaySettings = gameSettings.Gameplay;
+
             if (!CheckName(pars.Name))
             {
                 return Errors.IncorrectNameInput(req);
@@ -173,10 +176,11 @@ namespace EnterpriseBot.Api.Game.Essences
             return Name;
         }
 
-        public GameResult<StringLocalization> EditAbout(string newAbout, LocalizationLanguage language,
-            UserInputRequirements req)
+        public GameResult<StringLocalization> EditAbout(string newAbout, LocalizationLanguage language, GameSettings gameSettings)
         {
-            if(!CheckDescription(newAbout))
+            var req = gameSettings.Localization.UserInputRequirements;
+
+            if (!CheckDescription(newAbout))
             {
                 return Errors.IncorrectDescriptionInput(req);
             }
@@ -187,9 +191,10 @@ namespace EnterpriseBot.Api.Game.Essences
             return editResult;
         }
 
-        public GameResult<StringLocalization> EditStatus(string newStatus, LocalizationLanguage language,
-            UserInputRequirements req)
+        public GameResult<StringLocalization> EditStatus(string newStatus, LocalizationLanguage language, GameSettings gameSettings)
         {
+            var req = gameSettings.Localization.UserInputRequirements;
+
             if (!CheckPlayerStatus(newStatus))
             {
                 return Errors.IncorrectPlayerStatusInput(req);
@@ -201,10 +206,11 @@ namespace EnterpriseBot.Api.Game.Essences
             return editResult;
         }
 
-        public EmptyGameResult ChangePassword(string newPassword,
-            UserInputRequirements req)
+        public EmptyGameResult ChangePassword(string newPassword, GameSettings gameSettings)
         {
-            if(!CheckPasswordReliability(newPassword))
+            var req = gameSettings.Localization.UserInputRequirements;
+
+            if (!CheckPasswordReliability(newPassword))
             {
                 return Errors.IncorrectPasswordInput(req);
             }

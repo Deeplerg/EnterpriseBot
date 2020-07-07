@@ -2,6 +2,7 @@
 using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Utils;
@@ -119,12 +120,14 @@ namespace EnterpriseBot.Api.Game.Storages
             return Storage.GetItem(item);
         }
 
-        public GameResult<decimal> UpgradeCapacity(GameplaySettings settings, DonationSettings donationSettings)
+        public GameResult<decimal> UpgradeCapacity(GameSettings gameSettings)
         {
-            var upgradePrice = settings.Storage.Inventory.UpgradePrice;
-            decimal step = settings.Storage.Inventory.UpgradeStep;
+            var storageGameplaySettings = gameSettings.Gameplay.Storage;
 
-            if (Capacity >= settings.Storage.Company.MaxCapacity)
+            var upgradePrice = storageGameplaySettings.Inventory.UpgradePrice;
+            decimal step = storageGameplaySettings.Inventory.UpgradeStep;
+
+            if (Capacity >= storageGameplaySettings.Company.MaxCapacity)
             {
                 return Errors.StorageCapacityIsMax;
             }

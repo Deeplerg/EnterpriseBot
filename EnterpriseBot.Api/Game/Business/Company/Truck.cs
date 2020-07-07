@@ -4,6 +4,7 @@ using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings.Company;
 using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
@@ -44,17 +45,16 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return CreateTruck(creationPars);
         }
 
-        public static EmptyGameResult Buy(TruckCreationParams creationPars,
-            CompanyFeaturesPricesSettings pricesSettings, DonationSettings donationSettings, Player invoker)
+        public static EmptyGameResult Buy(TruckCreationParams creationPars, GameSettings gameSettings, Player invoker)
         {
             var cp = creationPars;
-
+            var prices = gameSettings.BusinessPrices.CompanyFeatures;
             if (!invoker.HasPermission(CompanyJobPermissions.BuyTrucks, cp.TruckGarage.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            var reduceResult = cp.TruckGarage.Company.ReduceBusinessCoins(pricesSettings.NewTruckSetup, donationSettings, invoker);
+            var reduceResult = cp.TruckGarage.Company.ReduceBusinessCoins(prices.NewTruckSetup, gameSettings, invoker);
             if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
             return new EmptyGameResult();
@@ -139,31 +139,31 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return new EmptyGameResult();
         }
 
-        public GameResult<uint> Upgrade(TruckUpgradePriceSetting upgradePriceSetting, TruckSettings truckSettings, Player invoker)
+        public GameResult<uint> Upgrade(GameSettings gameSettings, Player invoker)
         {
+            var upgradeSetting = gameSettings.BusinessPrices.CompanyFeatures.TruckUpgrade;
+
             if(!invoker.HasPermission(CompanyJobPermissions.UpgradeTrucks, TruckGarage.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            return Upgrade(upgradePriceSetting.StepInSeconds, upgradePriceSetting, truckSettings);
+            return Upgrade(upgradeSetting.StepInSeconds, gameSettings);
         }
 
-        public GameResult<uint> Upgrade(uint stepInSeconds, 
-            TruckUpgradePriceSetting upgradePriceSetting, TruckSettings truckSettings, Player invoker)
+        public GameResult<uint> Upgrade(uint stepInSeconds, GameSettings gameSettings, Player invoker)
         {
             if (!invoker.HasPermission(CompanyJobPermissions.UpgradeTrucks, TruckGarage.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            return Upgrade(stepInSeconds, upgradePriceSetting, truckSettings);
+            return Upgrade(stepInSeconds, gameSettings);
         }
 
-        public GameResult<uint> Upgrade(uint stepInSeconds, 
-            TruckUpgradePriceSetting upgradePriceSetting, TruckSettings truckSettings)
+        public GameResult<uint> Upgrade(uint stepInSeconds, GameSettings gameSettings)
         {
-            var prices = upgradePriceSetting;
+            var prices = gameSettings.BusinessPrices.CompanyFeatures.TruckUpgrade;
 
             if (stepInSeconds < 1)
             {
@@ -180,12 +180,12 @@ namespace EnterpriseBot.Api.Game.Business.Company
             var reducingResult = TruckGarage.Company.Purse.Reduce(price, Currency.BusinessCoins);
             if (reducingResult.LocalizedError != null) return reducingResult.LocalizedError;
 
-            return ForceUpgrade(stepInSeconds, truckSettings);
+            return ForceUpgrade(stepInSeconds, gameSettings);
         }
 
-        public GameResult<uint> ForceUpgrade(uint stepInSeconds, TruckSettings truckSettings)
+        public GameResult<uint> ForceUpgrade(uint stepInSeconds, GameSettings gameSettings)
         {
-            if(DeliveringSpeedInSeconds - stepInSeconds <= truckSettings.MinTime)
+            if(DeliveringSpeedInSeconds - stepInSeconds <= gameSettings.Business.Company.Truck.MinTime)
             {
                 return new LocalizedError
                 {

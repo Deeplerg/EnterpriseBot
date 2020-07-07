@@ -2,6 +2,7 @@
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings.Company;
 using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
@@ -36,9 +37,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        public static GameResult<TruckGarage> Create(TruckGarageCreationParams creationPars, 
-            TruckGarageSettings truckGarageSettings)
+        public static GameResult<TruckGarage> Create(TruckGarageCreationParams creationPars, GameSettings gameSettings)
         {
+            var truckGarageSettings = gameSettings.Business.Company.TruckGarage;
+
             if(creationPars.Capacity > truckGarageSettings.MaxCapacity)
             {
                 return new LocalizedError
@@ -81,33 +83,32 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Truck.Create(pars);
         }
 
-        public GameResult<Truck> BuyAndAddTruck(TruckCreationParams pars, CompanyFeaturesPricesSettings prices, DonationSettings donationSettings, Player invoker)
+        public GameResult<Truck> BuyAndAddTruck(TruckCreationParams pars, GameSettings gameSettings, Player invoker)
         {
-            var buyResult = Truck.Buy(pars, prices, donationSettings, invoker);
+            var buyResult = Truck.Buy(pars, gameSettings, invoker);
             if (buyResult.LocalizedError != null) return buyResult.LocalizedError;
 
             return AddTruck(pars);
         }
 
-        public GameResult<sbyte> Upgrade(TruckGarageSettings garageSettings, 
-                                         CompanyFeaturesPricesSettings prices, 
-                                         DonationSettings donationSettings, 
-                                         Player invoker)
+        public GameResult<sbyte> Upgrade(GameSettings gameSettings, Player invoker)
         {
+            var upgradePrice = gameSettings.BusinessPrices.CompanyFeatures.GarageUpgrade;
+
             if(!invoker.HasPermission(CompanyJobPermissions.UpgradeTruckGarage, Company))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            var reduceResult = Company.ReduceBusinessCoins(prices.GarageUpgrade.Price, donationSettings, invoker);
+            var reduceResult = Company.ReduceBusinessCoins(upgradePrice.Price, gameSettings, invoker);
             if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
-            return ForceUpgrade(garageSettings, prices.GarageUpgrade.StepInSlots);
+            return ForceUpgrade(gameSettings, upgradePrice.StepInSlots);
         }
 
-        public GameResult<sbyte> ForceUpgrade(TruckGarageSettings garageSettings, sbyte step)
+        public GameResult<sbyte> ForceUpgrade(GameSettings gameSettings, sbyte step)
         {
-            if(Capacity + step >= garageSettings.MaxCapacity)
+            if(Capacity + step >= gameSettings.Business.Company.TruckGarage.MaxCapacity)
             {
                 return new LocalizedError
                 {

@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using EnterpriseBot.Api.Models.Common.Enums;
+using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api.Game.Donation
 {
@@ -48,9 +49,10 @@ namespace EnterpriseBot.Api.Game.Donation
             };
         }
 
-        public static GameResult<decimal> GetBusinessPriceMultiplierForPrivelege(Privilege privilege,
-            DonationSettings donationSettings)
+        public static GameResult<decimal> GetBusinessPriceMultiplierForPrivelege(Privilege privilege, GameSettings gameSettings)
         {
+            var donationSettings = gameSettings.Donation;
+
             switch(privilege)
             {
                 case Privilege.NoDonation:
@@ -76,14 +78,16 @@ namespace EnterpriseBot.Api.Game.Donation
             }
         }
 
-        public GameResult<decimal> GetBusinessPriceMultiplier(DonationSettings donationSettings)
+        public GameResult<decimal> GetBusinessPriceMultiplier(GameSettings gameSettings)
         {
-            return GetBusinessPriceMultiplierForPrivelege(Privilege, donationSettings);
+            return GetBusinessPriceMultiplierForPrivelege(Privilege, gameSettings);
         }
 
-        public static GameResult<uint> GetMaximumContractsForPrivelege(Privilege privilege,
-            DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        public static GameResult<uint> GetMaximumContractsForPrivelege(Privilege privilege, GameSettings gameSettings)
         {
+            var donationSettings = gameSettings.Donation;
+            var contractSettings = gameSettings.Business.Company.Contract;
+
             var max = donationSettings.MaxContracts;
             uint @default = contractSettings.MaxContracts;
 
@@ -112,13 +116,16 @@ namespace EnterpriseBot.Api.Game.Donation
             }
         }
 
-        public GameResult<uint> GetMaximumContracts(DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        public GameResult<uint> GetMaximumContracts(GameSettings gameSettings)
         {
-            return GetMaximumContractsForPrivelege(Privilege, donationSettings, contractSettings);
+            return GetMaximumContractsForPrivelege(Privilege, gameSettings);
         }
 
-        public static GameResult<uint> GetContractMaxTimeInDaysForPrivilege(Privilege privilege, DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        public static GameResult<uint> GetContractMaxTimeInDaysForPrivilege(Privilege privilege, GameSettings gameSettings)
         {
+            var donationSettings = gameSettings.Donation;
+            var contractSettings = gameSettings.Business.Company.Contract;
+
             var max = donationSettings.ContractMaxTimeInDays;
             uint @default = contractSettings.MaxTimeInDays;
 
@@ -147,9 +154,9 @@ namespace EnterpriseBot.Api.Game.Donation
             }
         }
 
-        public GameResult<uint> GetContractMaxTimeInDays(DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        public GameResult<uint> GetContractMaxTimeInDays(GameSettings gameSettings)
         {
-            return GetContractMaxTimeInDaysForPrivilege(Privilege, donationSettings, contractSettings);
+            return GetContractMaxTimeInDaysForPrivilege(Privilege, gameSettings);
         }
 
         public GameResult<Privilege> UpgradePrivilege(Privilege to)

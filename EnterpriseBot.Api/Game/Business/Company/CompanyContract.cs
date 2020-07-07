@@ -50,16 +50,15 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        public static GameResult<CompanyContract> Create(CompanyContractCreationParams creationPars, 
-            UserInputRequirements inputRequirements, DonationSettings donationSettings, CompanyContractSettings contractSettings)
+        public static GameResult<CompanyContract> Create(CompanyContractCreationParams creationPars, GameSettings gameSettings)
         {
             var cp = creationPars;
-            var req = inputRequirements;
+            var req = gameSettings.Localization.UserInputRequirements;
 
-            var incomeCompanyCanConcludeResult = cp.IncomeCompany.CanConcludeOneMoreContract(donationSettings, contractSettings);
+            var incomeCompanyCanConcludeResult = cp.IncomeCompany.CanConcludeOneMoreContract(gameSettings);
             if (incomeCompanyCanConcludeResult.LocalizedError != null) return incomeCompanyCanConcludeResult.LocalizedError;
 
-            var outcomeCompanyCanConcludeResult = cp.OutcomeCompany.CanConcludeOneMoreContract(donationSettings, contractSettings);
+            var outcomeCompanyCanConcludeResult = cp.OutcomeCompany.CanConcludeOneMoreContract(gameSettings);
             if (outcomeCompanyCanConcludeResult.LocalizedError != null) return outcomeCompanyCanConcludeResult.LocalizedError;
 
             if (!incomeCompanyCanConcludeResult
@@ -73,7 +72,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            var checkMaxTimeResult = CheckMaxTime(cp.IncomeCompany, cp.OutcomeCompany, donationSettings, contractSettings);
+            var checkMaxTimeResult = CheckMaxTime(cp.IncomeCompany, cp.OutcomeCompany, gameSettings);
             if (checkMaxTimeResult.LocalizedError != null) return checkMaxTimeResult.LocalizedError;
 
             if (!CheckName(cp.Name))
@@ -146,8 +145,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             };
         }
 
-        public static GameResult<CompanyContract> Conclude(CompanyContractRequest contractRequest,
-            UserInputRequirements inputRequirements, DonationSettings donationSettings, CompanyContractSettings contractSettings, Player invoker = null)
+        public static GameResult<CompanyContract> Conclude(CompanyContractRequest contractRequest, GameSettings gameSettings, Player invoker = null)
         {
             var cReq = contractRequest;
 
@@ -176,7 +174,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             CompanyContractIssuer issuer = cReq.RequestingCompanyRelationSide;
 
-            var checkMaxTimeResult = CheckMaxTime(incomeCompany, outcomeCompany, donationSettings, contractSettings, invoker);
+            var checkMaxTimeResult = CheckMaxTime(incomeCompany, outcomeCompany, gameSettings, invoker);
             if (checkMaxTimeResult.LocalizedError != null) return checkMaxTimeResult.LocalizedError;
 
             return Create(new CompanyContractCreationParams
@@ -194,7 +192,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
                 OverallCost = cReq.ContractOverallCost,
                 TerminationTermInWeeks = cReq.TerminationTermInWeeks
-            }, inputRequirements, donationSettings, contractSettings);
+            }, gameSettings);
         }
 
         public GameResult<bool> CheckCompletion()
@@ -238,17 +236,16 @@ namespace EnterpriseBot.Api.Game.Business.Company
         /// </summary>
         /// <param name="incomeCompany"></param>
         /// <param name="outcomeCompany"></param>
-        /// <param name="donationSettings"></param>
-        /// <param name="contractSettings"></param>
         /// <param name="invoker"></param>
         /// <returns>If max time check wasn't passed, returns <see cref="LocalizedError"/>, otherwise, empty</returns>
-        private static EmptyGameResult CheckMaxTime(Company incomeCompany, Company outcomeCompany, 
-            DonationSettings donationSettings, CompanyContractSettings contractSettings, Player invoker = null)
+        private static EmptyGameResult CheckMaxTime(Company incomeCompany, Company outcomeCompany, GameSettings gameSettings, Player invoker = null)
         {
-            var incomeMaxTimeResult = incomeCompany.GetContractMaxTimeInDays(donationSettings, contractSettings, invoker);
+            var contractSettings = gameSettings.Business.Company.Contract;
+
+            var incomeMaxTimeResult = incomeCompany.GetContractMaxTimeInDays(gameSettings, invoker);
             if (incomeMaxTimeResult.LocalizedError != null) return incomeMaxTimeResult.LocalizedError;
 
-            var outcomeMaxTimeResult = outcomeCompany.GetContractMaxTimeInDays(donationSettings, contractSettings, invoker);
+            var outcomeMaxTimeResult = outcomeCompany.GetContractMaxTimeInDays(gameSettings, invoker);
             if (outcomeMaxTimeResult.LocalizedError != null) return outcomeMaxTimeResult.LocalizedError;
 
             uint maxTime = incomeMaxTimeResult;

@@ -35,28 +35,26 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        public static GameResult<CompanyContractRequest> Create(CompanyContractRequestCreationParams creationPars,
-            UserInputRequirements inputRequirements)
+        public static GameResult<CompanyContractRequest> Create(CompanyContractRequestCreationParams creationPars, GameSettings gameSettings)
         {
-            return CreateBase(creationPars, inputRequirements);
+            return CreateBase(creationPars, gameSettings);
         }
 
-        public static GameResult<CompanyContractRequest> Create(CompanyContractRequestCreationParams creationPars,
-            UserInputRequirements inputRequirements, Player invoker)
+        public static GameResult<CompanyContractRequest> Create(CompanyContractRequestCreationParams creationPars, GameSettings gameSettings, Player invoker)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.SignContracts, creationPars.RequestingCompany))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            return CreateBase(creationPars, inputRequirements);
+            return CreateBase(creationPars, gameSettings);
         }
 
-        public GameResult<string> SetName(string newName, UserInputRequirements req)
+        public GameResult<string> SetName(string newName, GameSettings gameSettings)
         {
             if(!UserInputUtils.CheckName(newName))
             {
-                return Errors.IncorrectNameInput(req);
+                return Errors.IncorrectNameInput(gameSettings.Localization.UserInputRequirements);
             }
 
             Name = newName;
@@ -64,11 +62,11 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Name;
         }
 
-        public GameResult<string> SetDescription(string newDesc, UserInputRequirements req)
+        public GameResult<string> SetDescription(string newDesc, GameSettings gameSettings)
         {
             if (!UserInputUtils.CheckDescription(newDesc))
             {
-                return Errors.IncorrectDescriptionInput(req);
+                return Errors.IncorrectDescriptionInput(gameSettings.Localization.UserInputRequirements);
             }
 
             Description = newDesc;
@@ -77,16 +75,15 @@ namespace EnterpriseBot.Api.Game.Business.Company
         }
 
 
-        private static GameResult<CompanyContractRequest> CreateBase(CompanyContractRequestCreationParams cp,
-            UserInputRequirements req)
+        private static GameResult<CompanyContractRequest> CreateBase(CompanyContractRequestCreationParams cp, GameSettings gameSettings)
         {
             if (!UserInputUtils.CheckName(cp.Name))
             {
-                return Errors.IncorrectNameInput(req);
+                return Errors.IncorrectNameInput(gameSettings.Localization.UserInputRequirements);
             }
             if (!UserInputUtils.CheckDescription(cp.Description))
             {
-                return Errors.IncorrectDescriptionInput(req);
+                return Errors.IncorrectDescriptionInput(gameSettings.Localization.UserInputRequirements);
             }
 
             if (cp.ItemQuantity < 1)

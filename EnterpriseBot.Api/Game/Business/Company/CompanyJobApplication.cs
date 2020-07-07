@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static EnterpriseBot.Api.Utils.UserInputUtils;
 using static EnterpriseBot.Api.Utils.Constants;
+using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -26,21 +27,13 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        public static GameResult<CompanyJobApplication> Create(CompanyJobApplicationCreationParams pars,
-            UserInputRequirements inputRequirements)
+        public static GameResult<CompanyJobApplication> Create(CompanyJobApplicationCreationParams pars, GameSettings gameSettings)
         {
-            if(!CheckResume(pars.Resume))
-            {
-                var req = inputRequirements;
+            var req = gameSettings.Localization.UserInputRequirements;
 
-                return new LocalizedError
-                {
-                    ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = string.Format(req.Resume.English,
-                                                   ResumeMaxLength),
-                    RussianMessage = string.Format(req.Resume.Russian,
-                                                   ResumeMaxLength)
-                };
+            if (!CheckResume(pars.Resume))
+            {
+                return Errors.IncorrectResumeInput(req);
             }
 
             if(pars.Job.IsOccupied)

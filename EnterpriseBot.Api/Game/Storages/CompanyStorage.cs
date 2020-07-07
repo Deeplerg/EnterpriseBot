@@ -4,6 +4,7 @@ using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Models.Settings.GameplaySettings;
@@ -57,9 +58,10 @@ namespace EnterpriseBot.Api.Game.Storages
             };
         }
 
-        public static EmptyGameResult Buy(Company company, CompanyStorageType storageType,
-            BusinessPricesSettings pricesSettings, DonationSettings donationSettings, Player invoker = null)
+        public static EmptyGameResult Buy(Company company, CompanyStorageType storageType, GameSettings gameSettings, Player invoker = null)
         {
+            var prices = gameSettings.BusinessPrices.CompanyFeatures;
+
             if (!invoker.HasPermission(CompanyJobPermissions.BuyStorages, company))
             {
                 return Errors.DoesNotHavePermission();
@@ -69,18 +71,18 @@ namespace EnterpriseBot.Api.Game.Storages
             switch(storageType)
             {
                 case CompanyStorageType.General:
-                    price = pricesSettings.CompanyFeatures.NewStoragePrices.Company;
+                    price = prices.NewStoragePrices.Company;
                     break;
 
                 case CompanyStorageType.Income:
-                    price = pricesSettings.CompanyFeatures.NewStoragePrices.Income;
+                    price = prices.NewStoragePrices.Income;
                     break;
 
                 default:
                     return Errors.UnknownEnumValue(storageType);
             }
 
-            var reduceResult = company.ReduceBusinessCoins(price, donationSettings, invoker);
+            var reduceResult = company.ReduceBusinessCoins(price, gameSettings, invoker);
             if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
             return new EmptyGameResult();
@@ -219,7 +221,7 @@ namespace EnterpriseBot.Api.Game.Storages
             return ingredients.All(ing => Items.Any(storageItem => storageItem.Item == ing.Item && storageItem.Quantity >= ing.Quantity));
         }
 
-        public GameResult<decimal> UpgradeCapacity(GameplaySettings settings, DonationSettings donationSettings, Player invoker = null)
+        public GameResult<decimal> UpgradeCapacity(GameplaySettings settings, GameSettings gameSettings, Player invoker = null)
         {
             if (!HasPermission(CompanyJobPermissions.UpgradeStorages, invoker))
             {
@@ -236,7 +238,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
             if (upgradePrice.Currency == Currency.BusinessCoins)
             {
-                var reduceResult = OwningCompany.ReduceBusinessCoins(upgradePrice.Amount, donationSettings);
+                var reduceResult = OwningCompany.ReduceBusinessCoins(upgradePrice.Amount, gameSettings);
                 if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
             }
             else

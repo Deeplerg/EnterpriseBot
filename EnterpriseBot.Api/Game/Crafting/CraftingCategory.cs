@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnterpriseBot.Api.Models.Common.Enums;
 using static EnterpriseBot.Api.Utils.UserInputUtils;
+using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api.Game.Crafting
 {
@@ -32,9 +33,10 @@ namespace EnterpriseBot.Api.Game.Crafting
         #endregion
 
         #region actions
-        public static GameResult<CraftingCategory> Create(CraftingCategoryCreationParams pars,
-            UserInputRequirements req)
+        public static GameResult<CraftingCategory> Create(CraftingCategoryCreationParams pars, GameSettings gameSettings)
         {
+            var req = gameSettings.Localization.UserInputRequirements;
+
             foreach (var str in pars.Name.Localizations)
             {
                 if (!CheckName(str.Text))
@@ -63,10 +65,11 @@ namespace EnterpriseBot.Api.Game.Crafting
             return craftingCategory;
         }
 
-        public GameResult<StringLocalization> EditName(string newName, LocalizationLanguage language,
-            UserInputRequirements req)
+        public GameResult<StringLocalization> EditName(string newName, LocalizationLanguage language, GameSettings gameSettings)
         {
-            if(!CheckName(newName))
+            var req = gameSettings.Localization.UserInputRequirements;
+
+            if (!CheckName(newName))
             {
                 return Errors.IncorrectNameInput(req);
             }
@@ -77,10 +80,11 @@ namespace EnterpriseBot.Api.Game.Crafting
             return editResult;
         }
 
-        public GameResult<StringLocalization> EditDescription(string newDescription, LocalizationLanguage language,
-            UserInputRequirements req)
+        public GameResult<StringLocalization> EditDescription(string newDescription, LocalizationLanguage language, GameSettings gameSettings)
         {
-            if(!CheckDescription(newDescription))
+            var req = gameSettings.Localization.UserInputRequirements;
+
+            if (!CheckDescription(newDescription))
             {
                 return Errors.IncorrectDescriptionInput(req);
             }

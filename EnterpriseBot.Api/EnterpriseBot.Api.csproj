@@ -34,13 +34,12 @@
   <ItemGroup>
     <Folder Include="Areas\Business\Company\Controllers\" />
     <Folder Include="Areas\Business\Controllers\" />
-    <Folder Include="Areas\Crafting\" />
-    <Folder Include="Areas\Donation\" />
-    <Folder Include="Areas\Essences\" />
-    <Folder Include="Areas\Localization\" />
-    <Folder Include="Areas\Money\" />
-    <Folder Include="Areas\Storages\" />
-    <Folder Include="Areas\Reputation\" />
+    <Folder Include="Areas\Donation\Controllers\" />
+    <Folder Include="Areas\Essences\Controllers\" />
+    <Folder Include="Areas\Localization\Controllers\" />
+    <Folder Include="Areas\Money\Controllers\" />
+    <Folder Include="Areas\Reputation\Controllers\" />
+    <Folder Include="Areas\Storages\Controllers\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

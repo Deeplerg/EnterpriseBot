@@ -78,7 +78,7 @@ namespace EnterpriseBot.Api.Game.Crafting
             return editResult;
         }
 
-        public GameResult<decimal> SetSpace(int newSpace)
+        public GameResult<decimal> SetSpace(decimal newSpace)
         {
             if (newSpace <= 0)
             {

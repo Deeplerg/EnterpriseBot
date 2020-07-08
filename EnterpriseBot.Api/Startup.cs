@@ -84,7 +84,8 @@ namespace EnterpriseBot.Api
                         {
                             NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: true, overrideSpecifiedNames: false)
                         };
-                        opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                        //opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                        opt.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All;
                     });
         }
 

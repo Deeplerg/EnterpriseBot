@@ -18,7 +18,7 @@ namespace EnterpriseBot.Api.Game.Crafting
 
         public virtual Item ResultItem { get; protected set; }
 
-        public short ResultItemQuantity { get; protected set; }
+        public int ResultItemQuantity { get; protected set; }
 
         public int LeadTimeInSeconds { get; protected set; } //how much time in seconds it takes to produce it
 
@@ -106,7 +106,7 @@ namespace EnterpriseBot.Api.Game.Crafting
             return LeadTimeInSeconds;
         }
 
-        public GameResult<int> SetResultItemQuantity(short newResultItemQuantity)
+        public GameResult<int> SetResultItemQuantity(int newResultItemQuantity)
         {
             if (newResultItemQuantity < 1)
             {

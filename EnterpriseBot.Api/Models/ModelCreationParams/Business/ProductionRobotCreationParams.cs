@@ -14,6 +14,6 @@ namespace EnterpriseBot.Api.Models.ModelCreationParams.Business
 
         public Company Company { get; set; }
         public Recipe Recipe { get; set; }
-        public CompanyStorage Storage { get; set; }
+        public CompanyStorage CompanyStorage { get; set; }
     }
 }

@@ -36,7 +36,9 @@ namespace EnterpriseBot.ApiWrapper.Utils
                     {
                         NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: true, overrideSpecifiedNames: false)
                     },
-                    FloatParseHandling = FloatParseHandling.Decimal
+                    FloatParseHandling = FloatParseHandling.Decimal,
+                    PreserveReferencesHandling = PreserveReferencesHandling.All,
+                    ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
                 };
             }
         }
@@ -54,7 +56,7 @@ namespace EnterpriseBot.ApiWrapper.Utils
 
             try
             {
-                return JsonConvert.DeserializeObject<T>(json.ToString());
+                return JsonConvert.DeserializeObject<T>(json.ToString(), JsonSerializerSettings);
             }
             catch (JsonReaderException)
             {
@@ -74,7 +76,7 @@ namespace EnterpriseBot.ApiWrapper.Utils
 
             try
             {
-                return JsonConvert.DeserializeObject(json.ToString(), typeToDeserialize);
+                return JsonConvert.DeserializeObject(json.ToString(), typeToDeserialize, JsonSerializerSettings);
             }
             catch (JsonReaderException)
             {
@@ -94,7 +96,7 @@ namespace EnterpriseBot.ApiWrapper.Utils
 
             try
             {
-                return JsonConvert.DeserializeObject(json.ToString());
+                return JsonConvert.DeserializeObject(json.ToString(), JsonSerializerSettings);
             }
             catch (JsonReaderException)
             {
@@ -119,6 +121,7 @@ namespace EnterpriseBot.ApiWrapper.Utils
         private async Task<Result> RequestBase(Uri uri, object objToSerialize)
         {
             string serialized = JsonConvert.SerializeObject(objToSerialize, JsonSerializerSettings);
+            
             var request = ConstructJsonHttpRequest(serialized, defaultHttpMethod, uri);
 
             var response = await http.SendAsync(request);
@@ -127,7 +130,7 @@ namespace EnterpriseBot.ApiWrapper.Utils
             Result result;
             try
             {
-                result = JsonConvert.DeserializeObject<Result>(responseResult);
+                result = JsonConvert.DeserializeObject<Result>(responseResult, JsonSerializerSettings);
             }
             catch (JsonReaderException)
             {
@@ -149,6 +152,7 @@ namespace EnterpriseBot.ApiWrapper.Utils
         private Uri ConstructUri(Uri uri, ApiRequestInfo reqInfo)
         {
             string relativeUri = Path.Combine(reqInfo.CategoryAreaName,
+                                              reqInfo.CategorySubAreaName ?? string.Empty,
                                               reqInfo.CategoryName,
                                               reqInfo.MethodName);
 

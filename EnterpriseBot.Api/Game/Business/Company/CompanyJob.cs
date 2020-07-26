@@ -32,8 +32,8 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #region model
         public long Id { get; protected set; }
 
-        public LocalizedString Name { get; protected set; }
-        public LocalizedString Description { get; protected set; }
+        public virtual LocalizedString Name { get; protected set; }
+        public virtual LocalizedString Description { get; protected set; }
 
         public virtual Player Employee { get; protected set; }
 
@@ -42,9 +42,6 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public CompanyJobPermissions Permissions { get; protected set; }
 
         public decimal Salary { get; protected set; }
-
-
-        protected virtual CompanyWorker Worker { get; set; }
 
         public virtual IReadOnlyCollection<CompanyJobApplication> Applications
         {
@@ -59,24 +56,25 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public Recipe Recipe { get => Worker.Recipe; }
         public CompanyStorage WorkingStorage { get => Worker.WorkingStorage; }
         public bool IsWorkingNow { get => Worker.IsWorkingNow; }
-        public int ItemsAmountMadeThisWeek { get => Worker.ItemsAmountMadeThisWeek; }
 
         [JsonIgnore]
-        public string ProduceItemJobId 
+        public string ProduceItemAndStopJobId 
         {
-            get => Worker.ProduceItemJobId;
-            set => Worker.ProduceItemJobId = value;
-        }
-
-        [JsonIgnore]
-        public string StopWorkingJobId
-        {
-            get => Worker.StopWorkingJobId;
-            set => Worker.StopWorkingJobId = value;
+            get => Worker.ProduceItemAndStopJobId;
+            set => Worker.ProduceItemAndStopJobId = value;
         }
 
         [JsonIgnore]
         public string PaySalaryJobId { get; set; }
+
+        [JsonIgnore]
+        public long CompanyWorkerId
+        {
+            get => Worker.Id;
+        }
+
+        [JsonIgnore]
+        protected virtual CompanyWorker Worker { get; set; }
 
         #region errors
         private static readonly LocalizedError recipeCantBeDoneByPlayerError = new LocalizedError
@@ -95,12 +93,6 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #endregion
 
         #region actions
-        /// <summary>
-        /// Creates <see cref="CompanyJob"/> instance. Used when the job <b>does NOT</b> have <see cref="CompanyJobPermissions.ProduceItems"/>
-        /// </summary>
-        /// <param name="pars"></param>
-        /// <param name="invoker"></param>
-        /// <returns></returns>
         public static GameResult<CompanyJob> Create(CompanyJobCreationParams pars, GameSettings gameSettings, Player invoker)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.CreateJob, pars.Company))
@@ -113,29 +105,40 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             CompanyJob job = jobCreationResult;
 
-            if (pars.Permissions.HasFlag(CompanyJobPermissions.ProduceItems))
+            //if (pars.Permissions.HasFlag(CompanyJobPermissions.ProduceItems))
+            //{
+            //    if(pars.Recipe == null || pars.CompanyStorage == null)
+            //    {
+            //        return cantAllowProduceItemsError;
+            //    }
+
+            //    if (!pars.Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
+            //    {
+            //        return recipeCantBeDoneByPlayerError;
+            //    }
+
+            //    var workerCreationResult = CompanyWorker.Create(new CompanyWorkerCreationParams
+            //    {
+            //        Company = pars.Company,
+            //        Recipe = pars.Recipe,
+            //        Storage = pars.CompanyStorage
+            //    }, gameSettings);
+            //    if (workerCreationResult.LocalizedError != null) return workerCreationResult.LocalizedError;
+
+
+            //    job.Worker = workerCreationResult;
+            //}
+
+            var workerCreationResult = CompanyWorker.Create(new CompanyWorkerCreationParams
             {
-                if(pars.Recipe == null || pars.Storage == null)
-                {
-                    return cantAllowProduceItemsError;
-                }
-
-                if (!pars.Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
-                {
-                    return recipeCantBeDoneByPlayerError;
-                }
-
-                var workerCreationResult = CompanyWorker.Create(new CompanyWorkerCreationParams
-                {
-                    Company = pars.Company,
-                    Recipe = pars.Recipe,
-                    Storage = pars.Storage
-                }, gameSettings);
-                if (workerCreationResult.LocalizedError != null) return workerCreationResult.LocalizedError;
+                Company = pars.Company,
+                Recipe = pars.Recipe,
+                CompanyStorage = pars.CompanyStorage
+            }, gameSettings);
+            if (workerCreationResult.LocalizedError != null) return workerCreationResult.LocalizedError;
 
 
-                job.Worker = workerCreationResult;
-            }
+            job.Worker = workerCreationResult;
 
             return job;
         }
@@ -282,7 +285,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return new EmptyGameResult();
         }
 
-        public EmptyGameResult Fire(Player invoker = null)
+        public EmptyGameResult Fire(Player invoker)
         {
             if (invoker != null)
             {
@@ -290,11 +293,14 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 {
                     return Errors.DoesNotHavePermission();
                 }
-                if(ThisJobHasPermission(CompanyJobPermissions.Fire))
+                if (ThisJobHasPermission(CompanyJobPermissions.Fire))
                 {
                     return Errors.DoesNotHavePermission();
                 }
             }
+
+            var stopWorkingResult = StopWorking();
+            if (stopWorkingResult.LocalizedError != null) return stopWorkingResult.LocalizedError;
 
             Employee = null;
 
@@ -338,11 +344,15 @@ namespace EnterpriseBot.Api.Game.Business.Company
             }
 
             Permissions ^= permissions;
+            if(permissions.HasFlag(CompanyJobPermissions.ProduceItems))
+            {
+                StopWorking();
+            }
 
             return new EmptyGameResult();
         }
 
-        public EmptyGameResult SetGamePermissions(CompanyJobPermissions permissions, Player invoker)
+        public EmptyGameResult SetPermissions(CompanyJobPermissions permissions, Player invoker)
         {
             if (!HasInvokerPermissionToChangeJobParameters(invoker))
             {
@@ -355,14 +365,21 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 return cantAllowProduceItemsError;
             }
 
+            if(!Permissions.HasFlag(CompanyJobPermissions.ProduceItems)
+            && permissions.HasFlag(CompanyJobPermissions.ProduceItems))
+            {
+                StopWorking();
+            }
+
             Permissions = permissions;
 
             return new EmptyGameResult();
         }
 
-        public GameResult<decimal> SetSalary(decimal newSalary, 
-            CompanyJobSettings jobSettings, Player invoker)
+        public GameResult<decimal> SetSalary(decimal newSalary, GameSettings gameSettings, Player invoker)
         {
+            var jobSettings = gameSettings.Business.Company.Job;
+
             if(!invoker.HasPermission(CompanyJobPermissions.ChangeJobParameters, Company))
             {
                 return Errors.DoesNotHavePermission();
@@ -370,7 +387,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             if(newSalary < jobSettings.MinSalary)
             {
-                return SalaryBelowTheMinimumError(jobSettings.MinSalary);
+                return SalaryBelowMinimumError(jobSettings.MinSalary);
             }
 
             Salary = newSalary;
@@ -378,15 +395,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Salary;
         }
 
-        public EmptyGameResult ResetItemsAmountMadeThisWeek()
-        {
-            return Worker.ResetItemsAmountMadeThisWeek();
-        }
-
         //for current job checking
         public bool ThisJobHasPermission(CompanyJobPermissions permission)
         {
-            return this.Permissions.HasFlag(permission);
+            return this.Permissions.HasFlag(permission) || this.Permissions.HasFlag(CompanyJobPermissions.GeneralManager);
         }
 
 
@@ -428,7 +440,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             if (pars.Salary < jobSettings.MinSalary)
             {
-                return SalaryBelowTheMinimumError(jobSettings.MinSalary);
+                return SalaryBelowMinimumError(jobSettings.MinSalary);
             }
 
             return new CompanyJob
@@ -442,7 +454,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             };
         }
 
-        private static LocalizedError SalaryBelowTheMinimumError(decimal minimum)
+        private static LocalizedError SalaryBelowMinimumError(decimal minimum)
         {
             return new LocalizedError
             {

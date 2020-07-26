@@ -12,7 +12,7 @@ namespace EnterpriseBot.Api.Game.Reputation
 {
     public class Review
     {
-        private Review() { }
+        protected Review() { }
 
         #region model
         public long Id { get; protected set; }
@@ -49,6 +49,29 @@ namespace EnterpriseBot.Api.Game.Reputation
                 return ratingOutOfRangeError;
             }
 
+            switch(pars.Reviewer)
+            {
+                case Reviewer.Company:
+                    if(pars.CompanyReviewer is null)
+                        return ReviewerIsNullError(pars.Reviewer);
+                    break;
+
+                case Reviewer.Player:
+                    if (pars.PlayerReviewer is null)
+                        return ReviewerIsNullError(pars.Reviewer);
+                    break;
+            }
+
+            if (pars.CompanyReviewer != null
+             && pars.PlayerReviewer != null)
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Critical,
+                    EnglishMessage = $"Both CompanyReviewer {pars.CompanyReviewer.Id} and PlayerReviewer {pars.PlayerReviewer.Id} were selected"
+                };
+            }
+
             return new Review
             {
                 Reviewer = pars.Reviewer,
@@ -60,7 +83,7 @@ namespace EnterpriseBot.Api.Game.Reputation
             };
         }
 
-        public EmptyGameResult Change(string newText, sbyte newRating, GameSettings gameSettings)
+        public EmptyGameResult Edit(string newText, sbyte newRating, GameSettings gameSettings)
         {
             var req = gameSettings.Localization.UserInputRequirements;
 
@@ -76,6 +99,17 @@ namespace EnterpriseBot.Api.Game.Reputation
 
             Text = newText;
             return new EmptyGameResult();
+        }
+
+
+        private static LocalizedError ReviewerIsNullError(Reviewer reviewer)
+        {
+            return new LocalizedError
+            {
+                ErrorSeverity = ErrorSeverity.Critical,
+                EnglishMessage = $"Reviewer {reviewer} is null",
+                RussianMessage = $"Рецензент {reviewer} является null"
+            };
         }
         #endregion
     }

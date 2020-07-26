@@ -12,13 +12,20 @@ namespace EnterpriseBot.Api.Models.ApiCreationParams.Business
         public long DescriptionLocalizedStringId { get; set; }
 
         public long CompanyId { get; set; }
-        public long RecipeId { get; set; }
-        public long StorageId { get; set; }
-
-        public bool HasRecipe { get; set; }
+        
+        /// <summary>
+        /// Optional
+        /// </summary>
+        public long? RecipeId { get; set; }
+        /// <summary>
+        /// Optional
+        /// </summary>
+        public long? CompanyStorageId { get; set; }
 
         public CompanyJobPermissions Permissions { get; set; }
 
         public decimal Salary { get; set; }
+
+        public long InvokerPlayerId { get; set; }
     }
 }

@@ -1,14 +1,12 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Abstractions
 {
-    public interface ICategory<TModel> where TModel : class
+    internal interface ICategory<TModel, TId, TCreationParams> where TModel : class
+                                                               where TCreationParams : class
     {
-        /// <summary>
-        /// Get model asynchronously
-        /// </summary>
-        /// <param name="id">Model id</param>
-        /// <returns>Model</returns>
-        Task<TModel> Get(object id);
+        Task<TModel> Get(TId id);
+
+        Task<TModel> Create(TCreationParams pars);
     }
 }

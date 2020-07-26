@@ -1,10 +1,5 @@
 using EnterpriseBot.Api.Models.Contexts;
 using EnterpriseBot.Api.Models.Other;
-using EnterpriseBot.Api.Models.Settings.MarketSettings;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings;
-using EnterpriseBot.Api.Models.Settings.GameplaySettings;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.MvcInputFormatters;
 using EnterpriseBot.Api.Services;
 using Hangfire;
@@ -20,11 +15,10 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
-using Microsoft.Extensions.Options;
 using EnterpriseBot.Api.Models.Settings;
 using Microsoft.AspNetCore.Mvc.Razor;
 using EnterpriseBot.Api.Routing;
+using EnterpriseBot.Api.Abstractions;
 
 namespace EnterpriseBot.Api
 {
@@ -56,7 +50,7 @@ namespace EnterpriseBot.Api
             #endregion
 
             services.AddSingleton<PostgresTransactionLimiter>();
-
+            
             #region Database
             //int poolSize = Configuration.GetValue<int>("DbContextPoolSize"); //this won't throw an exception while getting invalid value
             int poolSize = int.Parse(Configuration.GetValue<string>("DbContextPoolSize")); //but this will
@@ -87,15 +81,13 @@ namespace EnterpriseBot.Api
                         //opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                         opt.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All;
                     });
+
+            services.AddTransient<IBackgroundJobScheduler, BackgroundJobScheduler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
             app.UseExceptionHandler(app =>
             {
                 app.Run(ExceptionHandler);
@@ -145,7 +137,7 @@ namespace EnterpriseBot.Api
                     {
                         NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: true, overrideSpecifiedNames: false)
                     },
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    PreserveReferencesHandling = PreserveReferencesHandling.All
                 });
 
                 await ctx.Response.WriteAsync(serializedError);

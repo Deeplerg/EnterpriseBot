@@ -1,9 +1,12 @@
 using EnterpriseBot.ApiWrapper.Abstractions;
-using EnterpriseBot.ApiWrapper.Categories.Business;
+using EnterpriseBot.ApiWrapper.Categories.Business.Company;
 using EnterpriseBot.ApiWrapper.Categories.Crafting;
+using EnterpriseBot.ApiWrapper.Categories.Donation;
 using EnterpriseBot.ApiWrapper.Categories.Essences;
+using EnterpriseBot.ApiWrapper.Categories.Localization;
+using EnterpriseBot.ApiWrapper.Categories.Money;
+using EnterpriseBot.ApiWrapper.Categories.Reputation;
 using EnterpriseBot.ApiWrapper.Categories.Storages;
-using EnterpriseBot.ApiWrapper.CategoryLists;
 using EnterpriseBot.ApiWrapper.Extensions;
 using EnterpriseBot.ApiWrapper.Models.Other;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,10 +22,14 @@ namespace EnterpriseBot.ApiWrapper
         private readonly IServiceProvider serviceProvider;
         private readonly CurrentLocalization currentLocalization;
 
-        public BusinessCategoryList Business { get; private set; }
-        public CraftingCategoryList Crafting { get; private set; }
-        public EssencesCategoryList Essences { get; private set; }
-        public StoragesCategoryList Storages { get; private set; }
+        public CategoryLists.BusinessCategoryList Business { get; private set; }
+        public CategoryLists.CraftingCategoryList Crafting { get; private set; }
+        public CategoryLists.DonationCategoryList Donation { get; private set; }
+        public CategoryLists.EssencesCategoryList Essences { get; private set; }
+        public CategoryLists.LocalizationCategoryList Localization { get; private set; }
+        public CategoryLists.MoneyCategoryList Money { get; private set; }
+        public CategoryLists.ReputationCategoryList Reputation { get; private set; }
+        public CategoryLists.StoragesCategoryList Storages { get; private set; }
 
         public EntbotApi(string apiUri, ushort? port = null, CurrentLocalization localization = DefaultLocalization)
         {
@@ -79,55 +86,107 @@ namespace EnterpriseBot.ApiWrapper
         private void InitCategoryLists(IServiceProvider serviceProvider)
         {
             #region CategoryList init methods
-            BusinessCategoryList GetBusinessCtgList()
+            CategoryLists.BusinessCategoryList GetBusiness()
             {
-                return new BusinessCategoryList
+                return new CategoryLists.BusinessCategoryList
                 {
-                    Company = ActivatorUtilities.GetServiceOrCreateInstance<CompanyCategory>(serviceProvider),
-                    Contract = ActivatorUtilities.GetServiceOrCreateInstance<ContractCategory>(serviceProvider),
-                    Job = ActivatorUtilities.GetServiceOrCreateInstance<JobCategory>(serviceProvider),
-                    Shop = ActivatorUtilities.GetServiceOrCreateInstance<ShopCategory>(serviceProvider)
+                    Company = new CategoryLists.CompanySubCategoryList
+                    {
+                        Company = ActivatorUtilities.GetServiceOrCreateInstance<CompanyCategory>(serviceProvider),
+                        CompanyContract = ActivatorUtilities.GetServiceOrCreateInstance<CompanyContractCategory>(serviceProvider),
+                        CompanyContractRequest = ActivatorUtilities.GetServiceOrCreateInstance<CompanyContractRequestCategory>(serviceProvider),
+                        CompanyJobApplication = ActivatorUtilities.GetServiceOrCreateInstance<CompanyJobApplicationCategory>(serviceProvider),
+                        CompanyJob = ActivatorUtilities.GetServiceOrCreateInstance<CompanyJobCategory>(serviceProvider),
+
+#pragma warning disable CS0618 // Type or member is obsolete
+                        CompanyWorker = ActivatorUtilities.GetServiceOrCreateInstance<CompanyWorkerCategory>(serviceProvider),
+#pragma warning restore CS0618 // Type or member is obsolete
+
+                        ProductionRobot = ActivatorUtilities.GetServiceOrCreateInstance<ProductionRobotCategory>(serviceProvider),
+                        Truck = ActivatorUtilities.GetServiceOrCreateInstance<TruckCategory>(serviceProvider),
+                        TruckGarage = ActivatorUtilities.GetServiceOrCreateInstance<TruckGarageCategory>(serviceProvider),
+                    }
                 };
             }
 
-            CraftingCategoryList GetCraftingCtgList()
+            CategoryLists.CraftingCategoryList GetCrafting()
             {
-                return new CraftingCategoryList
+                return new CategoryLists.CraftingCategoryList
                 {
                     CraftingCategory = ActivatorUtilities.GetServiceOrCreateInstance<CraftingCategoryCategory>(serviceProvider),
+                    CraftingSubCategory = ActivatorUtilities.GetServiceOrCreateInstance<CraftingSubCategoryCategory>(serviceProvider),
                     Item = ActivatorUtilities.GetServiceOrCreateInstance<ItemCategory>(serviceProvider),
                     Recipe = ActivatorUtilities.GetServiceOrCreateInstance<RecipeCategory>(serviceProvider),
                     Ingredient = ActivatorUtilities.GetServiceOrCreateInstance<IngredientCategory>(serviceProvider)
                 };
             }
-
-            EssencesCategoryList GetEssencesCtgList()
+            
+            CategoryLists.DonationCategoryList GetDonation()
             {
-                return new EssencesCategoryList
+                return new CategoryLists.DonationCategoryList
                 {
-                    Player = ActivatorUtilities.GetServiceOrCreateInstance<PlayerCategory>(serviceProvider),
-                    Bot = ActivatorUtilities.GetServiceOrCreateInstance<BotCategory>(serviceProvider)
+                    Donation = ActivatorUtilities.GetServiceOrCreateInstance<DonationCategory>(serviceProvider),
+                    DonationPurchase = ActivatorUtilities.GetServiceOrCreateInstance<DonationPurchaseCategory>(serviceProvider),
                 };
             }
 
-            StoragesCategoryList GetStoragesCtgList()
+            CategoryLists.EssencesCategoryList GetEssences()
             {
-                return new StoragesCategoryList
+                return new CategoryLists.EssencesCategoryList
                 {
-                    IncomeStorage = ActivatorUtilities.GetServiceOrCreateInstance<IncomeStorageCategory>(serviceProvider),
-                    OutcomeStorage = ActivatorUtilities.GetServiceOrCreateInstance<OutcomeStorageCategory>(serviceProvider),
-                    WorkerStorage = ActivatorUtilities.GetServiceOrCreateInstance<WorkerStorageCategory>(serviceProvider),
+                    Player = ActivatorUtilities.GetServiceOrCreateInstance<PlayerCategory>(serviceProvider)
+                };
+            }
+
+            CategoryLists.LocalizationCategoryList GetLocalization()
+            {
+                return new CategoryLists.LocalizationCategoryList
+                {
+                    LocalizedString = ActivatorUtilities.GetServiceOrCreateInstance<LocalizedStringCategory>(serviceProvider),
+                    StringLocalization = ActivatorUtilities.GetServiceOrCreateInstance<StringLocalizationCategory>(serviceProvider)
+                };
+            }
+
+            CategoryLists.MoneyCategoryList GetMoney()
+            {
+                return new CategoryLists.MoneyCategoryList
+                {
+                    Purse = ActivatorUtilities.GetServiceOrCreateInstance<PurseCategory>(serviceProvider),
+                };
+            }
+
+            CategoryLists.ReputationCategoryList GetReputation()
+            {
+                return new CategoryLists.ReputationCategoryList
+                {
+                    Reputation = ActivatorUtilities.GetServiceOrCreateInstance<ReputationCategory>(serviceProvider),
+                    Review = ActivatorUtilities.GetServiceOrCreateInstance<ReviewCategory>(serviceProvider)
+                };
+            }
+
+            CategoryLists.StoragesCategoryList GetStorages()
+            {
+                return new CategoryLists.StoragesCategoryList
+                {
+                    CompanyStorage = ActivatorUtilities.GetServiceOrCreateInstance<CompanyStorageCategory>(serviceProvider),
+                    InventoryStorage = ActivatorUtilities.GetServiceOrCreateInstance<InventoryStorageCategory>(serviceProvider),
+                    ItemPrice = ActivatorUtilities.GetServiceOrCreateInstance<ItemPriceCategory>(serviceProvider),
                     ShowcaseStorage = ActivatorUtilities.GetServiceOrCreateInstance<ShowcaseStorageCategory>(serviceProvider),
+                    Storage = ActivatorUtilities.GetServiceOrCreateInstance<StorageCategory>(serviceProvider),
+                    StorageItem = ActivatorUtilities.GetServiceOrCreateInstance<StorageItemCategory>(serviceProvider),
                     TrunkStorage = ActivatorUtilities.GetServiceOrCreateInstance<TrunkStorageCategory>(serviceProvider),
-                    PersonalStorage = ActivatorUtilities.GetServiceOrCreateInstance<PersonalStorageCategory>(serviceProvider)
                 };
             }
             #endregion
 
-            Business = GetBusinessCtgList();
-            Crafting = GetCraftingCtgList();
-            Essences = GetEssencesCtgList();
-            Storages = GetStoragesCtgList();
+            Business = GetBusiness();
+            Crafting = GetCrafting();
+            Donation = GetDonation();
+            Essences = GetEssences();
+            Localization = GetLocalization();
+            Money = GetMoney();
+            Reputation = GetReputation();
+            Storages = GetStorages();
         }
         #endregion
     }

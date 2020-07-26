@@ -1,13 +1,15 @@
-using EnterpriseBot.ApiWrapper.Abstractions;
-using EnterpriseBot.ApiWrapper.Categories.Crafting;
+﻿using EnterpriseBot.ApiWrapper.Categories.Crafting;
 
 namespace EnterpriseBot.ApiWrapper.CategoryLists
 {
-    public class CraftingCategoryList : ICategoryList
+    public class CraftingCategoryList
     {
-        public CraftingCategoryCategory CraftingCategory { get; set; }
-        public ItemCategory Item { get; set; }
-        public RecipeCategory Recipe { get; set; }
-        public IngredientCategory Ingredient { get; set; }
+        internal CraftingCategoryList() { }
+
+        public CraftingCategoryCategory CraftingCategory { get; internal set; }
+        public CraftingSubCategoryCategory CraftingSubCategory { get; internal set; }
+        public ItemCategory Item { get; internal set; }
+        public RecipeCategory Recipe { get; internal set; }
+        public IngredientCategory Ingredient { get; internal set; }
     }
 }

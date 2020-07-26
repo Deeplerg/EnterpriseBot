@@ -16,6 +16,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using EnterpriseBot.Api.Game.Crafting;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Models.Settings;
+using Newtonsoft.Json;
+using Hangfire.Server;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -33,10 +35,16 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public Recipe Recipe { get => Worker.Recipe; }
         public CompanyStorage WorkingStorage { get => Worker.WorkingStorage; }
         public bool IsWorkingNow { get => Worker.IsWorkingNow; }
-        public int ItemsAmountMadeThisWeek { get => Worker.ItemsAmountMadeThisWeek; }
         public decimal SpeedMultiplier { get => Worker.SpeedMultiplier; }
+        
 
+        [JsonIgnore]
+        public long CompanyWorkerId
+        {
+            get => Worker.Id;
+        }
 
+        [JsonIgnore]
         protected virtual CompanyWorker Worker { get; set; }
 
         #region errors
@@ -54,7 +62,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             var req = gameSettings.Localization.UserInputRequirements;
             var workerSettings = gameSettings.Business.Company.Worker;
 
-            if (!invoker.HasPermission(CompanyJobPermissions.BuyRobots, pars.Company))
+            if(invoker != null && !invoker.HasPermission(CompanyJobPermissions.BuyRobots, pars.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -64,20 +72,38 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             var robot = robotCreationResult.Result;
 
-            if (pars.Storage != null || pars.Recipe != null)
-            {
-                if (pars.Recipe != null && !pars.Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Robot))
-                {
-                    return recipeCantBeDoneByRobotError;
-                }
+            //if (pars.CompanyStorage != null || pars.Recipe != null)
+            //{
+            //    if (pars.Recipe != null && !pars.Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Robot))
+            //    {
+            //        return recipeCantBeDoneByRobotError;
+            //    }
 
-                robot.Worker = CompanyWorker.Create(new CompanyWorkerCreationParams
-                {
-                    Company = robot.Company,
-                    Recipe = pars.Recipe,
-                    Storage = pars.Storage
-                }, gameSettings);
+            //    var workerCreationResult = CompanyWorker.Create(new CompanyWorkerCreationParams
+            //    {
+            //        Company = robot.Company,
+            //        Recipe = pars.Recipe,
+            //        CompanyStorage = pars.CompanyStorage
+            //    }, gameSettings);
+            //    if (workerCreationResult.LocalizedError != null) return workerCreationResult.LocalizedError;
+
+            //    robot.Worker = workerCreationResult;
+            //}
+
+            if (pars.Recipe != null && !pars.Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Robot))
+            {
+                return recipeCantBeDoneByRobotError;
             }
+
+            var workerCreationResult = CompanyWorker.Create(new CompanyWorkerCreationParams
+            {
+                Company = robot.Company,
+                Recipe = pars.Recipe,
+                CompanyStorage = pars.CompanyStorage
+            }, gameSettings);
+            if (workerCreationResult.LocalizedError != null) return workerCreationResult.LocalizedError;
+
+            robot.Worker = workerCreationResult;
 
             return robot;
         }
@@ -145,20 +171,20 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Worker.SetRecipe(recipe);
         }
 
-        public EmptyGameResult ResetItemsAmountMadeThisWeek()
+        public EmptyGameResult Upgrade(GameSettings gameSettings, Player invoker)
         {
-            return Worker.ResetItemsAmountMadeThisWeek();
-        }
+            if(!invoker.HasPermission(CompanyJobPermissions.UpgradeRobots, Company))
+            {
+                return Errors.DoesNotHavePermission();
+            }
 
-        public EmptyGameResult Upgrade(GameSettings gameSettings)
-        {
             var prices = gameSettings.BusinessPrices.CompanyFeatures;
 
             decimal step = prices.WorkerModifierUpgrade.Step;
             decimal price = prices.WorkerModifierUpgrade.Price;
 
-            var buyingUpgradeResult = Company.Purse.Reduce(price, Currency.BusinessCoins);
-            if (buyingUpgradeResult.LocalizedError != null) return buyingUpgradeResult.LocalizedError;
+            var reduceResult = Company.Purse.Reduce(price, Currency.BusinessCoins);
+            if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
             return Worker.UpgradeSpeedMultiplier(step, gameSettings);
         }

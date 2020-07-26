@@ -19,6 +19,6 @@ namespace EnterpriseBot.Api.Models.ApiCreationParams.Business
         public int ItemQuantity { get; set; }
 
         public decimal OverallCost { get; set; }
-        public sbyte TerminationTermInWeeks { get; set; }
+        public sbyte TerminationTermInDays { get; set; }
     }
 }

@@ -40,24 +40,5 @@ namespace EnterpriseBot.Api.Utils
             if (!string.Equals(CreateHash(input, salt), hash))
                 throw new ArgumentException($"{nameof(input)} has not passed hash verification");
         }
-
-        //public static string GenerateSHA512(string input)
-        //{
-        //    byte[] hash;
-        //    using(var sha512 = new SHA512Managed())
-        //    {
-        //        hash = sha512.ComputeHash(Encoding.UTF8.GetBytes(input));
-        //    }
-
-        //    StringBuilder sb = new StringBuilder();
-        //    foreach(var b in hash)
-        //        sb.Append(b.ToString("X2"));
-        //    return sb.ToString();
-        //}
-
-        //public static string VerifySHA512(string hash, string input)
-        //{
-
-        //}
     }
 }

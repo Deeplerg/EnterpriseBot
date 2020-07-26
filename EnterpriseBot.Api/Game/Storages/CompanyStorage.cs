@@ -9,6 +9,7 @@ using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Storages
 {
+    // Trying to "simulate" inheritance while TPT is not yet supported in EF Core
     public class CompanyStorage
     {
         protected CompanyStorage() { }
@@ -33,7 +35,9 @@ namespace EnterpriseBot.Api.Game.Storages
         public decimal OccupiedSpace { get => Storage.OccupiedSpace; }
         public IReadOnlyCollection<StorageItem> Items { get => Storage.Items; }
 
+        [JsonIgnore]
         protected virtual Storage Storage { get; set; }
+        public long StorageId { get; protected set; }
 
         #region errors
         #endregion
@@ -58,7 +62,7 @@ namespace EnterpriseBot.Api.Game.Storages
             };
         }
 
-        public static EmptyGameResult Buy(Company company, CompanyStorageType storageType, GameSettings gameSettings, Player invoker = null)
+        public static EmptyGameResult Buy(Company company, CompanyStorageType storageType, GameSettings gameSettings, Player invoker)
         {
             var prices = gameSettings.BusinessPrices.CompanyFeatures;
 
@@ -150,54 +154,54 @@ namespace EnterpriseBot.Api.Game.Storages
         }
 
 
-        public GameResult<int> TransferHereFrom(Storage storage, Item item, int quantity = 1, Player invoker = null)
+        public GameResult<int> TransferTo(Storage storage, Item item, int quantity = 1, Player invoker = null)
         {
             if (!HasPermissionToManage(invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            return storage.TransferTo(Storage, item, quantity);
+            return Storage.TransferTo(storage, item, quantity);
         }
 
-        public GameResult<int> TransferHereFrom(Storage storage, StorageItem storageItem, Player invoker = null)
+        public GameResult<int> TransferTo(Storage storage, StorageItem storageItem, Player invoker = null)
         {
             if (!HasPermissionToManage(invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            return storage.TransferTo(Storage, storageItem);
+            return Storage.TransferTo(storage, storageItem);
         }
 
-        public GameResult<int> TransferHereFrom(Storage storage, IEnumerable<StorageItem> items, Player invoker = null)
+        public GameResult<int> TransferTo(Storage storage, IEnumerable<StorageItem> items, Player invoker = null)
         {
             if (!HasPermissionToManage(invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            return storage.TransferTo(Storage, items);
+            return Storage.TransferTo(storage, items);
         }
 
-        public GameResult<int> TransferEverythingHereFrom(Storage storage, Player invoker = null)
+        public GameResult<int> TransferEverythingTo(Storage storage, Player invoker = null)
         {
             if (!HasPermissionToManage(invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            return storage.TransferEverythingTo(Storage);
+            return Storage.TransferEverythingTo(storage);
         }
 
-        public GameResult<int> TransferEverythingHereFrom(Storage storage, Item itemTypeToTransfer, Player invoker = null)
+        public GameResult<int> TransferEverythingTo(Storage storage, Item itemTypeToTransfer, Player invoker = null)
         {
             if (!HasPermissionToManage(invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            return storage.TransferEverythingTo(Storage, itemTypeToTransfer);
+            return Storage.TransferEverythingTo(storage, itemTypeToTransfer);
         }
 
 
@@ -221,17 +225,19 @@ namespace EnterpriseBot.Api.Game.Storages
             return ingredients.All(ing => Items.Any(storageItem => storageItem.Item == ing.Item && storageItem.Quantity >= ing.Quantity));
         }
 
-        public GameResult<decimal> UpgradeCapacity(GameplaySettings settings, GameSettings gameSettings, Player invoker = null)
+        public GameResult<decimal> UpgradeCapacity(GameSettings gameSettings, Player invoker = null)
         {
+            var companyStorageSettings = gameSettings.Gameplay.Storage.Company;
+
             if (!HasPermission(CompanyJobPermissions.UpgradeStorages, invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            var upgradePrice = settings.Storage.Company.UpgradePrice;
-            decimal step = settings.Storage.Company.UpgradeStep;
+            var upgradePrice = companyStorageSettings.UpgradePrice;
+            decimal step = companyStorageSettings.UpgradeStep;
 
-            if (Capacity >= settings.Storage.Company.MaxCapacity)
+            if (Capacity >= companyStorageSettings.MaxCapacity)
             {
                 return Errors.StorageCapacityIsMax;
             }
@@ -253,17 +259,26 @@ namespace EnterpriseBot.Api.Game.Storages
             return Capacity;
         }
 
+        public EmptyGameResult ReturnErrorIfDoesNotHavePermissionToManage(Player invoker)
+        {
+            if (!HasPermissionToManage(invoker))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+            else
+            {
+                return new EmptyGameResult();
+            }
+        }
 
-        private bool HasPermissionToManage(Player invoker)
+
+        public bool HasPermissionToManage(Player invoker)
         {
             return HasPermission(CompanyJobPermissions.ManageCompanyStorages, invoker);
         }
 
         private bool HasPermission(CompanyJobPermissions permission, Player invoker)
         {
-            if (invoker == null)
-                return true;
-
             return invoker.HasPermission(permission, OwningCompany);
         }
 

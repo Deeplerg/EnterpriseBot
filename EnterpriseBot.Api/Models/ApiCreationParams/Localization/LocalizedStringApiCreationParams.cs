@@ -10,6 +10,6 @@ namespace EnterpriseBot.Api.Models.ApiCreationParams.Localization
         /// <summary>
         /// Optional
         /// </summary>
-        public List<long> LocalizationsIds { get; set; }
+        public List<long> LocalizedStringIds { get; set; }
     }
 }

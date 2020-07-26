@@ -3,17 +3,10 @@ using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings.Company;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
-using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Utils;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -83,12 +76,12 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Truck.Create(pars);
         }
 
-        public GameResult<Truck> BuyAndAddTruck(TruckCreationParams pars, GameSettings gameSettings, Player invoker)
+        public EmptyGameResult BuyTruck(GameSettings gameSettings, Player invoker)
         {
-            var buyResult = Truck.Buy(pars, gameSettings, invoker);
+            var buyResult = Truck.Buy(Company, gameSettings, invoker);
             if (buyResult.LocalizedError != null) return buyResult.LocalizedError;
 
-            return AddTruck(pars);
+            return new EmptyGameResult();
         }
 
         public GameResult<sbyte> Upgrade(GameSettings gameSettings, Player invoker)
@@ -103,10 +96,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
             var reduceResult = Company.ReduceBusinessCoins(upgradePrice.Price, gameSettings, invoker);
             if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
-            return ForceUpgrade(gameSettings, upgradePrice.StepInSlots);
+            return ForceUpgrade(upgradePrice.StepInSlots, gameSettings);
         }
 
-        public GameResult<sbyte> ForceUpgrade(GameSettings gameSettings, sbyte step)
+        public GameResult<sbyte> ForceUpgrade(sbyte step, GameSettings gameSettings)
         {
             if(Capacity + step >= gameSettings.Business.Company.TruckGarage.MaxCapacity)
             {

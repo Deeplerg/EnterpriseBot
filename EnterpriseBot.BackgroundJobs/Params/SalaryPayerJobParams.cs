@@ -1,6 +1,6 @@
 ﻿namespace EnterpriseBot.BackgroundJobs.Params
 {
-    public class SalaryPayerJobParams
+    public class PaySalaryJobParams
     {
         public long JobId { get; set; }
     }

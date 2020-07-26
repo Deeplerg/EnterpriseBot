@@ -46,7 +46,7 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
         }
 
         ///<inheritdoc/>
-        public async Task<GameResult<Recipe>> Get(IdParameter idpar)
+        public async Task<GameResult<Recipe>> Get([FromBody] IdParameter idpar)
         {
             long id = (long)idpar.Id;
 
@@ -56,7 +56,7 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
         }
 
         ///<inheritdoc/>
-        public async Task<GameResult<Recipe>> Create(RecipeApiCreationParams pars)
+        public async Task<GameResult<Recipe>> Create([FromBody] RecipeApiCreationParams pars)
         {
             var resultItem = await ctx.Items.FindAsync(pars.ResultItemId);
             if (resultItem == null) return Errors.DoesNotExist(pars.ResultItemId, localization.Crafting.Item);
@@ -137,7 +137,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var recipe = await ctx.Recipes.FindAsync(d.modelId);
             if (recipe == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return recipe.SetLeadTimeInSeconds(d.newLeadTimeInSeconds);
+            var actionResult = recipe.SetLeadTimeInSeconds(d.newLeadTimeInSeconds);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
 
         public async Task<GameResult<int>> SetResultItemQuantity([FromBody] string json)
@@ -153,7 +158,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var recipe = await ctx.Recipes.FindAsync(d.modelId);
             if (recipe == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return recipe.SetResultItemQuantity(d.newResultItemQuantity);
+            var actionResult = recipe.SetResultItemQuantity(d.newResultItemQuantity);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
 
         public async Task<GameResult<RecipeCanBeDoneBy>> SetCanBeDoneBy([FromBody] string json)
@@ -169,7 +179,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var recipe = await ctx.Recipes.FindAsync(d.modelId);
             if(recipe == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return recipe.SetCanBeDoneBy(d.newCanBeDoneBy);
+            var actionResult = recipe.SetCanBeDoneBy(d.newCanBeDoneBy);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
     }
 }

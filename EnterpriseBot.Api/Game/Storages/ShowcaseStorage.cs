@@ -15,10 +15,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Storages
 {
+    // Trying to "simulate" inheritance while TPT is not yet supported by EF Core
     public class ShowcaseStorage
     {
         protected ShowcaseStorage() { }
@@ -40,7 +42,9 @@ namespace EnterpriseBot.Api.Game.Storages
         public decimal OccupiedSpace { get => Storage.OccupiedSpace; }
         public IReadOnlyCollection<StorageItem> Items { get => Storage.Items; }
 
+        [JsonIgnore]
         protected virtual Storage Storage { get; set; }
+        public long StorageId { get; protected set; }
 
         #region errors
         private static readonly LocalizedError priceNotDefinedError = new LocalizedError
@@ -70,9 +74,9 @@ namespace EnterpriseBot.Api.Game.Storages
             };
         }
 
-        public static EmptyGameResult Buy(Company company, GameSettings gameSettings, Player invoker = null)
+        public static EmptyGameResult Buy(Company company, GameSettings gameSettings, Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.BuyStorages, company))
+            if (!invoker.HasPermission(CompanyJobPermissions.BuyStorages, company))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -187,9 +191,23 @@ namespace EnterpriseBot.Api.Game.Storages
             return Storage.TransferEverythingTo(storage, itemTypeToTransfer);
         }
 
-
-        public GameResult<ItemPrice> AddPrice(Item item, decimal price)
+        public GameResult<bool> Contains(StorageItem storageItem)
         {
+            return Storage.Contains(storageItem);
+        }
+
+        public GameResult<StorageItem> GetItem(Item item)
+        {
+            return Storage.GetItem(item);
+        }
+
+
+        public GameResult<ItemPrice> AddPrice(Item item, decimal price, Player invoker)
+        {
+            if(!HasPermissionToManagePrices(invoker))
+            {
+                return Errors.DoesNotHavePermission();
+            }
             var itemPriceCreationResult = ItemPrice.Create(new ItemPriceCreationParams
             {
                 Item = item,
@@ -199,7 +217,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
             ItemPrice itemPrice = itemPriceCreationResult;
 
-            if (Prices == null) 
+            if (Prices == null)
                 Prices = new List<ItemPrice>();
 
             prices.Add(itemPrice);
@@ -207,9 +225,13 @@ namespace EnterpriseBot.Api.Game.Storages
             return itemPrice;
         }
 
-        public GameResult<ItemPrice> SetPrice(Item item, decimal newPrice)
+        public GameResult<ItemPrice> SetPrice(Item item, decimal newPrice, Player invoker)
         {
-            if (Prices != null)
+            if (!HasPermissionToManagePrices(invoker))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+            if (Prices.Any())
             {
                 var existingPrice = Prices.SingleOrDefault(price => price.Item == item);
                 if (existingPrice != null)
@@ -221,13 +243,13 @@ namespace EnterpriseBot.Api.Game.Storages
                 }
             }
 
-            return AddPrice(item, newPrice);
+            return AddPrice(item, newPrice, invoker);
         }
 
         public GameResult<ItemPrice> GetPrice(Item item)
         {
             var price = Prices.SingleOrDefault(price => price.Item == item);
-            if(price == null)
+            if (price == null)
             {
                 return new LocalizedError
                 {
@@ -243,16 +265,6 @@ namespace EnterpriseBot.Api.Game.Storages
         public bool IsPriceDefinedForItem(Item item)
         {
             return Prices != null && Prices.Any(price => price.Item == item);
-        }
-
-        public GameResult<bool> Contains(StorageItem storageItem)
-        {
-            return Storage.Contains(storageItem);
-        }
-
-        public GameResult<StorageItem> GetItem(Item item)
-        {
-            return Storage.GetItem(item);
         }
 
         public GameResult<int> BuyItem(Item item, int quantity, Player buyer)
@@ -313,23 +325,48 @@ namespace EnterpriseBot.Api.Game.Storages
             return Capacity;
         }
 
-        public static implicit operator Storage(ShowcaseStorage showcaseStorage)
+        public EmptyGameResult ReturnErrorIfDoesNotHavePermissionToManage(Player invoker)
         {
-            return showcaseStorage.Storage;
+            if (!HasPermissionToManage(invoker))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+            else
+            {
+                return new EmptyGameResult();
+            }
         }
 
-
-        private bool HasPermissionToManage(Player invoker)
+        public EmptyGameResult ReturnErrorIfDoesNotHavePermissionToManagePrices(Player invoker)
         {
-            return HasPermission(CompanyJobPermissions.ManageTrunkStorages, invoker);
+            if (!HasPermissionToManagePrices(invoker))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+            else
+            {
+                return new EmptyGameResult();
+            }
+        }
+
+        public bool HasPermissionToManage(Player invoker)
+        {
+            return HasPermission(CompanyJobPermissions.ManageShowcaseStorages, invoker);
+        }
+
+        public bool HasPermissionToManagePrices(Player invoker)
+        {
+            return HasPermission(CompanyJobPermissions.ManageShowcasePrices, invoker);
         }
 
         private bool HasPermission(CompanyJobPermissions permission, Player invoker)
         {
-            if (invoker == null)
-                return true;
-
             return invoker.HasPermission(permission, OwningCompany);
+        }
+
+        public static implicit operator Storage(ShowcaseStorage showcaseStorage)
+        {
+            return showcaseStorage.Storage;
         }
         #endregion
     }

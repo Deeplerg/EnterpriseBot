@@ -1,4 +1,5 @@
-﻿using EnterpriseBot.Api.Game.Essences;
+﻿using EnterpriseBot.Api.Game.Crafting;
+using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Game.Storages;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
@@ -12,6 +13,7 @@ using EnterpriseBot.Api.Utils;
 using Microsoft.AspNetCore.Connections;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -42,25 +44,24 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #region actions
         public static GameResult<Truck> Create(TruckCreationParams creationPars)
         {
-            return CreateTruck(creationPars);
+            return CreateBase(creationPars);
         }
 
-        public static EmptyGameResult Buy(TruckCreationParams creationPars, GameSettings gameSettings, Player invoker)
+        public static EmptyGameResult Buy(Company company, GameSettings gameSettings, Player invoker)
         {
-            var cp = creationPars;
             var prices = gameSettings.BusinessPrices.CompanyFeatures;
-            if (!invoker.HasPermission(CompanyJobPermissions.BuyTrucks, cp.TruckGarage.Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.BuyTrucks, company))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            var reduceResult = cp.TruckGarage.Company.ReduceBusinessCoins(prices.NewTruckSetup, gameSettings, invoker);
+            var reduceResult = company.ReduceBusinessCoins(prices.NewTruckSetup, gameSettings, invoker);
             if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
             return new EmptyGameResult();
         }
 
-        public EmptyGameResult SendTruck(CompanyContract contract, Player invoker)
+        public EmptyGameResult Send(CompanyContract contract, Player invoker)
         {
             if(!invoker.HasPermission(CompanyJobPermissions.SendTrucks, contract.OutcomeCompany))
             {
@@ -72,7 +73,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return new EmptyGameResult();
         }
 
-        public EmptyGameResult ReturnTruck()
+        public EmptyGameResult Return()
         {
             CurrentState = TruckState.ReadyToGo;
 
@@ -200,8 +201,13 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return DeliveringSpeedInSeconds;
         }
 
+        public GameResult<decimal> GetSpaceOccupiedByItemsForContract(CompanyContract contract)
+        {
+            return Trunk.Items.Where(sItem => sItem.Item == contract.ContractItem).Sum(sItem => sItem.Space);
+        }
 
-        private static GameResult<Truck> CreateTruck(TruckCreationParams creationPars)
+
+        private static GameResult<Truck> CreateBase(TruckCreationParams creationPars)
         {
             var cp = creationPars;
 

@@ -201,7 +201,7 @@ namespace EnterpriseBot.Api.Game.Storages
                 return itemQuantityLowerThan1Error;
             }
 
-            //if Items have the exact same item, so it is possible to simply remove it
+            //if Items have the exact same item, it is possible to simply remove it
             var existingStorageItem = items.FirstOrDefault(item => item == storageItem);
             if(existingStorageItem != null)
             {
@@ -215,7 +215,7 @@ namespace EnterpriseBot.Api.Game.Storages
             existingStorageItem = items.FirstOrDefault(item => item.Item == storageItem.Item);
             if (existingStorageItem is null)
             {
-                return 0; //nothing to remove
+                return 0; //nothing removed
             }
             else
             {
@@ -348,15 +348,18 @@ namespace EnterpriseBot.Api.Game.Storages
             return transferredQuantity;
         }
 
-        public GameResult<int> TransferEverythingTo(Storage storage)
-        {
-            return TransferTo(storage, items);
-        }
 
-        public GameResult<int> TransferEverythingTo(Storage storage, Item itemTypeToTransfer)
+        public GameResult<int> TransferEverythingTo(Storage storage, Item itemTypeToTransfer = null)
         {
-            var itemsToTransfer = items.Where(storageItem => storageItem.Item == itemTypeToTransfer).ToList();
-            return TransferTo(storage, itemsToTransfer);
+            if (itemTypeToTransfer != null)
+            {
+                var itemsToTransfer = items.Where(storageItem => storageItem.Item == itemTypeToTransfer).ToList();
+                return TransferTo(storage, itemsToTransfer);
+            }
+            else
+            {
+                return TransferTo(storage, items);
+            }
         }
 
         public GameResult<StorageItem> GetItem(Item item)

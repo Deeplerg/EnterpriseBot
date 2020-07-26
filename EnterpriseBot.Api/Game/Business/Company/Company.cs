@@ -28,6 +28,7 @@ using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Game.Localization;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using EnterpriseBot.Api.Models.ModelCreationParams.Reputation;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -187,7 +188,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return overallPrice;
         } 
 
-        public GameResult<CompanyStorage> GetCompanyStorageWithAvailableSpace(int space, CompanyStorageType storageType)
+        public GameResult<CompanyStorage> GetCompanyStorageWithAvailableSpace(decimal space, CompanyStorageType storageType)
         {
             bool hasStorage = HasCompanyStorageWithAvailableSpace(space, storageType);
 
@@ -204,7 +205,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             return Storages.First(s => s.AvailableSpace >= space && s.Type == storageType); // Or use FirstOrDefault instead of HasStorage to not waste database queries?
         }
 
-        public bool HasCompanyStorageWithAvailableSpace(int space, CompanyStorageType storageType)
+        public bool HasCompanyStorageWithAvailableSpace(decimal space, CompanyStorageType storageType)
         {
             return Storages.Any(s => s.AvailableSpace >= space && s.Type == storageType);
         }
@@ -328,6 +329,44 @@ namespace EnterpriseBot.Api.Game.Business.Company
             }
 
             return maxTime;
+        }
+
+        public GameResult<Review> WriteReview(Reputation.Reputation reputation, string text, sbyte rating, GameSettings gameSettings, Player invoker)
+        {
+            if(!invoker.HasPermission(CompanyJobPermissions.WriteReview, this))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+
+            return reputation.AddReview(new ReviewCreationParams
+            {
+                Reviewer = Reviewer.Company,
+                CompanyReviewer = this,
+                Text = text,
+                Rating = rating
+            }, gameSettings);
+        }
+
+        public GameResult<Review> EditReview(Review review, string newText, sbyte newRating, GameSettings gameSettings, Player invoker)
+        {
+            if(invoker.HasPermission(CompanyJobPermissions.EditReview, this))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+
+            if(review.CompanyReviewer != this)
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Critical,
+                    EnglishMessage = $"Reviewer of review {review.Id} is not Company {this.Id}",
+                    RussianMessage = $"Рецензент отзыва {review.Id} - не компания {this.Id}"
+                };
+            }
+
+            review.Edit(newText, newRating, gameSettings);
+
+            return review;
         }
 
 

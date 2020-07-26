@@ -91,28 +91,6 @@ namespace EnterpriseBot.Api.Game.Money
             return Transfer(from: this, to: purse, amount, currency);
         }
 
-        private static EmptyGameResult Transfer(Purse from, Purse to,
-                                                decimal amount, Currency currency)
-        {
-            var receivingPurseMoney = to.Money.Single(m => m.Currency == currency);
-            var givingPurseMoney = from.Money.Single(m => m.Currency == currency);
-
-            if (givingPurseMoney.Amount - amount < 0)
-            {
-                return new LocalizedError
-                {
-                    ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = "Not enough money to transfer",
-                    RussianMessage = "Недостаточно денег для перевода"
-                };
-            }
-
-            givingPurseMoney.Reduce(amount);
-            receivingPurseMoney.Add(amount);
-
-            return new EmptyGameResult();
-        }
-
         public decimal GetMoneyAmount(Currency currency)
         {
             return Money.Single(m => m.Currency == currency).Amount;
@@ -144,6 +122,29 @@ namespace EnterpriseBot.Api.Game.Money
 
             units.Reduce(overallPrice);
             bc.Add(amount);
+
+            return new EmptyGameResult();
+        }
+
+
+        private static EmptyGameResult Transfer(Purse from, Purse to,
+                                        decimal amount, Currency currency)
+        {
+            var receivingPurseMoney = to.Money.Single(m => m.Currency == currency);
+            var givingPurseMoney = from.Money.Single(m => m.Currency == currency);
+
+            if (givingPurseMoney.Amount - amount < 0)
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Normal,
+                    EnglishMessage = "Not enough money to transfer",
+                    RussianMessage = "Недостаточно денег для перевода"
+                };
+            }
+
+            givingPurseMoney.Reduce(amount);
+            receivingPurseMoney.Add(amount);
 
             return new EmptyGameResult();
         }

@@ -92,7 +92,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var ingredient = await ctx.Ingredients.FindAsync(d.modelId);
             if (ingredient == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return ingredient.SetQuantity(d.newQuantity);
+            var actionResult = ingredient.SetQuantity(d.newQuantity);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
     }
 }

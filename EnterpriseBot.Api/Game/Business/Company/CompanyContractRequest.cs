@@ -31,7 +31,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public int ContractItemQuantity { get; protected set; }
 
         public decimal ContractOverallCost { get; protected set; }
-        public sbyte TerminationTermInWeeks { get; protected set; }
+        public sbyte TerminationTermInDays { get; protected set; }
         #endregion
 
         #region actions
@@ -106,13 +106,13 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if (cp.TerminationTermInWeeks < 1)
+            if (cp.TerminationTermInDays < 1)
             {
                 return new LocalizedError
                 {
                     ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = "Contract term can't be under 1 week",
-                    RussianMessage = "Срок контракта не может быть меньше 1 недели"
+                    EnglishMessage = "Contract term can't be under 1 day",
+                    RussianMessage = "Срок контракта не может быть меньше 1 дня"
                 };
             }
 
@@ -138,7 +138,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 ContractItemQuantity = cp.ItemQuantity,
 
                 ContractOverallCost = cp.OverallCost,
-                TerminationTermInWeeks = cp.TerminationTermInWeeks
+                TerminationTermInDays = cp.TerminationTermInDays
             };
         }
         #endregion

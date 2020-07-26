@@ -12,7 +12,6 @@ using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
-using EnterpriseBot.ApiWrapper.Models.Common.Business;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Game.Essences;
 
@@ -33,20 +32,18 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public CompanyContractIssuer Issuer { get; protected set; }
 
         public DateTimeOffset ConclusionDate { get; protected set; }
-        public sbyte TerminationTermInWeeks { get; protected set; }
+        public sbyte TerminationTermInDays { get; protected set; }
 
         public virtual Item ContractItem { get; protected set; }
 
         public int DeliveredAmount { get; protected set; } //how many items are already delivered
-        public int ContractItemQuantity { get; protected set; } //items amount to be delivered every week
+        public int ContractItemQuantity { get; protected set; } //items amount to be delivered
         public decimal ContractOverallCost { get; protected set; }
 
         public bool IsCompleted { get => DeliveredAmount >= ContractItemQuantity; }
 
         [JsonIgnore]
         public string CompletionCheckerBackgroundJobId { get; set; }
-        [JsonIgnore]
-        public string BreakerBackgroundJobId { get; set; }
         #endregion
 
         #region actions
@@ -104,13 +101,13 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if (cp.TerminationTermInWeeks < 1)
+            if (cp.TerminationTermInDays < 1)
             {
                 return new LocalizedError
                 {
                     ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = "Contract term can't be under 1 week",
-                    RussianMessage = "Срок контракта не может быть меньше 1 недели"
+                    EnglishMessage = "Contract term can't be under 1 day",
+                    RussianMessage = "Срок контракта не может быть меньше 1 дня"
                 };
             }
 
@@ -122,8 +119,8 @@ namespace EnterpriseBot.Api.Game.Business.Company
                     EnglishMessage = "Income company does not have enough units to sign a contract"
                 };
             }
-            var reducingResult = cp.IncomeCompany.Purse.Reduce(cp.OverallCost, Currency.Units);
-            if (reducingResult.LocalizedError != null) return reducingResult.LocalizedError;
+            var reduceResult = cp.IncomeCompany.Purse.Reduce(cp.OverallCost, Currency.Units);
+            if (reduceResult.LocalizedError != null) return reduceResult.LocalizedError;
 
             return new CompanyContract
             {
@@ -141,7 +138,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 IncomeCompany = cp.IncomeCompany,
                 OutcomeCompany = cp.OutcomeCompany,
                 
-                TerminationTermInWeeks = cp.TerminationTermInWeeks
+                TerminationTermInDays = cp.TerminationTermInDays
             };
         }
 
@@ -191,7 +188,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 ItemQuantity = cReq.ContractItemQuantity,
 
                 OverallCost = cReq.ContractOverallCost,
-                TerminationTermInWeeks = cReq.TerminationTermInWeeks
+                TerminationTermInDays = cReq.TerminationTermInDays
             }, gameSettings);
         }
 

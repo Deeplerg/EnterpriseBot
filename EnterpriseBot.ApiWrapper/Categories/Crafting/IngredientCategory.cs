@@ -1,47 +1,60 @@
-using EnterpriseBot.ApiWrapper.Abstractions;
-using EnterpriseBot.ApiWrapper.Models.Common.Crafting;
-using EnterpriseBot.ApiWrapper.Models.ModelCreationParams.Crafting;
+﻿using EnterpriseBot.ApiWrapper.Abstractions;
+using EnterpriseBot.ApiWrapper.Models.CreationParams.Crafting;
+using EnterpriseBot.ApiWrapper.Models.Game.Crafting;
 using EnterpriseBot.ApiWrapper.Models.Other;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Crafting
 {
-    public class IngredientCategory : CraftingCategoryBase<Ingredient>,
-                                      ICreatableCategory<Ingredient, IngredientCreationParams>
+    public class IngredientCategory : CraftingCategoryBase<Ingredient,
+                                                           long,
+                                                           IngredientCreationParams>
     {
-        private static readonly string categoryName = "ingredient";
+        protected const string categoryName = "Ingredient";
 
         public IngredientCategory(IApiClient api) : base(api) { }
 
-        /// <inheritdoc/>
-        public override async Task<Ingredient> Get(object id)
+        public override async Task<Ingredient> Get(long id)
+        {
+            return await api.Call<Ingredient>(RequestInfo(nameof(Get)), IdParameter(id));
+        }
+
+        public override async Task<Ingredient> Create(IngredientCreationParams pars)
+        {
+            return await api.Call<Ingredient>(RequestInfo(nameof(Create)), pars);
+        }
+
+        public async Task<int> SetQuantity(long modelId, int newQuantity)
         {
             var pars = new
             {
-                id = id
+                modelId = modelId,
+                newQuantity = newQuantity
             };
 
-            var result = await api.Call<Ingredient>(new ApiRequestInfo
-            {
-                CategoryAreaName = categoryAreaName,
-                CategoryName = categoryName,
-                MethodName = nameof(Get).ToLower()
-            }, pars);
-
-            return result;
+            return await api.Call<int>(RequestInfo(nameof(SetQuantity)), pars);
         }
 
-        /// <inheritdoc/>
-        public async Task<Ingredient> Create(IngredientCreationParams pars)
+
+        private ApiRequestInfo RequestInfo(string methodName)
         {
-            var result = await api.Call<Ingredient>(new ApiRequestInfo
+            return new ApiRequestInfo
             {
                 CategoryAreaName = categoryAreaName,
                 CategoryName = categoryName,
-                MethodName = nameof(Create).ToLower()
-            }, pars);
+                MethodName = methodName
+            };
+        }
 
-            return result;
+        private object IdParameter(long id)
+        {
+            return new
+            {
+                id = id
+            };
         }
     }
 }

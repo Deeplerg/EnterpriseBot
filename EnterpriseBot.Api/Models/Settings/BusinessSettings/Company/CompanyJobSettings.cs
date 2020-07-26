@@ -3,6 +3,5 @@
     public class CompanyJobSettings
     {
         public decimal MinSalary { get; set; }
-        public ushort MaxRecipesPerProduction { get; set; }
     }
 }

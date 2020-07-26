@@ -1,66 +1,76 @@
-using EnterpriseBot.ApiWrapper.Abstractions;
-using EnterpriseBot.ApiWrapper.Models.Common.Crafting;
-using EnterpriseBot.ApiWrapper.Models.ModelCreationParams.Crafting;
+﻿using EnterpriseBot.ApiWrapper.Abstractions;
+using EnterpriseBot.ApiWrapper.Models.CreationParams.Crafting;
+using EnterpriseBot.ApiWrapper.Models.Enums;
+using EnterpriseBot.ApiWrapper.Models.Game.Crafting;
+using EnterpriseBot.ApiWrapper.Models.Game.Localization;
 using EnterpriseBot.ApiWrapper.Models.Other;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Crafting
 {
-    public class CraftingCategoryCategory : CraftingCategoryBase<CraftingCategory>,
-                                            ICreatableCategory<CraftingCategory, CraftingCategoryCreationParams>
+    public class CraftingCategoryCategory : CraftingCategoryBase<CraftingCategory, 
+                                                                 long, 
+                                                                 CraftingCategoryCreationParams>
     {
-        private static readonly string categoryName = "craftingcategory";
+        protected const string categoryName = "CraftingCategory";
 
         public CraftingCategoryCategory(IApiClient api) : base(api) { }
 
-        /// <inheritdoc/>
-        public override async Task<CraftingCategory> Get(object id)
+
+        public override async Task<CraftingCategory> Get(long id)
+        {
+            return await api.Call<CraftingCategory>(RequestInfo(nameof(Get)), IdParameter(id));
+        }
+
+        public override async Task<CraftingCategory> Create(CraftingCategoryCreationParams pars)
+        {
+            return await api.Call<CraftingCategory>(RequestInfo(nameof(Create)), pars);
+        }
+
+        public async Task<StringLocalization> EditName(long modelId, string newName, LocalizationLanguage language)
         {
             var pars = new
             {
-                id = id
+                modelId = modelId,
+                newName = newName,
+                language = language
             };
 
-            var result = await api.Call<CraftingCategory>(new ApiRequestInfo
-            {
-                CategoryAreaName = categoryAreaName,
-                CategoryName = categoryName,
-                MethodName = nameof(Get).ToLower()
-            }, pars);
-
-            return result;
+            return await api.Call<StringLocalization>(RequestInfo(nameof(EditName)), pars);
         }
 
-        /// <inheritdoc/>
-        public async Task<CraftingCategory> Create(CraftingCategoryCreationParams pars)
+        public async Task<StringLocalization> EditDescription(long modelId, string newDescription, LocalizationLanguage language)
         {
-            var result = await api.Call<CraftingCategory>(new ApiRequestInfo
+            var pars = new
             {
-                CategoryAreaName = categoryAreaName,
-                CategoryName = categoryName,
-                MethodName = nameof(Create).ToLower()
-            }, pars);
+                modelId = modelId,
+                newDescription = newDescription,
+                language = language
+            };
 
-            return result;
+            return await api.Call<StringLocalization>(RequestInfo(nameof(EditDescription)), pars);
         }
 
-        /// <summary>
-        /// Returns all crafting categories
-        /// </summary>
-        /// <returns>All crafting categories</returns>
-        public async Task<List<CraftingCategory>> GetAll()
-        {
-            var pars = new { };
 
-            var result = await api.Call<List<CraftingCategory>>(new ApiRequestInfo
+        private ApiRequestInfo RequestInfo(string methodName)
+        {
+            return new ApiRequestInfo
             {
                 CategoryAreaName = categoryAreaName,
                 CategoryName = categoryName,
-                MethodName = nameof(GetAll).ToLower()
-            }, pars);
+                MethodName = methodName
+            };
+        }
 
-            return result;
+        private object IdParameter(long id)
+        {
+            return new
+            {
+                id = id
+            };
         }
     }
 }

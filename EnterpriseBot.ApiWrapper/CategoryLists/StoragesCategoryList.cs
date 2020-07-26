@@ -1,17 +1,20 @@
-using EnterpriseBot.ApiWrapper.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using EnterpriseBot.ApiWrapper.Categories.Storages;
 
 namespace EnterpriseBot.ApiWrapper.CategoryLists
 {
-    public class StoragesCategoryList : ICategoryList
+    public class StoragesCategoryList
     {
-        public IncomeStorageCategory IncomeStorage { get; set; }
-        public OutcomeStorageCategory OutcomeStorage { get; set; }
-        public WorkerStorageCategory WorkerStorage { get; set; }
+        internal StoragesCategoryList() { }
 
-        public TrunkStorageCategory TrunkStorage { get; set; }
-        public ShowcaseStorageCategory ShowcaseStorage { get; set; }
-
-        public PersonalStorageCategory PersonalStorage { get; set; }
+        public CompanyStorageCategory CompanyStorage { get; internal set; }
+        public InventoryStorageCategory InventoryStorage { get; internal set; }
+        public ItemPriceCategory ItemPrice { get; internal set; }
+        public ShowcaseStorageCategory ShowcaseStorage { get; internal set; }
+        public StorageCategory Storage { get; internal set; }
+        public StorageItemCategory StorageItem { get; internal set; }
+        public TrunkStorageCategory TrunkStorage { get; internal set; }
     }
 }

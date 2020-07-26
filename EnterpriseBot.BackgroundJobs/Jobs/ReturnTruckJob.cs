@@ -16,7 +16,9 @@ namespace EnterpriseBot.BackgroundJobs.Jobs
 
         public async Task Execute(ReturnTruckJobParams pars)
         {
-            await api.Business.Company.ReturnTruck(pars.TruckId);
+#pragma warning disable CS0618 // Type or member is obsolete
+            await api.Business.Company.Truck.Return(pars.TruckId);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

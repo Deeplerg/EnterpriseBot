@@ -55,8 +55,7 @@
         "DefaultBusinessCoins": 0,
 
         "Job": {
-          "MinSalary": 250000,
-          "MaxRecipesPerProduction": 10
+          "MinSalary": 50000
         },
 
         "Truck": {
@@ -71,8 +70,7 @@
 
         "Worker": {
           "MaxMultiplier": 0.1,
-          "DefaultMultiplier": 1,
-          "MaxRecipesPerProduction": 3
+          "DefaultMultiplier": 1
         },
 
         "Contract": {

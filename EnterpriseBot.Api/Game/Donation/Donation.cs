@@ -4,7 +4,6 @@ using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Utils;
-using EnterpriseBot.ApiWrapper.Models.Common.Business;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -28,7 +27,6 @@ namespace EnterpriseBot.Api.Game.Donation
             get => new ReadOnlyCollection<DonationPurchase>(history);
             protected set => history = value.ToList();
         }
-
         private List<DonationPurchase> history = new List<DonationPurchase>();
 
         public virtual Player Player { get; protected set; }

@@ -46,13 +46,13 @@ namespace EnterpriseBot.Api.Game.Essences
             get => new ReadOnlyCollection<CompanyJob>(companyJobs);
             protected set => companyJobs = value.ToList();
         }
+        private List<CompanyJob> companyJobs = new List<CompanyJob>();
+
         public virtual IReadOnlyCollection<Company> OwnedCompanies 
         {
             get => new ReadOnlyCollection<Company>(ownedCompanies);
             protected set => ownedCompanies = value.ToList();
         }
-
-        private List<CompanyJob> companyJobs = new List<CompanyJob>();
         private List<Company> ownedCompanies = new List<Company>();
 
         public virtual Donation.Donation Donation { get; protected set; }
@@ -160,15 +160,14 @@ namespace EnterpriseBot.Api.Game.Essences
             var job = CompanyJobs.SingleOrDefault(j => j.Company == company);
             if (job is null) return company.Owner == this;
 
-            return job.Permissions.HasFlag(permission);
+            return job.Permissions.HasFlag(permission) || job.Permissions.HasFlag(CompanyJobPermissions.GeneralManager);
         }
 
-        public GameResult<string> SetName(string newName,
-            UserInputRequirements req)
+        public GameResult<string> SetName(string newName, GameSettings gameSettings)
         {
             if(!CheckName(newName))
             {
-                return Errors.IncorrectNameInput(req);
+                return Errors.IncorrectNameInput(gameSettings.Localization.UserInputRequirements);
             }
 
             Name = newName;

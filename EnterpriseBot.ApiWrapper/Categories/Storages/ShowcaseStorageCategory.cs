@@ -1,99 +1,159 @@
-using EnterpriseBot.ApiWrapper.Abstractions;
-using EnterpriseBot.ApiWrapper.Models.Common.Storages;
+﻿using EnterpriseBot.ApiWrapper.Abstractions;
+using EnterpriseBot.ApiWrapper.Models.Game.Storages;
 using EnterpriseBot.ApiWrapper.Models.Other;
+using EnterpriseBot.ApiWrapper.Models.CreationParams.Storages;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Storages
 {
-    public class ShowcaseStorageCategory : StoragesCategoryBase<ShowcaseStorage>
+    public class ShowcaseStorageCategory : StoragesCategoryBase<ShowcaseStorage,
+                                                                long,
+                                                                ShowcaseStorageCreationParams>
     {
-        private static readonly string categoryName = "showcasestorage";
+        protected const string categoryName = "ShowcaseStorage";
 
-        public ShowcaseStorageCategory(IApiClient api) : base(api) { }
+        public ShowcaseStorageCategory(IApiClient apiClient) : base(apiClient) { }
 
-        /// <inheritdoc/>
-        public override async Task<ShowcaseStorage> Get(object id)
+        public override async Task<ShowcaseStorage> Get(long id)
         {
-            var pars = new
+            return await api.Call<ShowcaseStorage>(RequestInfo(nameof(Get)), IdParameter(id));
+        }
+
+        public override async Task<ShowcaseStorage> Create(ShowcaseStorageCreationParams pars)
+        {
+            return await api.Call<ShowcaseStorage>(RequestInfo(nameof(Create)), pars);
+        }
+
+
+        public async Task<ItemPrice> AddPrice(long modelId, long itemId, decimal price, long invokerPlayerId)
+        {
+            return await api.Call<ItemPrice>(RequestInfo(nameof(AddPrice)), new
+            {
+                modelId = modelId,
+                itemId = itemId,
+                price = price,
+                invokerId = invokerPlayerId
+            });
+        }
+
+        public async Task<ItemPrice> SetPrice(long modelId, long itemId, decimal price, long invokerPlayerId)
+        {
+            return await api.Call<ItemPrice>(RequestInfo(nameof(SetPrice)), new
+            {
+                modelId = modelId,
+                itemId = itemId,
+                price = price,
+                invokerId = invokerPlayerId
+            });
+        }
+
+        public async Task<ItemPrice> GetPrice(long modelId, long itemId)
+        {
+            return await api.Call<ItemPrice>(RequestInfo(nameof(GetPrice)), new
+            {
+                modelId = modelId,
+                itemId = itemId
+            });
+        }
+
+        public async Task<bool> IsPriceDefinedForItem(long modelId, long itemId)
+        {
+            return await api.Call<bool>(RequestInfo(nameof(IsPriceDefinedForItem)), new
+            {
+                modelId = modelId,
+                itemId = itemId
+            });
+        }
+
+        public async Task<int> BuyItem(long modelId, long itemId, int quantity, long buyerId)
+        {
+            return await api.Call<int>(RequestInfo(nameof(BuyItem)), new
+            {
+                modelId = modelId,
+                itemId = itemId,
+                quantity = quantity,
+                buyerId = buyerId
+            });
+        }
+
+        public async Task<decimal> UpgradeCapacity(long modelId)
+        {
+            return await UpgradeCapacity(modelId, invokerId: null);
+        }
+
+        public async Task<decimal> UpgradeCapacity(long modelId, long invokerPlayerId)
+        {
+            return await UpgradeCapacity(modelId, invokerId: invokerPlayerId);
+        }
+
+        private async Task<decimal> UpgradeCapacity(long modelId, long? invokerId)
+        {
+            return await api.Call<decimal>(RequestInfo(nameof(UpgradeCapacity)), new
+            {
+                modelId = modelId,
+                invokerId = invokerId
+            });
+        }
+
+        public async Task<bool> HasPermissionToManage(long modelId, long invokerPlayerId)
+        {
+            return await api.Call<bool>(RequestInfo(nameof(HasPermissionToManage)), new
+            {
+                modelId = modelId,
+                invokerId = invokerPlayerId
+            });
+        }
+
+        public async Task<bool> HasPermissionToManagePrices(long modelId, long invokerPlayerId)
+        {
+            return await api.Call<bool>(RequestInfo(nameof(HasPermissionToManagePrices)), new
+            {
+                modelId = modelId,
+                invokerId = invokerPlayerId
+            });
+        }
+
+        public async Task<bool> ReturnErrorIfDoesNotHavePermissionToManage(long modelId, long invokerPlayerId)
+        {
+            return await api.Call<bool>(RequestInfo(nameof(ReturnErrorIfDoesNotHavePermissionToManage)), new
+            {
+                modelId = modelId,
+                invokerId = invokerPlayerId
+            });
+        }
+
+        public async Task<bool> ReturnErrorIfDoesNotHavePermissionToManagePrices(long modelId, long invokerPlayerId)
+        {
+            return await api.Call<bool>(RequestInfo(nameof(ReturnErrorIfDoesNotHavePermissionToManagePrices)), new
+            {
+                modelId = modelId,
+                invokerId = invokerPlayerId
+            });
+        }
+
+
+
+        private ApiRequestInfo RequestInfo(string methodName)
+        {
+            return new ApiRequestInfo
+            {
+                CategoryAreaName = categoryAreaName,
+                CategoryName = categoryName,
+                MethodName = methodName
+            };
+        }
+
+        private object IdParameter(long id)
+        {
+            return new
             {
                 id = id
             };
-
-            var result = await api.Call<ShowcaseStorage>(new ApiRequestInfo
-            {
-                CategoryAreaName = categoryAreaName,
-                CategoryName = categoryName,
-                MethodName = nameof(Get).ToLower()
-            }, pars);
-
-            return result;
-        }
-
-        ///// <inheritdoc/>
-        //public override async Task<ShowcaseStorage> Create(ShowcaseStorageCreationParams pars)
-        //{
-        //    var result = await api.Call<ShowcaseStorage>(new ApiRequestInfo
-        //    {
-        //        CategoryAreaName = categoryAreaName,
-        //        CategoryName = categoryName,
-        //        MethodName = nameof(Create).ToLower()
-        //    }, pars);
-
-        //    return result;
-        //}
-
-        /// <summary>
-        /// Adds an item to a storage
-        /// </summary>
-        /// <param name="showcaseStorageId">Id of showcase storage to which to add the item</param>
-        /// <param name="itemId">Item id</param>
-        /// <param name="quantity">Item quantity</param>
-        /// <param name="price">Item price (for each one)</param>
-        /// <returns>Storage items</returns>
-        public async Task<List<StorageItemWithPrice>> AddItem(long showcaseStorageId, long itemId, int quantity, decimal price)
-        {
-            var pars = new
-            {
-                showcaseStorageId = showcaseStorageId,
-                itemId = itemId,
-                quantity = quantity,
-                price = price
-            };
-
-            var result = await api.Call<List<StorageItemWithPrice>>(new ApiRequestInfo
-            {
-                CategoryAreaName = categoryAreaName,
-                CategoryName = categoryName,
-                MethodName = nameof(AddItem).ToLower()
-            }, pars);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Removes an item from a storage
-        /// </summary>
-        /// <param name="showcaseStorageId">Id of showcase storage from which to remove an item</param>
-        /// <param name="storageItemWithPriceId">Id of <see cref="StorageItemWithPrice"/> which to remove</param>
-        /// <returns>Storage items</returns>
-        public async Task<List<StorageItemWithPrice>> RemoveItem(long showcaseStorageId, long storageItemWithPriceId, int quantity)
-        {
-            var pars = new
-            {
-                showcaseStorageId = showcaseStorageId,
-                storageItemWithPriceId = storageItemWithPriceId,
-                quantity = quantity
-            };
-
-            var result = await api.Call<List<StorageItemWithPrice>>(new ApiRequestInfo
-            {
-                CategoryAreaName = categoryAreaName,
-                CategoryName = categoryName,
-                MethodName = nameof(RemoveItem).ToLower()
-            }, pars);
-
-            return result;
         }
     }
 }

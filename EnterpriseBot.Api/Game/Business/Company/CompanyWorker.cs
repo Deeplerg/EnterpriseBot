@@ -30,14 +30,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public bool IsWorkingNow { get; protected set; }
 
-        public int ItemsAmountMadeThisWeek { get; protected set; }
-
         public decimal SpeedMultiplier { get; protected set; }
 
         [JsonIgnore]
-        public string ProduceItemJobId { get; set; }
-        [JsonIgnore]
-        public string StopWorkingJobId { get; set; }
+        public string ProduceItemAndStopJobId { get; set; }
 
         public int LeadTimeInSeconds 
         {
@@ -53,9 +49,9 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             var worker = workerCreationResult.Result;
 
-            if (pars.Storage != null)
+            if (pars.CompanyStorage != null)
             {
-                var workingStorageSetResult = worker.SetWorkingStorage(pars.Storage);
+                var workingStorageSetResult = worker.SetWorkingStorage(pars.CompanyStorage);
                 if (workingStorageSetResult.LocalizedError != null) return workingStorageSetResult.LocalizedError;
             }
 
@@ -143,8 +139,6 @@ namespace EnterpriseBot.Api.Game.Business.Company
             var additionResult = WorkingStorage.Add(Recipe.ResultItem, Recipe.ResultItemQuantity);
             if (additionResult.LocalizedError != null) return additionResult.LocalizedError;
 
-            ItemsAmountMadeThisWeek += Recipe.ResultItemQuantity;
-
             return new EmptyGameResult();
         }
 
@@ -157,6 +151,16 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult SetWorkingStorage(CompanyStorage storage)
         {
+            if (IsWorkingNow)
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Normal,
+                    EnglishMessage = "Cannot set the storage, as the work is currently being done",
+                    RussianMessage = "Нельзя изменить хранилище, так как в настоящее время идет работа"
+                };
+            }
+
             if (storage.Type != CompanyStorageType.General)
             {
                 return new LocalizedError
@@ -179,19 +183,12 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 return new LocalizedError
                 {
                     ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = "Cannot set recipe, as the work is currently being done",
+                    EnglishMessage = "Cannot set the recipe, as the work is currently being done",
                     RussianMessage = "Нельзя изменить рецепт, так как в настоящее время идет работа"
                 };
             }
 
             Recipe = recipe;
-
-            return new EmptyGameResult();
-        }
-
-        public EmptyGameResult ResetItemsAmountMadeThisWeek()
-        {
-            ItemsAmountMadeThisWeek = 0;
 
             return new EmptyGameResult();
         }
@@ -233,7 +230,6 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
                 SpeedMultiplier = gameSettings.Business.Company.Worker.DefaultMultiplier,
 
-                ItemsAmountMadeThisWeek = 0,
                 IsWorkingNow = false
             };
 

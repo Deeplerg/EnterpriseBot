@@ -1,11 +1,14 @@
-using EnterpriseBot.ApiWrapper.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using EnterpriseBot.ApiWrapper.Categories.Essences;
 
 namespace EnterpriseBot.ApiWrapper.CategoryLists
 {
-    public class EssencesCategoryList : ICategoryList
+    public class EssencesCategoryList
     {
-        public PlayerCategory Player { get; set; }
-        public BotCategory Bot { get; set; }
+        internal EssencesCategoryList() { }
+
+        public PlayerCategory Player { get; internal set; }
     }
 }

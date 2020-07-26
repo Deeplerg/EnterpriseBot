@@ -47,7 +47,7 @@ namespace EnterpriseBot.Api.Game.Localization
             return localizedString;
         }
 
-        public GameResult<IEnumerable<StringLocalization>> Add(StringLocalizationCreationParams localizationParams)
+        public GameResult<StringLocalization> AddLocalization(StringLocalizationCreationParams localizationParams)
         {
             if(localizations.Any(loc => loc.Language == localizationParams.Language))
             {
@@ -66,7 +66,7 @@ namespace EnterpriseBot.Api.Game.Localization
 
             localizations.Add(stringLocalization);
 
-            return localizations;
+            return stringLocalization;
         }
 
         public GameResult<StringLocalization> Edit(string newText, LocalizationLanguage language)

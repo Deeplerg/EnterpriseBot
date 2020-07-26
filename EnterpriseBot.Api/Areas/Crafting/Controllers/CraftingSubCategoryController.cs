@@ -109,7 +109,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var craftingSubCategory = await ctx.CraftingSubCategories.FindAsync(d.modelId);
             if (craftingSubCategory == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return craftingSubCategory.EditName(d.newName, d.language, gameSettings);
+            var actionResult = craftingSubCategory.EditName(d.newName, d.language, gameSettings);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
 
         public async Task<GameResult<StringLocalization>> EditDescription([FromBody] string json)
@@ -126,7 +131,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var craftingSubCategory = await ctx.CraftingSubCategories.FindAsync(d.modelId);
             if (craftingSubCategory == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return craftingSubCategory.EditDescription(d.newDescription, d.language, gameSettings);
+            var actionResult = craftingSubCategory.EditDescription(d.newDescription, d.language, gameSettings);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
 
         public async Task<GameResult<CraftingCategory>> SetCategory([FromBody] string json)
@@ -145,7 +155,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var newCraftingCategory = await ctx.CraftingCategories.FindAsync(d.newCraftingCategoryId);
             if (newCraftingCategory == null) return Errors.DoesNotExist(d.newCraftingCategoryId, localization.Crafting.CraftingCategory);
 
-            return craftingSubCategory.SetCategory(newCraftingCategory);
+            var actionResult = craftingSubCategory.SetCategory(newCraftingCategory);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
     }
 }

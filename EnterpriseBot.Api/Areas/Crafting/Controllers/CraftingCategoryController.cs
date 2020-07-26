@@ -105,7 +105,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var craftingCategory = await ctx.CraftingCategories.FindAsync(d.modelId);
             if (craftingCategory == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return craftingCategory.EditName(d.newName, d.language, gameSettings);
+            var actionResult = craftingCategory.EditName(d.newName, d.language, gameSettings);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
 
         public async Task<GameResult<StringLocalization>> EditDescription([FromBody] string json)
@@ -122,7 +127,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var craftingCategory = await ctx.CraftingCategories.FindAsync(d.modelId);
             if (craftingCategory == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return craftingCategory.EditDescription(d.newDescription, d.language, gameSettings);
+            var actionResult = craftingCategory.EditDescription(d.newDescription, d.language, gameSettings);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
     }
 }

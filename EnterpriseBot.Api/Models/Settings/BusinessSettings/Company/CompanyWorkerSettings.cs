@@ -9,6 +9,5 @@ namespace EnterpriseBot.Api.Models.Settings.BusinessSettings.Company
     {
         public decimal MaxMultiplier { get; set; }
         public decimal DefaultMultiplier { get; set; }
-        public uint MaxRecipesPerProduction { get; set; }
     }
 }

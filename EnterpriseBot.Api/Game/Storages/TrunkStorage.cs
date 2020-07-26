@@ -10,9 +10,11 @@ using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Utils;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace EnterpriseBot.Api.Game.Storages
 {
+    // Trying to "simulate" inheritance while TPT is not yet supported in EF Core
     public class TrunkStorage
     {
         protected TrunkStorage() { }
@@ -27,7 +29,9 @@ namespace EnterpriseBot.Api.Game.Storages
         public decimal OccupiedSpace { get => Storage.OccupiedSpace; }
         public IReadOnlyCollection<StorageItem> Items { get => Storage.Items; }
 
+        [JsonIgnore]
         protected virtual Storage Storage { get; set; }
+        public long StorageId { get; protected set; }
 
         #region errors
         #endregion
@@ -203,16 +207,26 @@ namespace EnterpriseBot.Api.Game.Storages
             return Capacity;
         }
 
-        private bool HasPermissionToManage(Player invoker)
+        public EmptyGameResult ReturnErrorIfDoesNotHavePermissionToManage(Player invoker)
+        {
+            if (!HasPermissionToManage(invoker))
+            {
+                return Errors.DoesNotHavePermission();
+            }
+            else
+            {
+                return new EmptyGameResult();
+            }
+        }
+
+        public bool HasPermissionToManage(Player invoker)
         {
             return HasPermission(CompanyJobPermissions.ManageTrunkStorages, invoker);
         }
 
+
         private bool HasPermission(CompanyJobPermissions permission, Player invoker)
         {
-            if (invoker == null)
-                return true;
-
             return invoker.HasPermission(permission, OwningTruck.TruckGarage.Company);
         }
 

@@ -95,7 +95,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var item = await ctx.Items.FindAsync(d.modelId);
             if (item == null) return Errors.DoesNotExist(d.modelId, localization.Crafting.Item);
 
-            return item.EditName(d.newName, d.language, gameSettings);
+            var actionResult = item.EditName(d.newName, d.language, gameSettings);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
 
         public async Task<GameResult<decimal>> SetSpace([FromBody] string json)
@@ -111,7 +116,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var item = await ctx.Items.FindAsync(d.modelId);
             if(item == null) return Errors.DoesNotExist(d.modelId, localization.Crafting.Item);
 
-            return item.SetSpace(d.newSpace);
+            var actionResult = item.SetSpace(d.newSpace);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
 
         public async Task<GameResult<CraftingSubCategory>> SetCategory([FromBody] string json)
@@ -130,7 +140,12 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var newCategory = await ctx.CraftingSubCategories.FindAsync(d.newCraftingSubCategoryId);
             if (newCategory == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
-            return item.SetCategory(newCategory);
+            var actionResult = item.SetCategory(newCategory);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
         }
     }
 }

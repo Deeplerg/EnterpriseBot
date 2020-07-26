@@ -2,6 +2,7 @@ using EnterpriseBot.Api.Game.Business.Company;
 using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.ModelCreationParams.Reputation;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -39,6 +40,18 @@ namespace EnterpriseBot.Api.Game.Reputation
             return new Reputation
             {
             };
+        }
+
+        public GameResult<Review> AddReview(ReviewCreationParams pars, GameSettings gameSettings)
+        {
+            var creationResult = Review.Create(pars, gameSettings);
+            if (creationResult.LocalizedError != null) return creationResult.LocalizedError;
+
+            Review review = creationResult;
+
+            reviews.Add(review);
+
+            return review;
         }
         #endregion
     }

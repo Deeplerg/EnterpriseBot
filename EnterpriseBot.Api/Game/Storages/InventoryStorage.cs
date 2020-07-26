@@ -6,6 +6,7 @@ using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Storages
 {
+    // Trying to "simulate" inheritance while TPT is not yet supported in EF Core
     public class InventoryStorage
     {
         protected InventoryStorage() { }
@@ -28,7 +30,9 @@ namespace EnterpriseBot.Api.Game.Storages
         public decimal OccupiedSpace { get => Storage.OccupiedSpace; }
         public IReadOnlyCollection<StorageItem> Items { get => Storage.Items; }
 
+        [JsonIgnore]
         protected virtual Storage Storage { get; set; }
+        public long StorageId { get; protected set; }
 
         #region errors
         #endregion

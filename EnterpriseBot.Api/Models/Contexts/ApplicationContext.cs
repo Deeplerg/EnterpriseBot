@@ -7,7 +7,6 @@ using EnterpriseBot.Api.Game.Money;
 using EnterpriseBot.Api.Game.Reputation;
 using EnterpriseBot.Api.Game.Storages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Reflection;
 
 namespace EnterpriseBot.Api.Models.Contexts
@@ -242,11 +241,11 @@ namespace EnterpriseBot.Api.Models.Contexts
 
                 b.Ignore(m => m.IsWorkingNow);
 
-                b.Ignore(m => m.ItemsAmountMadeThisWeek);
+                b.Ignore(m => m.ProduceItemAndStopJobId);
 
-                b.Ignore(m => m.ProduceItemJobId);
+                b.Ignore(m => m.PaySalaryJobId);
 
-                b.Ignore(m => m.StopWorkingJobId);
+                b.Ignore(m => m.CompanyWorkerId);
             });
 
             builder.Entity<CompanyJobApplication>(b =>
@@ -312,9 +311,9 @@ namespace EnterpriseBot.Api.Models.Contexts
 
                 b.Ignore(m => m.IsWorkingNow);
 
-                b.Ignore(m => m.ItemsAmountMadeThisWeek);
-
                 b.Ignore(m => m.SpeedMultiplier);
+
+                b.Ignore(m => m.CompanyWorkerId);
             });
 
             builder.Entity<Truck>(b =>
@@ -548,6 +547,21 @@ namespace EnterpriseBot.Api.Models.Contexts
 
                 b.Ignore(m => m.Rating);
             });
+
+            builder.Entity<Review>(b =>
+            {
+                b.HasKey(m => m.Id);
+
+                b.HasOne(m => m.CompanyReviewer)
+                 .WithMany()
+                 .HasForeignKey($"{nameof(Review.CompanyReviewer)}Id")
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasOne(m => m.PlayerReviewer)
+                 .WithMany()
+                 .HasForeignKey($"{nameof(Review.PlayerReviewer)}Id")
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
             #endregion
 
             #region storages
@@ -564,7 +578,7 @@ namespace EnterpriseBot.Api.Models.Contexts
 
                 b.HasOne(typeof(Storage), storagePropertyName)
                  .WithOne()
-                 .HasForeignKey(typeof(CompanyStorage), storagePropertyName + "Id")
+                 .HasForeignKey(typeof(CompanyStorage), nameof(CompanyStorage.StorageId))
                  .OnDelete(DeleteBehavior.Cascade);
 
                 b.Ignore(m => m.Capacity);
@@ -589,7 +603,7 @@ namespace EnterpriseBot.Api.Models.Contexts
 
                 b.HasOne(typeof(Storage), storagePropertyName)
                  .WithOne()
-                 .HasForeignKey(typeof(InventoryStorage), storagePropertyName + "Id")
+                 .HasForeignKey(typeof(InventoryStorage), nameof(InventoryStorage.StorageId))
                  .OnDelete(DeleteBehavior.Cascade);
 
                 b.Ignore(m => m.Capacity);
@@ -637,7 +651,7 @@ namespace EnterpriseBot.Api.Models.Contexts
 
                 b.HasOne(typeof(Storage), storagePropertyName)
                  .WithOne()
-                 .HasForeignKey(typeof(ShowcaseStorage), storagePropertyName + "Id")
+                 .HasForeignKey(typeof(ShowcaseStorage), nameof(ShowcaseStorage.StorageId))
                  .OnDelete(DeleteBehavior.Cascade);
 
                 b.Ignore(m => m.Capacity);
@@ -691,7 +705,7 @@ namespace EnterpriseBot.Api.Models.Contexts
 
                 b.HasOne(typeof(Storage), storagePropertyName)
                  .WithOne()
-                 .HasForeignKey(typeof(TrunkStorage), storagePropertyName + "Id")
+                 .HasForeignKey(typeof(TrunkStorage), nameof(TrunkStorage.StorageId))
                  .OnDelete(DeleteBehavior.Cascade);
 
                 b.Ignore(m => m.Capacity);

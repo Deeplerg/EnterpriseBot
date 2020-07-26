@@ -1,17 +1,11 @@
-﻿using EnterpriseBot.Api.Game.Storages;
+﻿using EnterpriseBot.Api.Game.Crafting;
+using EnterpriseBot.Api.Game.Storages;
+using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.Other;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EnterpriseBot.Api.Models.Common.Enums;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
-using Hangfire.Server;
-using EnterpriseBot.Api.Game.Crafting;
-using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 using EnterpriseBot.Api.Models.Settings;
+using Newtonsoft.Json;
+using System;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -35,7 +29,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         [JsonIgnore]
         public string ProduceItemAndStopJobId { get; set; }
 
-        public int LeadTimeInSeconds 
+        public int LeadTimeInSeconds
         {
             get => (int)Math.Floor(Recipe.LeadTimeInSeconds / SpeedMultiplier);
         }
@@ -66,7 +60,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult StartWorking()
         {
-            if(IsWorkingNow)
+            if (IsWorkingNow)
             {
                 return new LocalizedError
                 {
@@ -195,7 +189,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult UpgradeSpeedMultiplier(decimal step, GameSettings gameSettings)
         {
-            if(SpeedMultiplier - step >= gameSettings.Business.Company.Worker.MaxMultiplier)
+            if (SpeedMultiplier - step >= gameSettings.Business.Company.Worker.MaxMultiplier)
             {
                 return new LocalizedError
                 {

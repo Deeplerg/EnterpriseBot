@@ -1,24 +1,10 @@
-﻿using EnterpriseBot.Api.Game.Business.Company;
-using EnterpriseBot.Api.Game.Crafting;
-using EnterpriseBot.Api.Game.Essences;
-using EnterpriseBot.Api.Game.Money;
-using EnterpriseBot.Api.Models.Common.Enums;
-using EnterpriseBot.Api.Models.ModelCreationParams.Crafting;
+﻿using EnterpriseBot.Api.Game.Crafting;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
-using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings.Company;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
-using EnterpriseBot.Api.Models.Settings.GameplaySettings;
-using EnterpriseBot.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Storages
 {
@@ -31,7 +17,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public decimal Capacity { get; protected set; }
 
-        public virtual IReadOnlyCollection<StorageItem> Items 
+        public virtual IReadOnlyCollection<StorageItem> Items
         {
             get => new ReadOnlyCollection<StorageItem>(items);
             protected set => items = value.ToList();
@@ -59,7 +45,7 @@ namespace EnterpriseBot.Api.Game.Storages
         #region actions
         public static GameResult<Storage> Create(StorageCreationParams pars)
         {
-            if(pars.Capacity <= 0)
+            if (pars.Capacity <= 0)
             {
                 return new LocalizedError
                 {
@@ -91,7 +77,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public GameResult<int> Add(StorageItem storageItem)
         {
-            if(storageItem.Quantity < 1)
+            if (storageItem.Quantity < 1)
             {
                 return itemQuantityLowerThan1Error;
             }
@@ -107,7 +93,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
             var existingStorageItem = items.FirstOrDefault(item => item.Item == storageItem.Item);
 
-            if(existingStorageItem is null)
+            if (existingStorageItem is null)
             {
                 if (AvailableSpace >= storageItem.Space)
                 {
@@ -168,7 +154,7 @@ namespace EnterpriseBot.Api.Game.Storages
         {
             int addedQuantity = 0;
 
-            foreach(var item in storageItems)
+            foreach (var item in storageItems)
             {
                 var addResult = Add(item);
                 if (addResult.LocalizedError != null) return addResult.LocalizedError;
@@ -203,7 +189,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
             //if Items have the exact same item, it is possible to simply remove it
             var existingStorageItem = items.FirstOrDefault(item => item == storageItem);
-            if(existingStorageItem != null)
+            if (existingStorageItem != null)
             {
                 int removeQuantity = existingStorageItem.Quantity;
                 items.Remove(existingStorageItem);
@@ -237,7 +223,7 @@ namespace EnterpriseBot.Api.Game.Storages
         {
             int removedQuantity = 0;
 
-            foreach(var ingredient in ingredients)
+            foreach (var ingredient in ingredients)
             {
                 var containResult = Contains(ingredient.Item, ingredient.Quantity);
 
@@ -303,8 +289,8 @@ namespace EnterpriseBot.Api.Game.Storages
         }
 
         public GameResult<int> TransferTo(Storage storage, StorageItem storageItem)
-        { 
-            if(this == storage)
+        {
+            if (this == storage)
             {
                 return new LocalizedError
                 {
@@ -327,9 +313,9 @@ namespace EnterpriseBot.Api.Game.Storages
         {
             int transferredQuantity = 0;
 
-            foreach(var item in items)
+            foreach (var item in items)
             {
-                if(!Items.Contains(item) || !Items.Any(storageItem => storageItem.Item == item.Item))
+                if (!Items.Contains(item) || !Items.Any(storageItem => storageItem.Item == item.Item))
                 {
                     return new LocalizedError
                     {
@@ -365,7 +351,7 @@ namespace EnterpriseBot.Api.Game.Storages
         public GameResult<StorageItem> GetItem(Item item)
         {
             var foundItem = items.FirstOrDefault(storageItem => storageItem.Item == item);
-            if(foundItem is null)
+            if (foundItem is null)
             {
                 return new LocalizedError
                 {

@@ -2,12 +2,9 @@
 using EnterpriseBot.Api.Models.ModelCreationParams.Money;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.MarketSettings;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Money
 {
@@ -18,10 +15,10 @@ namespace EnterpriseBot.Api.Game.Money
         #region model
         public long Id { get; protected set; }
 
-        public virtual IReadOnlyCollection<Money> Money 
+        public virtual IReadOnlyCollection<Money> Money
         {
             get => new ReadOnlyCollection<Money>(money);
-            protected set => money = value.ToList(); 
+            protected set => money = value.ToList();
         }
         private List<Money> money = new List<Money>();
         #endregion
@@ -99,7 +96,7 @@ namespace EnterpriseBot.Api.Game.Money
         public EmptyGameResult BuyBusinessCoins(decimal amount, GameSettings gameSettings)
         {
             var units = Money.Single(m => m.Currency == Currency.Units);
-            var bc    = Money.Single(m => m.Currency == Currency.BusinessCoins);
+            var bc = Money.Single(m => m.Currency == Currency.BusinessCoins);
 
             var bcPrice = gameSettings.Market.BusinessCoinPricePerUnit;
             var overallPrice = bcPrice * amount;

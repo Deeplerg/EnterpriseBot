@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace EnterpriseBot.ApiWrapper.Models.CreationParams.Business.Company
+﻿namespace EnterpriseBot.ApiWrapper.Models.CreationParams.Business.Company
 {
     public class TruckCreationParams
     {

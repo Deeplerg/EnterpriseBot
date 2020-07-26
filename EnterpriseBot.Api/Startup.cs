@@ -1,6 +1,9 @@
+using EnterpriseBot.Api.Abstractions;
 using EnterpriseBot.Api.Models.Contexts;
 using EnterpriseBot.Api.Models.Other;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.MvcInputFormatters;
+using EnterpriseBot.Api.Routing;
 using EnterpriseBot.Api.Services;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -8,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,10 +19,6 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
-using EnterpriseBot.Api.Models.Settings;
-using Microsoft.AspNetCore.Mvc.Razor;
-using EnterpriseBot.Api.Routing;
-using EnterpriseBot.Api.Abstractions;
 
 namespace EnterpriseBot.Api
 {
@@ -50,7 +50,7 @@ namespace EnterpriseBot.Api
             #endregion
 
             services.AddSingleton<PostgresTransactionLimiter>();
-            
+
             #region Database
             //int poolSize = Configuration.GetValue<int>("DbContextPoolSize"); //this won't throw an exception while getting invalid value
             int poolSize = int.Parse(Configuration.GetValue<string>("DbContextPoolSize")); //but this will

@@ -14,14 +14,10 @@ using EnterpriseBot.BackgroundJobs.Abstractions;
 using EnterpriseBot.BackgroundJobs.Jobs;
 using EnterpriseBot.BackgroundJobs.Params;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Npgsql;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Business.Company.Controllers

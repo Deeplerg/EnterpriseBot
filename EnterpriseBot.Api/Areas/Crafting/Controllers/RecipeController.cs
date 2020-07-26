@@ -63,7 +63,7 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
 
             List<Ingredient> ingredients = null;
 
-            if(pars.IngredientsIds?.Any() is true)
+            if (pars.IngredientsIds?.Any() is true)
             {
                 ingredients = await ctx.Ingredients
                                        .Where(ingredient =>
@@ -105,7 +105,7 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var ingredient = await ctx.Ingredients.FindAsync(d.ingredientId);
             if (ingredient == null) return Errors.DoesNotExist(d.ingredientId, localization.Crafting.Ingredient);
 
-            if(!recipe.Ingredients.Contains(ingredient))
+            if (!recipe.Ingredients.Contains(ingredient))
             {
                 return new LocalizedError
                 {
@@ -177,7 +177,7 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var d = JsonConvert.DeserializeAnonymousType(json, pars);
 
             var recipe = await ctx.Recipes.FindAsync(d.modelId);
-            if(recipe == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
+            if (recipe == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
             var actionResult = recipe.SetCanBeDoneBy(d.newCanBeDoneBy);
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;

@@ -1,6 +1,5 @@
 ﻿using EnterpriseBot.Api.Abstractions;
 using EnterpriseBot.Api.Attributes;
-using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Game.Localization;
 using EnterpriseBot.Api.Game.Reputation;
 using EnterpriseBot.Api.Game.Storages;
@@ -13,20 +12,16 @@ using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 {
     [Area(nameof(Business))]
     [SubArea(nameof(Business.Company))]
-    public class CompanyController : Controller, 
+    public class CompanyController : Controller,
                                      IGameController<Game.Business.Company.Company, CompanyApiCreationParams>
     {
         private readonly ApplicationContext ctx;

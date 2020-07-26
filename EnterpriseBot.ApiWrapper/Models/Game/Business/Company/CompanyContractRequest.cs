@@ -1,5 +1,5 @@
-﻿using EnterpriseBot.ApiWrapper.Models.Game.Crafting;
-using EnterpriseBot.ApiWrapper.Models.Enums;
+﻿using EnterpriseBot.ApiWrapper.Models.Enums;
+using EnterpriseBot.ApiWrapper.Models.Game.Crafting;
 
 namespace EnterpriseBot.ApiWrapper.Models.Game.Business.Company
 {

@@ -1,15 +1,12 @@
 ﻿using EnterpriseBot.Api.Game.Essences;
+using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Donation;
 using EnterpriseBot.Api.Models.Other;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
+using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using EnterpriseBot.Api.Models.Common.Enums;
-using EnterpriseBot.Api.Models.Settings;
 
 namespace EnterpriseBot.Api.Game.Donation
 {
@@ -51,7 +48,7 @@ namespace EnterpriseBot.Api.Game.Donation
         {
             var donationSettings = gameSettings.Donation;
 
-            switch(privilege)
+            switch (privilege)
             {
                 case Privilege.NoDonation:
                     return donationSettings.BusinessPriceMultipliers.NoDonation;
@@ -89,7 +86,7 @@ namespace EnterpriseBot.Api.Game.Donation
             var max = donationSettings.MaxContracts;
             uint @default = contractSettings.MaxContracts;
 
-            switch(privilege)
+            switch (privilege)
             {
                 case Privilege.NoDonation:
                     return max.NoDonation ?? @default;
@@ -159,7 +156,7 @@ namespace EnterpriseBot.Api.Game.Donation
 
         public GameResult<Privilege> UpgradePrivilege(Privilege to)
         {
-            if(!CanUpgradeToPrivilege(to))
+            if (!CanUpgradeToPrivilege(to))
             {
                 return new LocalizedError
                 {

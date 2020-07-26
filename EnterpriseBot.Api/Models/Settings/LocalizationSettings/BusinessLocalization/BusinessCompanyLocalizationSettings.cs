@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace EnterpriseBot.Api.Models.Settings.LocalizationSettings.BusinessLocalization
+﻿namespace EnterpriseBot.Api.Models.Settings.LocalizationSettings.BusinessLocalization
 {
     public class BusinessCompanyLocalizationSettings
     {

@@ -120,7 +120,7 @@ namespace EnterpriseBot.ApiWrapper
                     Ingredient = ActivatorUtilities.GetServiceOrCreateInstance<IngredientCategory>(serviceProvider)
                 };
             }
-            
+
             CategoryLists.DonationCategoryList GetDonation()
             {
                 return new CategoryLists.DonationCategoryList

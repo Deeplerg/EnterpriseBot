@@ -13,10 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Crafting.Controllers
@@ -114,7 +110,7 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
             var d = JsonConvert.DeserializeAnonymousType(json, pars);
 
             var item = await ctx.Items.FindAsync(d.modelId);
-            if(item == null) return Errors.DoesNotExist(d.modelId, localization.Crafting.Item);
+            if (item == null) return Errors.DoesNotExist(d.modelId, localization.Crafting.Item);
 
             var actionResult = item.SetSpace(d.newSpace);
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;

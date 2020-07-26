@@ -1,5 +1,4 @@
-﻿using EnterpriseBot.Api.Game.Essences;
-using System;
+﻿using System;
 using System.Linq;
 using static EnterpriseBot.Api.Utils.Constants;
 

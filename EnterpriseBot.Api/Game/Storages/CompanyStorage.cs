@@ -5,16 +5,10 @@ using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
-using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Utils;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Storages
 {
@@ -27,7 +21,7 @@ namespace EnterpriseBot.Api.Game.Storages
         public long Id { get; protected set; }
 
         public virtual Company OwningCompany { get; protected set; }
-        
+
         public CompanyStorageType Type { get; protected set; }
 
         public decimal Capacity { get => Storage.Capacity; }
@@ -72,7 +66,7 @@ namespace EnterpriseBot.Api.Game.Storages
             }
 
             decimal price;
-            switch(storageType)
+            switch (storageType)
             {
                 case CompanyStorageType.General:
                     price = prices.NewStoragePrices.Company;
@@ -94,7 +88,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public GameResult<int> Add(Item item, int quantity = 1, Player invoker = null)
         {
-            if(!HasPermissionToManage(invoker))
+            if (!HasPermissionToManage(invoker))
             {
                 return Errors.DoesNotHavePermission();
             }

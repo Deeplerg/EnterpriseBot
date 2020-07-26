@@ -1,5 +1,5 @@
-﻿using EnterpriseBot.ApiWrapper.Models.Game.Storages;
-using EnterpriseBot.ApiWrapper.Models.Game.Crafting;
+﻿using EnterpriseBot.ApiWrapper.Models.Game.Crafting;
+using EnterpriseBot.ApiWrapper.Models.Game.Storages;
 
 namespace EnterpriseBot.ApiWrapper.Models.Game.Business.Company
 {
@@ -12,7 +12,7 @@ namespace EnterpriseBot.ApiWrapper.Models.Game.Business.Company
 
 
         public Recipe Recipe { get; set; }
-        public CompanyStorage WorkingStorage { get; set;  }
+        public CompanyStorage WorkingStorage { get; set; }
         public bool IsWorkingNow { get; set; }
         public decimal SpeedMultiplier { get; set; }
     }

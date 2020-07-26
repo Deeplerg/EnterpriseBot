@@ -1,12 +1,9 @@
-﻿using EnterpriseBot.Api.Models.ModelCreationParams.Localization;
+﻿using EnterpriseBot.Api.Models.Common.Enums;
+using EnterpriseBot.Api.Models.ModelCreationParams.Localization;
 using EnterpriseBot.Api.Models.Other;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using EnterpriseBot.Api.Models.Common.Enums;
 
 namespace EnterpriseBot.Api.Game.Localization
 {
@@ -41,7 +38,7 @@ namespace EnterpriseBot.Api.Game.Localization
             {
             };
 
-            if (pars.Localizations != null && pars.Localizations.Any()) 
+            if (pars.Localizations != null && pars.Localizations.Any())
                 localizedString.Localizations = pars.Localizations;
 
             return localizedString;
@@ -49,7 +46,7 @@ namespace EnterpriseBot.Api.Game.Localization
 
         public GameResult<StringLocalization> AddLocalization(StringLocalizationCreationParams localizationParams)
         {
-            if(localizations.Any(loc => loc.Language == localizationParams.Language))
+            if (localizations.Any(loc => loc.Language == localizationParams.Language))
             {
                 return new LocalizedError
                 {
@@ -61,7 +58,7 @@ namespace EnterpriseBot.Api.Game.Localization
 
             var stringLocalizationCreationResult = StringLocalization.Create(localizationParams);
             if (stringLocalizationCreationResult.LocalizedError != null) return stringLocalizationCreationResult.LocalizedError;
-            
+
             StringLocalization stringLocalization = stringLocalizationCreationResult;
 
             localizations.Add(stringLocalization);
@@ -84,7 +81,7 @@ namespace EnterpriseBot.Api.Game.Localization
 
         public GameResult<StringLocalization> GetLocalization(LocalizationLanguage language)
         {
-            if(!IsLocalizationPresent(language))
+            if (!IsLocalizationPresent(language))
             {
                 return localizationIsNotPresentError;
             }

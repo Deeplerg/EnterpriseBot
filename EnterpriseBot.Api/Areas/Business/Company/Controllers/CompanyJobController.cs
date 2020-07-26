@@ -1,7 +1,6 @@
 ﻿using EnterpriseBot.Api.Abstractions;
 using EnterpriseBot.Api.Attributes;
 using EnterpriseBot.Api.Game.Business.Company;
-using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Game.Localization;
 using EnterpriseBot.Api.Models.ApiCreationParams.Business;
 using EnterpriseBot.Api.Models.Common.Enums;
@@ -16,12 +15,8 @@ using EnterpriseBot.BackgroundJobs.Params;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
@@ -87,7 +82,7 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
                 Company = company,
                 Recipe = recipe,
                 CompanyStorage = companyStorage,
-                
+
                 Salary = pars.Salary,
                 Permissions = pars.Permissions
             }, gameSettings, invoker);
@@ -405,7 +400,7 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             var actionResult = companyJob.RemovePermissions(d.permissionsToRemove, invoker);
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
-            if(d.permissionsToRemove.HasFlag(CompanyJobPermissions.ProduceItems))
+            if (d.permissionsToRemove.HasFlag(CompanyJobPermissions.ProduceItems))
             {
                 jobs.Remove(companyJob.ProduceItemAndStopJobId);
             }

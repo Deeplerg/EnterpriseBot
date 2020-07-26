@@ -1,22 +1,13 @@
-﻿using EnterpriseBot.Api.Game.Crafting;
-using EnterpriseBot.Api.Game.Essences;
+﻿using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Game.Storages;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings.Company;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
 using EnterpriseBot.Api.Utils;
-using Microsoft.AspNetCore.Connections;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -63,7 +54,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult Send(CompanyContract contract, Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.SendTrucks, contract.OutcomeCompany))
+            if (!invoker.HasPermission(CompanyJobPermissions.SendTrucks, contract.OutcomeCompany))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -82,7 +73,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult Unload(CompanyStorage storage, CompanyContract contract)
         {
-            if(storage.Type != CompanyStorageType.Income)
+            if (storage.Type != CompanyStorageType.Income)
             {
                 return new LocalizedError
                 {
@@ -92,7 +83,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if(CurrentState != TruckState.OnTheWayTowards)
+            if (CurrentState != TruckState.OnTheWayTowards)
             {
                 return new LocalizedError
                 {
@@ -106,12 +97,12 @@ namespace EnterpriseBot.Api.Game.Business.Company
             int needed = contract.DeliveredAmount - contract.ContractItemQuantity;
             int neededItemsAmountInTrunk = 0;
 
-            if(Trunk.Items != null)
+            if (Trunk.Items != null)
             {
-                neededItemsAmountInTrunk = Trunk.Items.Sum(sItem => sItem.Item == contract.ContractItem ? sItem.Quantity : 0 );
+                neededItemsAmountInTrunk = Trunk.Items.Sum(sItem => sItem.Item == contract.ContractItem ? sItem.Quantity : 0);
             }
 
-            if(neededItemsAmountInTrunk == 0)
+            if (neededItemsAmountInTrunk == 0)
             {
                 return new LocalizedError
                 {
@@ -121,7 +112,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if(needed > neededItemsAmountInTrunk)
+            if (needed > neededItemsAmountInTrunk)
             {
                 quantity = neededItemsAmountInTrunk;
             }
@@ -144,7 +135,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         {
             var upgradeSetting = gameSettings.BusinessPrices.CompanyFeatures.TruckUpgrade;
 
-            if(!invoker.HasPermission(CompanyJobPermissions.UpgradeTrucks, TruckGarage.Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.UpgradeTrucks, TruckGarage.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -186,7 +177,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<uint> ForceUpgrade(uint stepInSeconds, GameSettings gameSettings)
         {
-            if(DeliveringSpeedInSeconds - stepInSeconds <= gameSettings.Business.Company.Truck.MinTime)
+            if (DeliveringSpeedInSeconds - stepInSeconds <= gameSettings.Business.Company.Truck.MinTime)
             {
                 return new LocalizedError
                 {

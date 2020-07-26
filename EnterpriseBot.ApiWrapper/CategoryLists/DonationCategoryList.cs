@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using EnterpriseBot.ApiWrapper.Categories.Donation;
+﻿using EnterpriseBot.ApiWrapper.Categories.Donation;
 
 namespace EnterpriseBot.ApiWrapper.CategoryLists
 {

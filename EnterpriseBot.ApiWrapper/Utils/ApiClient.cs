@@ -121,7 +121,7 @@ namespace EnterpriseBot.ApiWrapper.Utils
         private async Task<Result> RequestBase(Uri uri, object objToSerialize)
         {
             string serialized = JsonConvert.SerializeObject(objToSerialize, JsonSerializerSettings);
-            
+
             var request = ConstructJsonHttpRequest(serialized, defaultHttpMethod, uri);
 
             var response = await http.SendAsync(request);

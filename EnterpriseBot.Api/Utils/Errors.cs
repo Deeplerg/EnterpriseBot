@@ -93,7 +93,7 @@ namespace EnterpriseBot.Api.Utils
         /// inputted <b>business name</b> is incorrect
         /// </summary>
         /// <returns><see cref="ErrorSeverity.Normal"/> <see cref="LocalizedError"/></returns>
-        public static LocalizedError IncorrectBusinessNameInput(UserInputRequirements inputRequirements) 
+        public static LocalizedError IncorrectBusinessNameInput(UserInputRequirements inputRequirements)
             => IncorrectInput(inputRequirements.BusinessName, Constants.BusinessNameMaxLength);
 
         /// <summary>

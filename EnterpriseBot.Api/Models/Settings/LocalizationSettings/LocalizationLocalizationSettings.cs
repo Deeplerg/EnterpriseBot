@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace EnterpriseBot.Api.Models.Settings.LocalizationSettings
+﻿namespace EnterpriseBot.Api.Models.Settings.LocalizationSettings
 {
     public class LocalizationLocalizationSettings
     {

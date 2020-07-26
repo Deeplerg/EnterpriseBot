@@ -1,23 +1,12 @@
-﻿using EnterpriseBot.Api.Game.Storages;
-using EnterpriseBot.Api.Models.Other;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EnterpriseBot.Api.Models.ModelCreationParams.Business;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
-using EnterpriseBot.Api.Utils;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
+﻿using EnterpriseBot.Api.Game.Crafting;
 using EnterpriseBot.Api.Game.Essences;
+using EnterpriseBot.Api.Game.Storages;
 using EnterpriseBot.Api.Models.Common.Enums;
-using EnterpriseBot.Api.Game.Money;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings.Company;
-using System.ComponentModel.DataAnnotations.Schema;
-using EnterpriseBot.Api.Game.Crafting;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
+using EnterpriseBot.Api.Models.ModelCreationParams.Business;
+using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
+using EnterpriseBot.Api.Utils;
 using Newtonsoft.Json;
-using Hangfire.Server;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -36,7 +25,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public CompanyStorage WorkingStorage { get => Worker.WorkingStorage; }
         public bool IsWorkingNow { get => Worker.IsWorkingNow; }
         public decimal SpeedMultiplier { get => Worker.SpeedMultiplier; }
-        
+
 
         [JsonIgnore]
         public long CompanyWorkerId
@@ -62,7 +51,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             var req = gameSettings.Localization.UserInputRequirements;
             var workerSettings = gameSettings.Business.Company.Worker;
 
-            if(invoker != null && !invoker.HasPermission(CompanyJobPermissions.BuyRobots, pars.Company))
+            if (invoker != null && !invoker.HasPermission(CompanyJobPermissions.BuyRobots, pars.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -118,7 +107,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult StartWorking(Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.ManageRobotTasks, Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.ManageRobotTasks, Company))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -155,10 +144,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             return Worker.SetWorkingStorage(storage);
         }
-        
+
         public EmptyGameResult SetRecipe(Recipe recipe, Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.ManageRobotTasks, Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.ManageRobotTasks, Company))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -173,7 +162,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult Upgrade(GameSettings gameSettings, Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.UpgradeRobots, Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.UpgradeRobots, Company))
             {
                 return Errors.DoesNotHavePermission();
             }

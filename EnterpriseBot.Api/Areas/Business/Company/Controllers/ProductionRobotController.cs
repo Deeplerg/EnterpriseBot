@@ -8,15 +8,10 @@ using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
-using EnterpriseBot.BackgroundJobs.Jobs;
-using EnterpriseBot.BackgroundJobs.Params;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Business.Company.Controllers

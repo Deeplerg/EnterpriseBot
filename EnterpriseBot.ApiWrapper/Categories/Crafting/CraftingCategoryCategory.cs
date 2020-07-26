@@ -4,15 +4,12 @@ using EnterpriseBot.ApiWrapper.Models.Enums;
 using EnterpriseBot.ApiWrapper.Models.Game.Crafting;
 using EnterpriseBot.ApiWrapper.Models.Game.Localization;
 using EnterpriseBot.ApiWrapper.Models.Other;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Crafting
 {
-    public class CraftingCategoryCategory : CraftingCategoryBase<CraftingCategory, 
-                                                                 long, 
+    public class CraftingCategoryCategory : CraftingCategoryBase<CraftingCategory,
+                                                                 long,
                                                                  CraftingCategoryCreationParams>
     {
         protected const string categoryName = "CraftingCategory";

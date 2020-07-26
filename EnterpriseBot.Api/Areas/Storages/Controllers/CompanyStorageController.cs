@@ -1,9 +1,6 @@
-﻿using Castle.Components.DictionaryAdapter;
-using EnterpriseBot.Api.Abstractions;
-using EnterpriseBot.Api.Game.Essences;
+﻿using EnterpriseBot.Api.Abstractions;
 using EnterpriseBot.Api.Game.Storages;
 using EnterpriseBot.Api.Models.ApiCreationParams.Storages;
-using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.Contexts;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
@@ -14,9 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Storages.Controllers
@@ -76,7 +70,7 @@ namespace EnterpriseBot.Api.Areas.Storages.Controllers
 
             return model;
         }
-    
+
         public async Task<GameResult<CompanyStorage>> BuyAndCreate([FromBody] string json)
         {
             var pars = new

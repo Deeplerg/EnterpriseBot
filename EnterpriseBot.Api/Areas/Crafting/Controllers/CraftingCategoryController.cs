@@ -14,7 +14,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ using System.Threading.Tasks;
 namespace EnterpriseBot.Api.Areas.Crafting.Controllers
 {
     [Area(nameof(Crafting))]
-    public class CraftingCategoryController : Controller, 
+    public class CraftingCategoryController : Controller,
                                               IGameController<CraftingCategory, CraftingCategoryApiCreationParams>
     {
         private readonly ApplicationContext ctx;
@@ -33,7 +32,7 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
         private readonly LocalizationSettings localization;
         private readonly LocalizationSetting modelLocalization;
 
-        public CraftingCategoryController(ApplicationContext dbContext, 
+        public CraftingCategoryController(ApplicationContext dbContext,
                                           ILogger<CraftingCategoryController> logger,
                                           IOptionsSnapshot<GameSettings> gameOptionsAccessor)
         {
@@ -67,10 +66,10 @@ namespace EnterpriseBot.Api.Areas.Crafting.Controllers
 
             List<CraftingSubCategory> subCategories = null;
 
-            if(pars.CraftingSubCategoriesIds?.Any() is true)
+            if (pars.CraftingSubCategoriesIds?.Any() is true)
             {
                 subCategories = await ctx.CraftingSubCategories
-                                         .Where(subCategory => 
+                                         .Where(subCategory =>
                                                 pars.CraftingSubCategoriesIds.Any(id => subCategory.Id == id))
                                          .ToListAsync();
             }

@@ -1,7 +1,4 @@
 ﻿using EnterpriseBot.ApiWrapper.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EnterpriseBot.ApiWrapper.Categories
 {

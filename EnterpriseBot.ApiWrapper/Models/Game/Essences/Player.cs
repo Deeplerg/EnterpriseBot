@@ -27,7 +27,7 @@ namespace EnterpriseBot.ApiWrapper.Models.Game.Essences
 
         public bool VkConnected { get; set; }
         public long? VkId { get; set; }
-        
+
         public DateTime RegistrationDate { get; set; }
 
         public Reputation.Reputation Reputation { get; set; }

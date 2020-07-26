@@ -1,5 +1,4 @@
 ﻿using EnterpriseBot.ApiWrapper.Abstractions;
-using EnterpriseBot.ApiWrapper.Models.CreationParams.Business;
 using EnterpriseBot.ApiWrapper.Models.CreationParams.Business.Company;
 using EnterpriseBot.ApiWrapper.Models.Enums;
 using EnterpriseBot.ApiWrapper.Models.Game.Localization;

@@ -1,4 +1,3 @@
-using System;
 using EnterpriseBot.Api.Game.Crafting;
 using EnterpriseBot.Api.Game.Storages;
 

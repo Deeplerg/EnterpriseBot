@@ -1,41 +1,27 @@
-﻿using EnterpriseBot.Api.Game.Donation;
-using EnterpriseBot.Api.Game.Essences;
+﻿using EnterpriseBot.Api.Game.Essences;
+using EnterpriseBot.Api.Game.Localization;
 using EnterpriseBot.Api.Game.Money;
 using EnterpriseBot.Api.Game.Reputation;
 using EnterpriseBot.Api.Game.Storages;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
-using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
+using EnterpriseBot.Api.Models.ModelCreationParams.Money;
+using EnterpriseBot.Api.Models.ModelCreationParams.Reputation;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings;
-using EnterpriseBot.Api.Models.Settings.GameplaySettings;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
+using EnterpriseBot.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using static EnterpriseBot.Api.Utils.UserInputUtils;
-using static EnterpriseBot.Api.Utils.Constants;
-using EnterpriseBot.Api.Models.ModelCreationParams.Money;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings.Company;
-using EnterpriseBot.Api.Utils;
-using System.ComponentModel.DataAnnotations.Schema;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
-using EnterpriseBot.Api.Game.Localization;
-using System.Security.Cryptography;
-using System.Runtime.InteropServices;
-using EnterpriseBot.Api.Models.ModelCreationParams.Reputation;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
     public class Company
     {
         protected Company() { }
-        
+
         #region model
         public long Id { get; protected set; }
 
@@ -173,26 +159,26 @@ namespace EnterpriseBot.Api.Game.Business.Company
             // All currently selected values
             var exts = values.Where(ext => (extensions & ext) == ext);
 
-            foreach(CompanyExtensions ext in exts)
+            foreach (CompanyExtensions ext in exts)
             {
                 if (extensionsWithPrices.ContainsKey(ext))
                     overallPrice += (extensionsWithPrices[ext] * priceMultiplier);
             }
 
             overallPrice += p.Base;
-            if((extensions & CompanyExtensions.CanHaveRobots) == CompanyExtensions.CanHaveRobots)
+            if ((extensions & CompanyExtensions.CanHaveRobots) == CompanyExtensions.CanHaveRobots)
             {
                 overallPrice += p.NewRobotSetup;
             }
 
             return overallPrice;
-        } 
+        }
 
         public GameResult<CompanyStorage> GetCompanyStorageWithAvailableSpace(decimal space, CompanyStorageType storageType)
         {
             bool hasStorage = HasCompanyStorageWithAvailableSpace(space, storageType);
 
-            if(!hasStorage)
+            if (!hasStorage)
             {
                 return new LocalizedError
                 {
@@ -300,7 +286,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 }
             }
 
-            if(IncomeContracts.Count() + OutcomeContracts.Count() >= maxContracts)
+            if (IncomeContracts.Count() + OutcomeContracts.Count() >= maxContracts)
             {
                 return false;
             }
@@ -333,7 +319,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<Review> WriteReview(Reputation.Reputation reputation, string text, sbyte rating, GameSettings gameSettings, Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.WriteReview, this))
+            if (!invoker.HasPermission(CompanyJobPermissions.WriteReview, this))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -349,12 +335,12 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<Review> EditReview(Review review, string newText, sbyte newRating, GameSettings gameSettings, Player invoker)
         {
-            if(invoker.HasPermission(CompanyJobPermissions.EditReview, this))
+            if (invoker.HasPermission(CompanyJobPermissions.EditReview, this))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            if(review.CompanyReviewer != this)
+            if (review.CompanyReviewer != this)
             {
                 return new LocalizedError
                 {

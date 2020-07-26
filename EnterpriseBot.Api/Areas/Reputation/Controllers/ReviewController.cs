@@ -8,14 +8,9 @@ using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Reputation.Controllers
@@ -77,7 +72,7 @@ namespace EnterpriseBot.Api.Areas.Reputation.Controllers
             return model;
         }
 
-        
+
         public async Task<GameResult<Review>> Edit([FromBody] string json)
         {
             var pars = new

@@ -1,19 +1,13 @@
 ﻿using EnterpriseBot.Api.Game.Crafting;
+using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
-using System;
-using static EnterpriseBot.Api.Utils.UserInputUtils;
-using static EnterpriseBot.Api.Utils.Constants;
 using EnterpriseBot.Api.Utils;
+using System;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
-using EnterpriseBot.Api.Game.Essences;
+using static EnterpriseBot.Api.Utils.UserInputUtils;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -111,7 +105,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if(cp.IncomeCompany.Purse.GetMoneyAmount(Currency.Units) < cp.OverallCost)
+            if (cp.IncomeCompany.Purse.GetMoneyAmount(Currency.Units) < cp.OverallCost)
             {
                 return new LocalizedError
                 {
@@ -134,10 +128,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 ContractOverallCost = cp.OverallCost,
 
                 Issuer = cp.Issuer,
-                
+
                 IncomeCompany = cp.IncomeCompany,
                 OutcomeCompany = cp.OutcomeCompany,
-                
+
                 TerminationTermInDays = cp.TerminationTermInDays
             };
         }
@@ -153,7 +147,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
             Company incomeCompany;
             Company outcomeCompany;
-            switch(cReq.RequestingCompanyRelationSide)
+            switch (cReq.RequestingCompanyRelationSide)
             {
                 case CompanyContractIssuer.IncomeCompany:
                     incomeCompany = cReq.RequestingCompany;
@@ -202,7 +196,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<int> AddDeliveredAmount(int amount)
         {
-            if(amount < 1)
+            if (amount < 1)
             {
                 return new LocalizedError
                 {

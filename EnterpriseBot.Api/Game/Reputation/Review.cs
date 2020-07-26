@@ -4,7 +4,6 @@ using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Reputation;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
 using static EnterpriseBot.Api.Utils.UserInputUtils;
 
@@ -17,7 +16,7 @@ namespace EnterpriseBot.Api.Game.Reputation
         #region model
         public long Id { get; protected set; }
         public string Text { get; protected set; }
-        
+
         public Reviewer Reviewer { get; protected set; }
         public virtual Company CompanyReviewer { get; protected set; }
         public virtual Player PlayerReviewer { get; protected set; }
@@ -49,10 +48,10 @@ namespace EnterpriseBot.Api.Game.Reputation
                 return ratingOutOfRangeError;
             }
 
-            switch(pars.Reviewer)
+            switch (pars.Reviewer)
             {
                 case Reviewer.Company:
-                    if(pars.CompanyReviewer is null)
+                    if (pars.CompanyReviewer is null)
                         return ReviewerIsNullError(pars.Reviewer);
                     break;
 

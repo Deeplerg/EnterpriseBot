@@ -2,9 +2,6 @@
 using EnterpriseBot.ApiWrapper.Models.CreationParams.Reputation;
 using EnterpriseBot.ApiWrapper.Models.Game.Reputation;
 using EnterpriseBot.ApiWrapper.Models.Other;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Reputation
@@ -13,7 +10,7 @@ namespace EnterpriseBot.ApiWrapper.Categories.Reputation
     {
         protected const string categoryName = "Review";
 
-        internal ReviewCategory(IApiClient api) : base(api) { } 
+        internal ReviewCategory(IApiClient api) : base(api) { }
 
         public override async Task<Review> Get(long id)
         {

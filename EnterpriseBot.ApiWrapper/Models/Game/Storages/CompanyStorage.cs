@@ -1,5 +1,5 @@
-﻿using EnterpriseBot.ApiWrapper.Models.Game.Business.Company;
-using EnterpriseBot.ApiWrapper.Models.Enums;
+﻿using EnterpriseBot.ApiWrapper.Models.Enums;
+using EnterpriseBot.ApiWrapper.Models.Game.Business.Company;
 using System.Collections.Generic;
 
 namespace EnterpriseBot.ApiWrapper.Models.Game.Storages
@@ -9,7 +9,7 @@ namespace EnterpriseBot.ApiWrapper.Models.Game.Storages
         public long Id { get; set; }
 
         public Company OwningCompany { get; set; }
-        
+
         public CompanyStorageType Type { get; set; }
 
         public long StorageId { get; set; }

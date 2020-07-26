@@ -1,10 +1,4 @@
-﻿using EnterpriseBot.Api.Game.Money;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace EnterpriseBot.Api.Models.ModelCreationParams.Money
+﻿namespace EnterpriseBot.Api.Models.ModelCreationParams.Money
 {
     public class PurseCreationParams
     {

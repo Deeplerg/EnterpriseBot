@@ -1,5 +1,4 @@
 ﻿using EnterpriseBot.Api.Game.Business.Company;
-using EnterpriseBot.Api.Game.Donation;
 using EnterpriseBot.Api.Game.Localization;
 using EnterpriseBot.Api.Game.Money;
 using EnterpriseBot.Api.Game.Reputation;
@@ -11,17 +10,12 @@ using EnterpriseBot.Api.Models.ModelCreationParams.Money;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.GameplaySettings;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
-using Microsoft.AspNetCore.Routing.Constraints;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using static EnterpriseBot.Api.Utils.UserInputUtils;
 
 namespace EnterpriseBot.Api.Game.Essences
@@ -41,14 +35,14 @@ namespace EnterpriseBot.Api.Game.Essences
 
         public virtual Purse Purse { get; protected set; }
 
-        public virtual IReadOnlyCollection<CompanyJob> CompanyJobs 
+        public virtual IReadOnlyCollection<CompanyJob> CompanyJobs
         {
             get => new ReadOnlyCollection<CompanyJob>(companyJobs);
             protected set => companyJobs = value.ToList();
         }
         private List<CompanyJob> companyJobs = new List<CompanyJob>();
 
-        public virtual IReadOnlyCollection<Company> OwnedCompanies 
+        public virtual IReadOnlyCollection<Company> OwnedCompanies
         {
             get => new ReadOnlyCollection<Company>(ownedCompanies);
             protected set => ownedCompanies = value.ToList();
@@ -59,7 +53,7 @@ namespace EnterpriseBot.Api.Game.Essences
 
         public bool VkConnected { get; protected set; }
         public long? VkId { get; protected set; }
-        
+
         public DateTime RegistrationDate { get; protected set; }
 
         public virtual Reputation.Reputation Reputation { get; protected set; }
@@ -94,7 +88,7 @@ namespace EnterpriseBot.Api.Game.Essences
                 return Errors.IncorrectNameInput(req);
             }
 
-            if(!CheckPasswordReliability(pars.RawPassword))
+            if (!CheckPasswordReliability(pars.RawPassword))
             {
                 return Errors.IncorrectPasswordInput(req);
             }
@@ -165,7 +159,7 @@ namespace EnterpriseBot.Api.Game.Essences
 
         public GameResult<string> SetName(string newName, GameSettings gameSettings)
         {
-            if(!CheckName(newName))
+            if (!CheckName(newName))
             {
                 return Errors.IncorrectNameInput(gameSettings.Localization.UserInputRequirements);
             }

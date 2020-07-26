@@ -5,18 +5,11 @@ using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.BusinessPricesSettings;
-using EnterpriseBot.Api.Models.Settings.DonationSettings;
-using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Utils;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Storages
 {
@@ -204,7 +197,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public GameResult<ItemPrice> AddPrice(Item item, decimal price, Player invoker)
         {
-            if(!HasPermissionToManagePrices(invoker))
+            if (!HasPermissionToManagePrices(invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -269,7 +262,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public GameResult<int> BuyItem(Item item, int quantity, Player buyer)
         {
-            if(quantity < 1)
+            if (quantity < 1)
             {
                 return new LocalizedError
                 {

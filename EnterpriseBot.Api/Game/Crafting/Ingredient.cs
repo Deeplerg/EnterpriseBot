@@ -1,9 +1,5 @@
 ﻿using EnterpriseBot.Api.Models.ModelCreationParams.Crafting;
 using EnterpriseBot.Api.Models.Other;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Crafting
 {

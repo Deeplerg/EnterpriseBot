@@ -21,10 +21,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public sbyte Capacity { get; protected set; }
 
-        public virtual IReadOnlyCollection<Truck> Trucks 
+        public virtual IReadOnlyCollection<Truck> Trucks
         {
             get => new ReadOnlyCollection<Truck>(trucks);
-            protected set => trucks = value.ToList(); 
+            protected set => trucks = value.ToList();
         }
         private List<Truck> trucks = new List<Truck>();
         #endregion
@@ -34,7 +34,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         {
             var truckGarageSettings = gameSettings.Business.Company.TruckGarage;
 
-            if(creationPars.Capacity > truckGarageSettings.MaxCapacity)
+            if (creationPars.Capacity > truckGarageSettings.MaxCapacity)
             {
                 return new LocalizedError
                 {
@@ -44,7 +44,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if(creationPars.Capacity < 1)
+            if (creationPars.Capacity < 1)
             {
                 return new LocalizedError
                 {
@@ -63,7 +63,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<Truck> AddTruck(TruckCreationParams pars)
         {
-            if(trucks.Count + 1 > Capacity)
+            if (trucks.Count + 1 > Capacity)
             {
                 return new LocalizedError
                 {
@@ -88,7 +88,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         {
             var upgradePrice = gameSettings.BusinessPrices.CompanyFeatures.GarageUpgrade;
 
-            if(!invoker.HasPermission(CompanyJobPermissions.UpgradeTruckGarage, Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.UpgradeTruckGarage, Company))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -101,7 +101,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<sbyte> ForceUpgrade(sbyte step, GameSettings gameSettings)
         {
-            if(Capacity + step >= gameSettings.Business.Company.TruckGarage.MaxCapacity)
+            if (Capacity + step >= gameSettings.Business.Company.TruckGarage.MaxCapacity)
             {
                 return new LocalizedError
                 {

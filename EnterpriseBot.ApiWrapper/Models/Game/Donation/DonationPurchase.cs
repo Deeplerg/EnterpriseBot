@@ -1,5 +1,5 @@
-﻿using System;
-using EnterpriseBot.ApiWrapper.Models.Enums;
+﻿using EnterpriseBot.ApiWrapper.Models.Enums;
+using System;
 
 namespace EnterpriseBot.ApiWrapper.Models.Game.Donation
 {

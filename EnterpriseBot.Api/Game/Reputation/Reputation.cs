@@ -1,16 +1,9 @@
-using EnterpriseBot.Api.Game.Business.Company;
-using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.ModelCreationParams.Reputation;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Reputation
 {
@@ -21,9 +14,9 @@ namespace EnterpriseBot.Api.Game.Reputation
         #region model
         public long Id { get; protected set; }
 
-        public virtual IReadOnlyCollection<Review> Reviews 
+        public virtual IReadOnlyCollection<Review> Reviews
         {
-            get => new ReadOnlyCollection<Review>(reviews); 
+            get => new ReadOnlyCollection<Review>(reviews);
             protected set => reviews = value.ToList();
         }
         private List<Review> reviews = new List<Review>();

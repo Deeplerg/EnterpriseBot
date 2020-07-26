@@ -1,5 +1,3 @@
-using EnterpriseBot.Api.Game.Localization;
-
 namespace EnterpriseBot.Api.Models.ModelCreationParams.Essences
 {
     public class PlayerCreationParams

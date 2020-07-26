@@ -1,12 +1,6 @@
 ﻿using EnterpriseBot.Api.Game.Crafting;
-using EnterpriseBot.Api.Models.ModelCreationParams.Crafting;
 using EnterpriseBot.Api.Models.ModelCreationParams.Storages;
 using EnterpriseBot.Api.Models.Other;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Storages
 {
@@ -42,7 +36,7 @@ namespace EnterpriseBot.Api.Game.Storages
         #region actions
         public static GameResult<StorageItem> Create(StorageItemCreationParams pars)
         {
-            if(pars.Quantity < 1)
+            if (pars.Quantity < 1)
             {
                 return quanitityLowerThan1Error;
             }
@@ -56,7 +50,7 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public GameResult<int> AddQuantity(int amount)
         {
-            if(amount < 1)
+            if (amount < 1)
             {
                 return quanitityLowerThan1Error;
             }
@@ -68,12 +62,12 @@ namespace EnterpriseBot.Api.Game.Storages
 
         public GameResult<int> ReduceQuantity(int amount)
         {
-            if(amount < 1)
+            if (amount < 1)
             {
                 return quanitityLowerThan1Error;
             }
 
-            if(amount > Quantity)
+            if (amount > Quantity)
             {
                 return new LocalizedError
                 {

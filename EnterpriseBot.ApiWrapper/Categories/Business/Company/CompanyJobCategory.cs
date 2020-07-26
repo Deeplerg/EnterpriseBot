@@ -1,15 +1,11 @@
 ﻿using EnterpriseBot.ApiWrapper.Abstractions;
-using EnterpriseBot.ApiWrapper.Models.Game.Business.Company;
-using EnterpriseBot.ApiWrapper.Models.Other;
 using EnterpriseBot.ApiWrapper.Models.CreationParams.Business.Company;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using EnterpriseBot.ApiWrapper.Models.Enums;
+using EnterpriseBot.ApiWrapper.Models.Game.Business.Company;
 using EnterpriseBot.ApiWrapper.Models.Game.Localization;
-using Newtonsoft.Json;
-using System.Reflection.Metadata.Ecma335;
+using EnterpriseBot.ApiWrapper.Models.Other;
+using System;
+using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Business.Company
 {
@@ -32,9 +28,9 @@ namespace EnterpriseBot.ApiWrapper.Categories.Business.Company
         }
 
 
-        public async Task<StringLocalization> SetDescription(long modelId, 
-                                                             string newDescription, 
-                                                             LocalizationLanguage localizationLanguage, 
+        public async Task<StringLocalization> SetDescription(long modelId,
+                                                             string newDescription,
+                                                             LocalizationLanguage localizationLanguage,
                                                              long invokerPlayerId)
         {
             return await api.Call<StringLocalization>(RequestInfo(nameof(SetDescription)), new
@@ -130,8 +126,8 @@ namespace EnterpriseBot.ApiWrapper.Categories.Business.Company
             });
         }
 
-        public async Task<CompanyJobPermissions> AddPermissions(long modelId, 
-                                                                CompanyJobPermissions newPermissions, 
+        public async Task<CompanyJobPermissions> AddPermissions(long modelId,
+                                                                CompanyJobPermissions newPermissions,
                                                                 long invokerPlayerId)
         {
             return await api.Call<CompanyJobPermissions>(RequestInfo(nameof(AddPermissions)), new

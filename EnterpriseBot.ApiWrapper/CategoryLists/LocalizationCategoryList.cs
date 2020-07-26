@@ -1,7 +1,4 @@
 ﻿using EnterpriseBot.ApiWrapper.Categories.Localization;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EnterpriseBot.ApiWrapper.CategoryLists
 {

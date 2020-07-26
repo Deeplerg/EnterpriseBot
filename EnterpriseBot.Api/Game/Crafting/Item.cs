@@ -1,17 +1,10 @@
 ﻿using EnterpriseBot.Api.Game.Localization;
+using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Crafting;
 using EnterpriseBot.Api.Models.Other;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
-using EnterpriseBot.Api.Utils;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
-using EnterpriseBot.Api.Models.Common.Enums;
-using static EnterpriseBot.Api.Utils.UserInputUtils;
 using EnterpriseBot.Api.Models.Settings;
+using EnterpriseBot.Api.Utils;
+using static EnterpriseBot.Api.Utils.UserInputUtils;
 
 namespace EnterpriseBot.Api.Game.Crafting
 {

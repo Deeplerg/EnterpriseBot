@@ -1,6 +1,6 @@
-﻿using EnterpriseBot.ApiWrapper.Models.Game.Essences;
+﻿using EnterpriseBot.ApiWrapper.Models.Enums;
+using EnterpriseBot.ApiWrapper.Models.Game.Essences;
 using System.Collections.Generic;
-using EnterpriseBot.ApiWrapper.Models.Enums;
 
 namespace EnterpriseBot.ApiWrapper.Models.Game.Donation
 {

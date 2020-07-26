@@ -10,14 +10,11 @@ using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
 using EnterpriseBot.BackgroundJobs.Jobs;
 using EnterpriseBot.BackgroundJobs.Params;
-using Hangfire.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
@@ -168,7 +165,7 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
             return actionResult;
         }
-        
+
         public async Task<EmptyGameResult> Complete([FromBody] string json, [FromServices] IBackgroundJobScheduler jobs)
         {
             var pars = new
@@ -230,7 +227,7 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
         //    return new EmptyGameResult();
         //}
-        
+
 
 
         private void ScheduleCompletionCheckerJob(CompanyContract contract, IBackgroundJobScheduler jobs)

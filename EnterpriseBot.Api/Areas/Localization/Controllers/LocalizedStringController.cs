@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -58,7 +57,7 @@ namespace EnterpriseBot.Api.Areas.Localization.Controllers
         {
             var localizations = new List<StringLocalization>();
 
-            if(pars.LocalizedStringIds?.Any() is true)
+            if (pars.LocalizedStringIds?.Any() is true)
             {
                 localizations = await ctx.StringLocalizations
                                          .Where(str =>

@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using EnterpriseBot.ApiWrapper.Abstractions;
+﻿using EnterpriseBot.ApiWrapper.Abstractions;
 using EnterpriseBot.ApiWrapper.Models.CreationParams.Reputation;
-using EnterpriseBot.ApiWrapper.Models.Game;
 using EnterpriseBot.ApiWrapper.Models.Game.Reputation;
 using EnterpriseBot.ApiWrapper.Models.Other;
+using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Reputation
 {
-    public class ReputationCategory : ReputationCategoryBase<Models.Game.Reputation.Reputation, 
-                                                             long, 
+    public class ReputationCategory : ReputationCategoryBase<Models.Game.Reputation.Reputation,
+                                                             long,
                                                              ReputationCreationParams>
     {
         protected const string categoryName = "Reputation";

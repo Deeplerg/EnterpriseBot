@@ -1,7 +1,6 @@
 ﻿using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Money;
 using EnterpriseBot.Api.Models.Other;
-using Microsoft.EntityFrameworkCore;
 
 namespace EnterpriseBot.Api.Game.Money
 {

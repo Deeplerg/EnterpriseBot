@@ -1,10 +1,6 @@
-﻿using EnterpriseBot.Api.Models.ModelCreationParams.Localization;
+﻿using EnterpriseBot.Api.Models.Common.Enums;
+using EnterpriseBot.Api.Models.ModelCreationParams.Localization;
 using EnterpriseBot.Api.Models.Other;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EnterpriseBot.Api.Models.Common.Enums;
 
 namespace EnterpriseBot.Api.Game.Localization
 {
@@ -29,7 +25,7 @@ namespace EnterpriseBot.Api.Game.Localization
         #region actions
         public static GameResult<StringLocalization> Create(StringLocalizationCreationParams pars)
         {
-            if(string.IsNullOrWhiteSpace(pars.Text))
+            if (string.IsNullOrWhiteSpace(pars.Text))
             {
                 return textEmptyOrWhiteSpaceError;
             }
@@ -43,7 +39,7 @@ namespace EnterpriseBot.Api.Game.Localization
 
         public GameResult<string> SetText(string newText)
         {
-            if(string.IsNullOrWhiteSpace(newText))
+            if (string.IsNullOrWhiteSpace(newText))
             {
                 return textEmptyOrWhiteSpaceError;
             }

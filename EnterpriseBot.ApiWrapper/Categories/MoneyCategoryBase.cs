@@ -1,8 +1,4 @@
 ﻿using EnterpriseBot.ApiWrapper.Abstractions;
-using EnterpriseBot.ApiWrapper.Models.Game.Money;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories

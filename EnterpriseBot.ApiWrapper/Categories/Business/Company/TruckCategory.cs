@@ -1,12 +1,9 @@
 ﻿using EnterpriseBot.ApiWrapper.Abstractions;
+using EnterpriseBot.ApiWrapper.Models.CreationParams.Business.Company;
 using EnterpriseBot.ApiWrapper.Models.Game.Business.Company;
 using EnterpriseBot.ApiWrapper.Models.Other;
-using EnterpriseBot.ApiWrapper.Models.CreationParams.Business.Company;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Business.Company
 {
@@ -28,7 +25,7 @@ namespace EnterpriseBot.ApiWrapper.Categories.Business.Company
             return await api.Call<Truck>(RequestInfo(nameof(Create)), pars);
         }
 
-        
+
         public async Task Send(long modelId, long contractId, long invokerPlayerId)
         {
             await api.Call(RequestInfo(nameof(Send)), new

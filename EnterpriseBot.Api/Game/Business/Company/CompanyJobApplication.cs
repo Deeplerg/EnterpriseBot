@@ -1,15 +1,9 @@
 ﻿using EnterpriseBot.Api.Game.Essences;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.Other;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
-using EnterpriseBot.Api.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using static EnterpriseBot.Api.Utils.UserInputUtils;
-using static EnterpriseBot.Api.Utils.Constants;
 using EnterpriseBot.Api.Models.Settings;
+using EnterpriseBot.Api.Utils;
+using static EnterpriseBot.Api.Utils.UserInputUtils;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -36,7 +30,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 return Errors.IncorrectResumeInput(req);
             }
 
-            if(pars.Job.IsOccupied)
+            if (pars.Job.IsOccupied)
             {
                 return new LocalizedError
                 {

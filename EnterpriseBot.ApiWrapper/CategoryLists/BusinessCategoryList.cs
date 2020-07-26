@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EnterpriseBot.ApiWrapper.CategoryLists
+﻿namespace EnterpriseBot.ApiWrapper.CategoryLists
 {
     public class BusinessCategoryList
     {

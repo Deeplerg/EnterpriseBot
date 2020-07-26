@@ -1,10 +1,6 @@
 ﻿using EnterpriseBot.Api.Game.Money;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Money;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Models.Settings
 {

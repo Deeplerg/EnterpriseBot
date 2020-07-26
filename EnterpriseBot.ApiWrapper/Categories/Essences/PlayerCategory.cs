@@ -4,12 +4,7 @@ using EnterpriseBot.ApiWrapper.Models.Enums;
 using EnterpriseBot.ApiWrapper.Models.Game.Essences;
 using EnterpriseBot.ApiWrapper.Models.Game.Localization;
 using EnterpriseBot.ApiWrapper.Models.Other;
-using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Essences

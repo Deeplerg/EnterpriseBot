@@ -1,9 +1,9 @@
-﻿using EnterpriseBot.ApiWrapper.Models.Game.Essences;
+﻿using EnterpriseBot.ApiWrapper.Models.Enums;
+using EnterpriseBot.ApiWrapper.Models.Game.Essences;
+using EnterpriseBot.ApiWrapper.Models.Game.Localization;
 using EnterpriseBot.ApiWrapper.Models.Game.Money;
 using EnterpriseBot.ApiWrapper.Models.Game.Storages;
-using EnterpriseBot.ApiWrapper.Models.Enums;
 using System.Collections.Generic;
-using EnterpriseBot.ApiWrapper.Models.Game.Localization;
 
 namespace EnterpriseBot.ApiWrapper.Models.Game.Business.Company
 {

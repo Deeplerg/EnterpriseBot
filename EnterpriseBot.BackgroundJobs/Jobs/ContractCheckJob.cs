@@ -17,7 +17,7 @@ namespace EnterpriseBot.BackgroundJobs.Jobs
         public async Task Execute(ContractCheckJobParams pars)
         {
             bool completed = await api.Business.Company.CompanyContract.CheckCompletion(pars.ContractId);
-            if(completed)
+            if (completed)
             {
                 await api.Business.Company.CompanyContract.Complete(pars.ContractId);
             }

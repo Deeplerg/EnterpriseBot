@@ -1,27 +1,17 @@
-﻿using EnterpriseBot.Api.Game.Essences;
+﻿using EnterpriseBot.Api.Game.Crafting;
+using EnterpriseBot.Api.Game.Essences;
+using EnterpriseBot.Api.Game.Localization;
+using EnterpriseBot.Api.Game.Storages;
 using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.Other;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
-using EnterpriseBot.Api.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using static EnterpriseBot.Api.Utils.UserInputUtils;
-using static EnterpriseBot.Api.Utils.Constants;
-using EnterpriseBot.Api.Game.Storages;
-using System.Text;
-using EnterpriseBot.Api.Models.Settings.BusinessSettings.Company;
-using Hangfire.Storage.Monitoring;
-using EnterpriseBot.Api.Game.Crafting;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.ObjectModel;
-using Newtonsoft.Json;
-using EnterpriseBot.Api.Game.Localization;
-using Microsoft.CodeAnalysis.Differencing;
-using System.Diagnostics.CodeAnalysis;
 using EnterpriseBot.Api.Models.Settings;
+using EnterpriseBot.Api.Utils;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using static EnterpriseBot.Api.Utils.UserInputUtils;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -58,7 +48,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public bool IsWorkingNow { get => Worker.IsWorkingNow; }
 
         [JsonIgnore]
-        public string ProduceItemAndStopJobId 
+        public string ProduceItemAndStopJobId
         {
             get => Worker.ProduceItemAndStopJobId;
             set => Worker.ProduceItemAndStopJobId = value;
@@ -95,7 +85,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         #region actions
         public static GameResult<CompanyJob> Create(CompanyJobCreationParams pars, GameSettings gameSettings, Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.CreateJob, pars.Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.CreateJob, pars.Company))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -145,11 +135,11 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<StringLocalization> SetDescription(string newDescription, LocalizationLanguage language, GameSettings gameSettings, Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.ChangeJobParameters, Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.ChangeJobParameters, Company))
             {
                 return Errors.DoesNotHavePermission();
             }
-            if(ThisJobHasPermission(CompanyJobPermissions.ChangeJobParameters))
+            if (ThisJobHasPermission(CompanyJobPermissions.ChangeJobParameters))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -164,7 +154,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult StartWorking()
         {
-            if(!ThisJobHasPermission(CompanyJobPermissions.ProduceItems))
+            if (!ThisJobHasPermission(CompanyJobPermissions.ProduceItems))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -180,7 +170,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if(!Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
+            if (!Recipe.CanBeDoneBy.HasFlag(RecipeCanBeDoneBy.Player))
             {
                 return recipeCantBeDoneByPlayerError;
             }
@@ -190,7 +180,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult ProduceItem()
         {
-            if(!ThisJobHasPermission(CompanyJobPermissions.ProduceItems))
+            if (!ThisJobHasPermission(CompanyJobPermissions.ProduceItems))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -268,7 +258,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if(application.Job != this)
+            if (application.Job != this)
             {
                 return new LocalizedError
                 {
@@ -320,12 +310,12 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public EmptyGameResult AddPermissions(CompanyJobPermissions permissions, Player invoker)
         {
-            if(!HasInvokerPermissionToChangeJobParameters(invoker))
+            if (!HasInvokerPermissionToChangeJobParameters(invoker))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            if(permissions.HasFlag(CompanyJobPermissions.ProduceItems) 
+            if (permissions.HasFlag(CompanyJobPermissions.ProduceItems)
                 && (Worker == null || Worker.Recipe == null || Worker.WorkingStorage == null))
             {
                 return cantAllowProduceItemsError;
@@ -344,7 +334,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
             }
 
             Permissions ^= permissions;
-            if(permissions.HasFlag(CompanyJobPermissions.ProduceItems))
+            if (permissions.HasFlag(CompanyJobPermissions.ProduceItems))
             {
                 StopWorking();
             }
@@ -365,7 +355,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 return cantAllowProduceItemsError;
             }
 
-            if(!Permissions.HasFlag(CompanyJobPermissions.ProduceItems)
+            if (!Permissions.HasFlag(CompanyJobPermissions.ProduceItems)
             && permissions.HasFlag(CompanyJobPermissions.ProduceItems))
             {
                 StopWorking();
@@ -380,12 +370,12 @@ namespace EnterpriseBot.Api.Game.Business.Company
         {
             var jobSettings = gameSettings.Business.Company.Job;
 
-            if(!invoker.HasPermission(CompanyJobPermissions.ChangeJobParameters, Company))
+            if (!invoker.HasPermission(CompanyJobPermissions.ChangeJobParameters, Company))
             {
                 return Errors.DoesNotHavePermission();
             }
 
-            if(newSalary < jobSettings.MinSalary)
+            if (newSalary < jobSettings.MinSalary)
             {
                 return SalaryBelowMinimumError(jobSettings.MinSalary);
             }

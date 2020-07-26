@@ -1,7 +1,4 @@
 ﻿using EnterpriseBot.ApiWrapper.Categories.Reputation;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EnterpriseBot.ApiWrapper.CategoryLists
 {

@@ -4,12 +4,7 @@ using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Business;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
-using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Business.Company
 {
@@ -42,7 +37,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public static GameResult<CompanyContractRequest> Create(CompanyContractRequestCreationParams creationPars, GameSettings gameSettings, Player invoker)
         {
-            if(!invoker.HasPermission(CompanyJobPermissions.SignContracts, creationPars.RequestingCompany))
+            if (!invoker.HasPermission(CompanyJobPermissions.SignContracts, creationPars.RequestingCompany))
             {
                 return Errors.DoesNotHavePermission();
             }
@@ -52,7 +47,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
         public GameResult<string> SetName(string newName, GameSettings gameSettings)
         {
-            if(!UserInputUtils.CheckName(newName))
+            if (!UserInputUtils.CheckName(newName))
             {
                 return Errors.IncorrectNameInput(gameSettings.Localization.UserInputRequirements);
             }
@@ -116,7 +111,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 };
             }
 
-            if(cp.RequestedCompany == cp.RequestingCompany)
+            if (cp.RequestedCompany == cp.RequestingCompany)
             {
                 return new LocalizedError
                 {

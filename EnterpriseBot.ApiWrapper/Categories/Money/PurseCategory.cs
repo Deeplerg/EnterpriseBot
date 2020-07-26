@@ -3,15 +3,12 @@ using EnterpriseBot.ApiWrapper.Models.CreationParams.Money;
 using EnterpriseBot.ApiWrapper.Models.Enums;
 using EnterpriseBot.ApiWrapper.Models.Game.Money;
 using EnterpriseBot.ApiWrapper.Models.Other;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Money
 {
-    public class PurseCategory : MoneyCategoryBase<Purse, 
-                                                   long, 
+    public class PurseCategory : MoneyCategoryBase<Purse,
+                                                   long,
                                                    PurseCreationParams>
     {
         protected const string categoryName = "Purse";

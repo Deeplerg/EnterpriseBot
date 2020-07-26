@@ -1,7 +1,5 @@
 ﻿using EnterpriseBot.ApiWrapper.Categories.Business.Company;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EnterpriseBot.ApiWrapper.CategoryLists
 {

@@ -1,11 +1,9 @@
 ﻿using EnterpriseBot.Api.Models.Common.Enums;
 using EnterpriseBot.Api.Models.ModelCreationParams.Crafting;
 using EnterpriseBot.Api.Models.Other;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Game.Crafting
 {
@@ -24,10 +22,10 @@ namespace EnterpriseBot.Api.Game.Crafting
 
         public RecipeCanBeDoneBy CanBeDoneBy { get; protected set; }
 
-        public virtual IReadOnlyCollection<Ingredient> Ingredients 
-        { 
-            get => new ReadOnlyCollection<Ingredient>(ingredients); 
-            protected set => ingredients = value.ToList(); 
+        public virtual IReadOnlyCollection<Ingredient> Ingredients
+        {
+            get => new ReadOnlyCollection<Ingredient>(ingredients);
+            protected set => ingredients = value.ToList();
         }
         private List<Ingredient> ingredients = new List<Ingredient>();
 

@@ -1,10 +1,7 @@
 ﻿using EnterpriseBot.ApiWrapper.Abstractions;
+using EnterpriseBot.ApiWrapper.Models.CreationParams.Business.Company;
 using EnterpriseBot.ApiWrapper.Models.Game.Business.Company;
 using EnterpriseBot.ApiWrapper.Models.Other;
-using EnterpriseBot.ApiWrapper.Models.CreationParams.Business.Company;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.ApiWrapper.Categories.Business.Company

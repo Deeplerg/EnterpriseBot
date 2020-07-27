@@ -2,13 +2,15 @@
 using EnterpriseBot.VK.Models.MenuRelated;
 using EnterpriseBot.VK.Models.Messages;
 using EnterpriseBot.VK.Utils;
+using Newtonsoft.Json;
 using System;
 
 namespace EnterpriseBot.VK.Models.MenuResults
 {
+    [JsonObject(MemberSerialization.Fields)]
     public class TextResult : IMenuResult
     {
-        private readonly string _text;
+        private readonly string text;
         private readonly NextAction nextAction;
 
         public TextResult(string text, NextAction nextAction)
@@ -19,13 +21,13 @@ namespace EnterpriseBot.VK.Models.MenuResults
                                                           nameof(text)));
             }
 
-            this._text = text;
+            this.text = text;
             this.nextAction = nextAction ?? throw new ArgumentNullException(paramName: nameof(nextAction));
         }
 
         public VkMessage GetMessage()
         {
-            return new VkMessage(_text);
+            return new VkMessage(text);
         }
 
         public NextAction GetNextAction(MenuContext context)
@@ -35,7 +37,7 @@ namespace EnterpriseBot.VK.Models.MenuResults
 
         public object Clone()
         {
-            return new TextResult(_text, nextAction);
+            return new TextResult(text, (NextAction)nextAction.Clone());
         }
     }
 }

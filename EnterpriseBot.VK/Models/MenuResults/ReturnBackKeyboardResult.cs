@@ -4,72 +4,71 @@ using EnterpriseBot.VK.Models.Keyboard;
 using EnterpriseBot.VK.Models.MenuRelated;
 using EnterpriseBot.VK.Models.Messages;
 using EnterpriseBot.VK.Utils;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using VkNet.Enums.SafetyEnums;
 
 namespace EnterpriseBot.VK.Models.MenuResults
 {
+    [JsonObject(MemberSerialization.Fields)]
     public class ReturnBackKeyboardResult : IMenuResult
     {
-        private const string defaultReturnButtonText = "Вернуться назад";
-
-        private readonly string message;
-        private readonly LocalKeyboard keyboard;
-        private readonly IMenuResult previousResult;
+        private string message;
         private string returnButtonText;
+        private NextAction previousAction;
 
-        public ReturnBackKeyboardResult(string message, IMenuResult previousResult, string returnButtonText = defaultReturnButtonText)
+        public ReturnBackKeyboardResult(string message, MenuContext menuContext, string returnButtonText = Constants.ReturnBackMenuDefaultButtonText)
+                                 : this(message, menuContext.LocalPlayer.PreviousAction, returnButtonText) { }
+
+        public ReturnBackKeyboardResult(string message, NextAction previousAction, string returnButtonText = Constants.ReturnBackMenuDefaultButtonText)
         {
             this.message = message;
-            this.previousResult = (IMenuResult)previousResult.Clone();
             this.returnButtonText = returnButtonText;
-
-            var builder = new LocalKeyboardBuilder();
-            builder.AddButton(new LocalKeyboardButton
-            {
-                Text = this.returnButtonText,
-                Next = new NextAction
-                {
-                    PlainAction = _ => this.previousResult
-                }
-            });
-
-            this.keyboard = builder.Build();
+            this.previousAction = (NextAction)previousAction.Clone();
         }
-
-        public ReturnBackKeyboardResult(string message, MenuContext context, string returnButtonText = defaultReturnButtonText)
-            : this(message, context.LocalPlayer.PreviousResult, returnButtonText) { }
 
         public VkMessage GetMessage()
         {
             return new VkMessage
             {
                 Text = message,
-                Keyboard = keyboard
+                Keyboard = BuildKeyboard(returnButtonText)
             };
         }
 
         public NextAction GetNextAction(MenuContext context)
         {
-            if (context.Message.PressedButton == null)
-            {
-                return new NextAction
-                {
-                    Menu = Constants.PayloadEmptyMenu,
-                    MenuAction = Constants.PayloadEmptyMenuAction,
-                    Parameters = new MenuParameter[]
-                    {
-                        new MenuParameter(previousResult)
-                    }
-                };
-            }
-            else
-            {
-                return keyboard[context.Message.PressedButton.Value].Next;
-            }
+            return KeyboardUtils.GetNextActionFromKeyboard(context);
         }
 
         public object Clone()
         {
-            return new ReturnBackKeyboardResult(message, (IMenuResult)previousResult.Clone(), returnButtonText);
+            return new ReturnBackKeyboardResult(message, (NextAction)previousAction.Clone(), returnButtonText);
+        }
+
+        private LocalKeyboard BuildKeyboard(string returnButtonText)
+        {
+            var builder = new LocalKeyboardBuilder();
+            builder.AddButton(new LocalKeyboardButton
+            {
+                Text = returnButtonText,
+                Next = previousAction,
+                Color = KeyboardButtonColor.Primary
+            });
+            builder.AddLine();
+            builder.AddButton(new LocalKeyboardButton
+            {
+                Text = "В главное меню",
+                Next = new NextAction(menu: Constants.MainMenu,
+                                      action: Constants.MainMenuMainAction)
+            });
+            var keyboard = builder.Build();
+
+            return keyboard;
         }
     }
 }

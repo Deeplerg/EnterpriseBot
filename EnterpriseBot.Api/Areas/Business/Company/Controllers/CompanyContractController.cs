@@ -182,6 +182,7 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
             jobs.Remove(companyContract.CompletionCheckerBackgroundJobId);
+            companyContract.CompletionCheckerBackgroundJobId = null;
 
             ctx.CompanyContracts.Remove(companyContract);
             await ctx.SaveChangesAsync();
@@ -202,6 +203,7 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             if (companyContract == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
             jobs.Remove(companyContract.CompletionCheckerBackgroundJobId);
+            companyContract.CompletionCheckerBackgroundJobId = null;
 
             ctx.Remove(companyContract);
             await ctx.SaveChangesAsync();

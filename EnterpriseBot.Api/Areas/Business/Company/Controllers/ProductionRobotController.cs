@@ -8,10 +8,13 @@ using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
 using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
+using EnterpriseBot.BackgroundJobs.Jobs;
+using EnterpriseBot.BackgroundJobs.Params;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
@@ -117,15 +120,14 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             var actionResult = productionRobot.StartWorking(invoker);
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
-            // Why would one calling StartWorking on ProductionRobot (explicitly!) want it to stop?
-            //ScheduleProduceItemAndStopJob(companyWorker, jobs);
+            ScheduleProduceItemJob(productionRobot, jobs);
 
             await ctx.SaveChangesAsync();
 
             return new EmptyGameResult();
         }
 
-        public async Task<EmptyGameResult> ProduceItem([FromBody] string json)
+        public async Task<EmptyGameResult> ProduceItem([FromBody] string json, [FromServices] IBackgroundJobScheduler jobs)
         {
             var pars = new
             {
@@ -140,6 +142,9 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
             var actionResult = productionRobot.ProduceItem();
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            jobs.Remove(productionRobot.ProduceItemJobId);
+            productionRobot.ProduceItemJobId = null;
 
             await ctx.SaveChangesAsync();
 
@@ -166,7 +171,8 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             var actionResult = productionRobot.StopWorking(invoker);
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
-            //jobs.Remove(productionRobot.ProduceItemAndStopJobId);
+            jobs.Remove(productionRobot.ProduceItemJobId);
+            productionRobot.ProduceItemJobId = null;
 
             await ctx.SaveChangesAsync();
 
@@ -259,14 +265,15 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
 
 
-        //private void ScheduleProduceItemAndStopJob(ProductionRobot productionRobot, IBackgroundJobScheduler jobs)
-        //{
-        //    string jobId = jobs.Schedule<ProduceItemAndStopJob, ProduceItemAndStopJobParams>(new ProduceItemAndStopJobParams
-        //    {
-        //        CompanyWorkerId = productionRobot.CompanyWorkerId
-        //    }, TimeSpan.FromSeconds(productionRobot.Recipe.LeadTimeInSeconds));
+        private void ScheduleProduceItemJob(ProductionRobot productionRobot, IBackgroundJobScheduler jobs)
+        {
+            string jobId = jobs.Schedule<ProduceItemJob, ProduceItemJobParams>(new ProduceItemJobParams
+            {
+                CompanyWorkerId = productionRobot.CompanyWorkerId,
+                Repeatedly = true
+            }, TimeSpan.FromSeconds(productionRobot.Recipe.LeadTimeInSeconds));
 
-        //    productionRobot.ProduceItemAndStopJobId = jobId;
-        //}
+            productionRobot.ProduceItemJobId = jobId;
+        }
     }
 }

@@ -104,9 +104,9 @@ namespace EnterpriseBot.VK.Services
                         //first, search by name
                         //if nothing found, search by type
                         var param = menuParametersCopyForSorting.FirstOrDefault(p => p.Name == parameter.Name)
-                                    ?? menuParametersCopyForSorting.FirstOrDefault(p => p.Type == parameter.ParameterType)
-                                    ?? menuParametersCopyForSorting.FirstOrDefault(p => parameter.ParameterType.IsAssignableFrom(p.Type))
-                                    ?? (parameter.HasDefaultValue ? new MenuParameter(parameter.DefaultValue) : null);
+                                 ?? menuParametersCopyForSorting.FirstOrDefault(p => p.Type == parameter.ParameterType)
+                                 ?? menuParametersCopyForSorting.FirstOrDefault(p => parameter.ParameterType.IsAssignableFrom(p.Type))
+                                 ?? (parameter.HasDefaultValue ? new MenuParameter(parameter.DefaultValue) : null);
 
                         if (param == null)
                             throw new ArgumentException($"Unable to find suitable menu parameter for {parameter}");

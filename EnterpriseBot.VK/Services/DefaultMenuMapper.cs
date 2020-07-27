@@ -1,7 +1,9 @@
 ﻿using EnterpriseBot.VK.Abstractions;
 using EnterpriseBot.VK.Models.MenuRelated;
 using EnterpriseBot.VK.Utils;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -18,7 +20,7 @@ namespace EnterpriseBot.VK.Services
 
             if (!localPlayer.IsAuthorized)
             {
-                if (localPlayer?.PreviousResult == null)
+                if (localPlayer.PreviousResult == null)
                 {
                     return CreateAction(Constants.AuthMenu, Constants.AuthMenuAuthAction);
                 }
@@ -38,22 +40,47 @@ namespace EnterpriseBot.VK.Services
 
         public async Task<IMenuResult> InvokeAction(NextAction next, MenuContext context, IMenuRouter menuRouter, params object[] menuCreationParams)
         {
-            if (next.PlainAction != null)
+            var assembly = AppDomain.CurrentDomain
+                                    .GetAssemblies()
+                                    .FirstOrDefault(m => m.GetName().Name == next.MenuAssemblyName);
+            if(assembly == null)
             {
-                return next.PlainAction.Invoke(context);
-            }
-            if (next.Menu == null)
-            {
-                throw new ArgumentNullException($"{nameof(next.Menu)} cannot be null unless a {nameof(next.PlainAction)} specified");
-            }
-            if (next.Menu.GetInterface(nameof(IMenu)) == null)
-            {
-                throw new ArgumentException($"{next.Menu} is not a menu");
+                throw new ArgumentException($"Can't find assembly specified: {next.MenuAssemblyName}");
             }
 
-            MethodInfo action = next.MenuAction ?? next.Menu.GetMethod(nameof(IMenu.DefaultMenuLayout));
+            Type menu;
 
-            var menuInstance = menuRouter.CreateMenuOfType(next.Menu, menuCreationParams);
+            string menuTypeName = next.MenuTypeName;
+            if(string.IsNullOrEmpty(menuTypeName))
+            {
+                menuTypeName = nameof(IMenu.DefaultMenuLayout);
+            }
+
+            var menus = assembly.GetTypes().Where(m => m.Name == next.MenuTypeName).ToList();
+
+            if(menus.Count > 1)
+            {
+                menu = menus.FirstOrDefault(m => m.Namespace == next.MenuNamespace);
+            }
+            else
+            {
+                menu = menus.SingleOrDefault();
+            }
+
+            if(menu == null)
+            {
+                throw new ArgumentException($"Can't find menu specified: {next.MenuTypeName}");
+            }
+            if (menu.GetInterface(nameof(IMenu)) == null)
+            {
+                throw new ArgumentException($"{menu} is not a menu");
+            }
+
+            var method = TypeUtils.GetMethod(menu, next.MenuActionMethodName);
+
+            MethodInfo action = method ?? TypeUtils.GetMethod(menu, nameof(IMenu.DefaultMenuLayout));
+
+            var menuInstance = menuRouter.CreateMenuOfType(menu, menuCreationParams);
 
             return await menuRouter.InvokeMenuActionAsync(action, menuInstance, invocationParams: next.Parameters);
         }
@@ -69,66 +96,10 @@ namespace EnterpriseBot.VK.Services
                 throw new ArgumentException($"{menuType} is not a menu");
             }
 
-            return new NextAction
-            {
-                Menu = menuType,
-                MenuAction = menuAction ?? menuType.GetMethod(nameof(IMenu.DefaultMenuLayout)),
-                Parameters = pars
-            };
+            //var menuAction ??= TypeUtils.GetMethod(menuType, nameof(IMenu.DefaultMenuLayout));
+            if (menuAction is null) menuAction = TypeUtils.GetMethod(menuType, nameof(IMenu.DefaultMenuLayout));
+
+            return new NextAction(menuType, menuAction, pars);
         }
-
-        #region old code
-        //private async Task<IMenuResult> MapMenuAndInvokeAsync(IMenuRouter menuRouter, MenuContext context, params object[] creationParams)
-        //{
-        //    async Task<IMenuResult> CreateMenuAndInvoke(Type menuType, MethodInfo action, object[] creationPars, MenuParameter[] invocationPars)
-        //    {
-        //        var menuInstance = menuRouter.CreateMenuOfType(menuType, creationPars);
-
-        //        return await menuRouter.InvokeMenuActionAsync(action, menuInstance, invocationPars);
-        //    }
-        //    async Task<IMenuResult> InvokeNextAction(NextAction next)
-        //    {
-        //        if (next.PlainAction != null)
-        //        {
-        //            return next.PlainAction.Invoke(context);
-        //        }
-        //        if (next.Menu == null)
-        //        {
-        //            throw new ArgumentNullException($"{nameof(next.Menu)} cannot be null unless a {nameof(next.PlainAction)} specified");
-        //        }
-        //        if (next.Menu.GetInterface(nameof(IMenu)) == null)
-        //        {
-        //            throw new ArgumentException($"{next.Menu} is not a menu");
-        //        }
-
-        //        MethodInfo action = next.MenuAction ?? next.Menu.GetMethod(nameof(IMenu.DefaultMenuLayout));
-
-        //        return await CreateMenuAndInvoke(next.Menu, action, creationParams, next.Parameters);
-        //    }
-
-        //    var localPlayer = context.LocalPlayer;
-
-        //    if (!localPlayer.IsAuthorized)
-        //    {
-        //        if (localPlayer.PreviousResult == null)
-        //        {
-        //            return await CreateMenuAndInvoke(Constants.AuthMenu, Constants.AuthMenuAuthAction, creationParams, null);
-        //        }
-
-        //        var next = localPlayer.PreviousResult.GetNextAction(context);
-        //        return await InvokeNextAction(next);
-        //    }
-        //    else
-        //    {
-        //        if (localPlayer.PreviousResult == null)
-        //        {
-        //            return await CreateMenuAndInvoke(Constants.MainMenu, Constants.MainMenuAfterRestartAction, creationParams, null);
-        //        }
-
-        //        var next = localPlayer.PreviousResult.GetNextAction(context);
-        //        return await InvokeNextAction(next);
-        //    }
-        //}
-        #endregion
     }
 }

@@ -7,6 +7,7 @@ using EnterpriseBot.Api.Models.Contexts;
 using EnterpriseBot.Api.Models.ModelCreationParams.Essences;
 using EnterpriseBot.Api.Models.Other;
 using EnterpriseBot.Api.Models.Settings;
+using EnterpriseBot.Api.Models.Settings.GameplaySettings;
 using EnterpriseBot.Api.Models.Settings.LocalizationSettings;
 using EnterpriseBot.Api.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,17 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
 
         public async Task<GameResult<Player>> Create([FromBody] PlayerApiCreationParams pars)
         {
+            string name = pars.Name.ToLower().Trim();
+            if (await ctx.Players.AnyAsync(player => player.Name.ToLower().Trim() == name))
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Normal,
+                    EnglishMessage = "There already is a player with the same name",
+                    RussianMessage = "Уже есть игрок с таким именем"
+                };
+            }
+
             var creationResult = Player.Create(new PlayerCreationParams
             {
                 Name = pars.Name,
@@ -253,6 +265,7 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
 
             string name = d.name.ToLower();
 
+
             var players = await ctx.Players
                                    .Where(player => player.Name.ToLower().Contains(name))
                                    .ToListAsync();
@@ -260,7 +273,21 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
             return players;
         }
 
-        public async Task<GameResult<Player>> GetByPlatform([FromBody] string json)
+        public async Task<GameResult<Player>> SearchByExactName([FromBody] string json)
+        {
+            var pars = new
+            {
+                name = default(string)
+            };
+
+            var d = JsonConvert.DeserializeAnonymousType(json, pars);
+
+            string name = d.name.ToLower();
+
+            return await ctx.Players.FirstOrDefaultAsync(m => m.Name.ToLower() == name);
+        }
+
+        public GameResult<Player> GetByPlatform([FromBody] string json)
         {
             var pars = new
             {
@@ -278,9 +305,24 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
 
                         if (parsedSuccessfully)
                         {
+                            // Can't await SingleOrDefaultAsync in .NET Core 3.1.6, as the issue with it was fixed in the preview of .NET 5.
+                            /*
                             return await ctx.Players
                                             .SingleOrDefaultAsync(player => player.VkConnected
                                                                          && player.VkId == id);
+                            */
+
+                            // Async workaround:
+                            /*
+                            return (await ctx.Players.Where(player => player.VkConnected
+                                                                  && player.VkId == id)
+                                                    .Take(1)
+                                                    .ToListAsync()).SingleOrDefault();
+                            */
+
+                            return ctx.Players
+                                      .SingleOrDefault(player => player.VkConnected
+                                                              && player.VkId == id);
                         }
                         else
                         {

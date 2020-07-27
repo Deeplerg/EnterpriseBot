@@ -78,6 +78,15 @@ namespace EnterpriseBot.ApiWrapper.Categories.Business.Company
             });
         }
 
+        public async Task ScheduleProduceItem(long modelId, bool repeatedly)
+        {
+            await api.Call(RequestInfo(nameof(ScheduleProduceItem)), new
+            {
+                modelId = modelId,
+                repeatedly = repeatedly
+            });
+        }
+
 
 
         private ApiRequestInfo RequestInfo(string methodName)

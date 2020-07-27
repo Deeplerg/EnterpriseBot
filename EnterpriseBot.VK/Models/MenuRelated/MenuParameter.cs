@@ -1,4 +1,5 @@
 ﻿using EnterpriseBot.VK.Exceptions;
+using Newtonsoft.Json;
 using System;
 
 namespace EnterpriseBot.VK.Models.MenuRelated
@@ -13,12 +14,13 @@ namespace EnterpriseBot.VK.Models.MenuRelated
             this.Name = name;
         }
 
+        [JsonIgnore]
         public Type Type
         {
             get
             {
                 if (Value is null)
-                    throw new NullParameterValueException("Value is null, therefore cannot get its type");
+                    throw new NullParameterValueException("Value is null, thus cannot get its type");
                 return Value.GetType();
             }
         }

@@ -24,7 +24,9 @@ namespace EnterpriseBot.VK.Services
             this.logger = logger;
         }
 
-        public LocalPlayer Get(object id, PlayerManagerFilter filter = PlayerManagerFilter.LocalId)
+#nullable enable
+        public LocalPlayer? Get(object id, PlayerManagerFilter filter = PlayerManagerFilter.LocalId)
+#nullable restore
         {
             switch (filter)
             {

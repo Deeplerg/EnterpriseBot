@@ -5,14 +5,11 @@ namespace EnterpriseBot.VK.Menus
 {
     public class BotDoesNotSupportTextCommandsMenu : MenuBase
     {
-        public IMenuResult ReturnBack(IMenuResult previousResult = null)
+        public IMenuResult ReturnBack()
         {
-            if (previousResult == null)
-                previousResult = MenuContext.LocalPlayer.PreviousResult;
-
             string message = "На данный момент бот не поддерживает текстовые команды. Пожалуйста, используйте клавиатуру.";
 
-            return new ReturnBackKeyboardResult(message, previousResult);
+            return new ReturnBackKeyboardResult(message, MenuContext);
         }
 
         public override IMenuResult DefaultMenuLayout()

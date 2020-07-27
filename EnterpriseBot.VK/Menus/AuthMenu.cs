@@ -1,7 +1,8 @@
-﻿using EnterpriseBot.ApiWrapper.Models.ModelCreationParams.Essences;
+﻿using EnterpriseBot.ApiWrapper.Models.CreationParams.Essences;
 using EnterpriseBot.VK.Abstractions;
 using EnterpriseBot.VK.Models.Keyboard;
 using EnterpriseBot.VK.Models.MenuRelated;
+using EnterpriseBot.VK.Models.MenuResults;
 using EnterpriseBot.VK.Models.Settings;
 using EnterpriseBot.VK.Utils;
 using Microsoft.Extensions.Logging;
@@ -54,27 +55,31 @@ namespace EnterpriseBot.VK.Menus
                 new LocalKeyboardButton
                 {
                     Text = "Зарегистрироваться",
-                    Next = new NextAction
-                    {
-                        PlainAction = (ctx) => Input("Введи ник:", thisType, nameof(Register_PlayerName))
-                    },
+                    Next = new NextAction(thisType, nameof(Register_EnterName)),
                     Color = KeyboardButtonColor.Primary
                 },
                 new LocalKeyboardButton
                 {
                     Text = "Войти",
-                    Next = new NextAction
-                    {
-                        PlainAction = (ctx) => Input("Введи ник или id своего аккаунта:", thisType, nameof(Login_PlayerName))
-                    },
+                    Next = new NextAction(thisType, nameof(Login_EnterNameOrId)),
                     Color = KeyboardButtonColor.Default
                 }
             });
         }
 
+        public IMenuResult Login_EnterNameOrId()
+        {
+            string message = "Введи ник или id своего аккаунта:";
+
+            return new InputResult(message,
+                                   nextAction: new NextAction(thisType, nameof(Login_PlayerName)),
+                                   inputStringParameterName: "input",
+                                   returnBackAction: new NextAction(thisType, nameof(Auth)));
+        }
+
         public async Task<IMenuResult> Login_PlayerName(string input)
         {
-            var player = await BotApi.Essences.Player.GetByName(input);
+            var player = await BotApi.Essences.Player.SearchByExactName(input);
             if (player == null)
             {
                 if (long.TryParse(input, out long id))
@@ -86,11 +91,7 @@ namespace EnterpriseBot.VK.Menus
                 return Keyboard($"😕 Такой игрок не найден", new LocalKeyboardButton
                 {
                     Text = "Назад",
-                    Next = new NextAction
-                    {
-                        Menu = thisType,
-                        MenuAction = thisType.GetMethod(nameof(Auth))
-                    }
+                    Next = new NextAction(thisType, nameof(Auth))
                 });
             }
 
@@ -107,7 +108,10 @@ namespace EnterpriseBot.VK.Menus
                 Value = player.Id
             };
 
-            return Input(message, thisType, nameof(Login_Password), playerIdParameter);
+            return new InputResult(message,
+                                   nextAction: new NextAction(thisType, nameof(Login_Password), playerIdParameter),
+                                   inputStringParameterName: "password",
+                                   returnBackAction: new NextAction(thisType, nameof(Auth)));
         }
 
         public async Task<IMenuResult> Login_Password(string password, long playerId)
@@ -127,10 +131,8 @@ namespace EnterpriseBot.VK.Menus
                 return Keyboard("😄 Авторизация прошла успешно!", new LocalKeyboardButton
                 {
                     Text = "В главное меню",
-                    Next = new NextAction
-                    {
-                        Menu = Constants.MainMenu
-                    }
+                    Next = new NextAction(Constants.MainMenu, Constants.MainMenuMainAction),
+                    Color = KeyboardButtonColor.Positive
                 });
             }
             else
@@ -138,13 +140,20 @@ namespace EnterpriseBot.VK.Menus
                 return Keyboard("😕 Пароль неверный.", new LocalKeyboardButton
                 {
                     Text = "Назад",
-                    Next = new NextAction
-                    {
-                        Menu = thisType,
-                        MenuAction = thisType.GetMethod(nameof(Auth))
-                    }
+                    Next = new NextAction(thisType, nameof(Auth))
                 });
             }
+        }
+
+
+        public IMenuResult Register_EnterName()
+        {
+            string message = "Введи ник:";
+
+            return new InputResult(message,
+                                   nextAction: new NextAction(thisType, nameof(Register_PlayerName)),
+                                   inputStringParameterName: "name",
+                                   returnBackAction: new NextAction(thisType, nameof(Auth)));
         }
 
         public IMenuResult Register_PlayerName(string name)
@@ -154,14 +163,18 @@ namespace EnterpriseBot.VK.Menus
                              "Все пароли хранятся только в зашифрованном виде." +
                              "После отправки пароля настоятельно рекомендуется удалить сообщение с ним." +
                              "\n" +
-                             "Если что-то идёт не так, напиши в " +
-                            $"{MessageUtils.HideVkNameIntoText(links.EntbotSupportVkName, "техподдержку.")}" +
+                             "Если что-то идёт не так, " +
+                            $"{MessageUtils.HideVkNameIntoText(links.EntbotSupportVkName, "напиши в поддержку.")}" +
                              "\n" +
                              "Пароль:";
 
             var nameParameter = new MenuParameter(name);
 
-            return Input(message, thisType, nameof(Register_Password), nameParameter);
+            return new InputResult(message,
+                                   nextAction: new NextAction(thisType, nameof(Register_Password), 
+                                                              new MenuParameter(name, name: "name")),
+                                   inputStringParameterName: "password",
+                                   returnBackAction: new NextAction(thisType, nameof(Auth)));
         }
 
         public async Task<IMenuResult> Register_Password(string password, string name)
@@ -169,7 +182,7 @@ namespace EnterpriseBot.VK.Menus
             var player = await BotApi.Essences.Player.Create(new PlayerCreationParams
             {
                 Name = name,
-                Password = password
+                RawPassword = password
             });
 
             MenuContext.LocalPlayer.PlayerId = player.Id;
@@ -184,10 +197,7 @@ namespace EnterpriseBot.VK.Menus
             return Keyboard(message, new LocalKeyboardButton
             {
                 Text = "В главное меню",
-                Next = new NextAction
-                {
-                    Menu = Constants.MainMenu
-                },
+                Next = new NextAction(Constants.MainMenu, Constants.MainMenuMainAction),
                 Color = KeyboardButtonColor.Positive
             });
         }

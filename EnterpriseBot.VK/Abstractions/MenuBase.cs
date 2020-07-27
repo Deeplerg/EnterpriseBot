@@ -39,31 +39,19 @@ namespace EnterpriseBot.VK.Abstractions
             return new TextResult(text, next);
         }
 
-        protected TextResult Text(string text, Type nextMenu, MethodInfo nextMenuAction)
+        protected TextResult Text(string text, Type nextMenu, MethodInfo nextMenuAction, params MenuParameter[] pars)
         {
-            return new TextResult(text, new NextAction
-            {
-                Menu = nextMenu,
-                MenuAction = nextMenuAction
-            });
+            return new TextResult(text, new NextAction(nextMenu, nextMenuAction));
         }
 
         protected TextResult Text(string text, Type nextMenu, string nextMenuActionName)
         {
-            var method = nextMenu.GetMethod(nextMenuActionName)
+            var method = TypeUtils.GetMethod(nextMenu, nextMenuActionName)
                          ?? throw new ArgumentException(
                                       string.Format(ExceptionTemplates.MethodDoesNotExistInTypeTemplate,
                                                     nextMenuActionName, nextMenu));
 
             return Text(text, nextMenu, method);
-        }
-
-        protected TextResult Text(string text, Func<MenuContext, IMenuResult> nextAction)
-        {
-            return new TextResult(text, new NextAction
-            {
-                PlainAction = nextAction
-            });
         }
 
         protected KeyboardResult Keyboard(string text, LocalKeyboard keyboard)
@@ -89,20 +77,6 @@ namespace EnterpriseBot.VK.Abstractions
             var builder = new LocalKeyboardBuilder();
             builder.AddButton(button);
             return new KeyboardResult(text, builder.Build());
-        }
-
-        protected InputResult Input(string message, Type nextMenu, MethodInfo nextMenuAction, params MenuParameter[] additionalParams)
-        {
-            return new InputResult(message, nextMenu, nextMenuAction, additionalParams);
-        }
-
-        protected InputResult Input(string message, Type nextMenu, string nextMenuActionName, params MenuParameter[] additionalParams)
-        {
-            var method = nextMenu.GetMethod(nextMenuActionName)
-                         ?? throw new ArgumentException(
-                                      string.Format(ExceptionTemplates.MethodDoesNotExistInTypeTemplate,
-                                                    nextMenuActionName, nextMenu));
-            return Input(message, nextMenu, method, additionalParams);
         }
     }
 }

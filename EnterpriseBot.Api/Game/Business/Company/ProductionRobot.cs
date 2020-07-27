@@ -34,6 +34,13 @@ namespace EnterpriseBot.Api.Game.Business.Company
         }
 
         [JsonIgnore]
+        public string ProduceItemJobId 
+        { 
+            get => Worker.ProduceItemJobId; 
+            set => Worker.ProduceItemJobId = value; 
+        }
+
+        [JsonIgnore]
         protected virtual CompanyWorker Worker { get; set; }
 
         #region errors

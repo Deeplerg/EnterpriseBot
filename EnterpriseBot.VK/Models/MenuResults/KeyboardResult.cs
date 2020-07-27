@@ -4,14 +4,17 @@ using EnterpriseBot.VK.Models.Keyboard;
 using EnterpriseBot.VK.Models.MenuRelated;
 using EnterpriseBot.VK.Models.Messages;
 using EnterpriseBot.VK.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace EnterpriseBot.VK.Models.MenuResults
 {
+    [JsonObject(MemberSerialization.Fields)]
     public class KeyboardResult : IMenuResult
     {
+        [JsonIgnore] // No need to serialize this, because there is MenuContext.LocalPlayer.CurrentKeyboard
         private readonly LocalKeyboard localKeyboard;
         private readonly string text;
 
@@ -82,21 +85,7 @@ namespace EnterpriseBot.VK.Models.MenuResults
 
         public NextAction GetNextAction(MenuContext context)
         {
-            if (context.Message.PressedButton == null)
-            {
-                return new NextAction
-                {
-                    Menu = Constants.PayloadEmptyMenu,
-                    MenuAction = Constants.PayloadEmptyMenuAction
-                };
-            }
-
-            if (context.Message.PressedButton >= localKeyboard.ButtonCount || context.Message.PressedButton < 0)
-            {
-                throw new ArgumentOutOfRangeException($"{nameof(context.Message.PressedButton)} must not be more than or equal to button count or be lower than 0");
-            }
-
-            return localKeyboard[context.Message.PressedButton.Value].Next;
+            return KeyboardUtils.GetNextActionFromKeyboard(context, localKeyboard);
         }
 
         public object Clone()

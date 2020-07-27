@@ -36,6 +36,13 @@ namespace EnterpriseBot.VK.Models.Keyboard
             //}
         }
 
+        //public static implicit operator LocalKeyboard(LocalKeyboardButton button)
+        //{
+        //    var builder = new LocalKeyboardBuilder();
+        //    builder.AddButton(button);
+        //    return builder.Build();
+        //}
+
         public object Clone()
         {
             LocalKeyboard keyboard = (LocalKeyboard)MemberwiseClone();

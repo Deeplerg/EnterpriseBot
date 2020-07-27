@@ -10,7 +10,7 @@ namespace EnterpriseBot.ApiWrapper.Categories.Reputation
     {
         protected const string categoryName = "Review";
 
-        internal ReviewCategory(IApiClient api) : base(api) { }
+        public ReviewCategory(IApiClient api) : base(api) { }
 
         public override async Task<Review> Get(long id)
         {

@@ -104,7 +104,7 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             return new EmptyGameResult();
         }
 
-        public async Task<EmptyGameResult> ProduceItem([FromBody] string json)
+        public async Task<EmptyGameResult> ProduceItem([FromBody] string json, [FromServices] IBackgroundJobScheduler jobs)
         {
             var pars = new
             {
@@ -119,6 +119,9 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
             var actionResult = companyWorker.ProduceItem();
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            jobs.Remove(companyWorker.ProduceItemJobId);
+            companyWorker.ProduceItemJobId = null;
 
             await ctx.SaveChangesAsync();
 
@@ -141,7 +144,8 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             var actionResult = companyWorker.StopWorking();
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
-            jobs.Remove(companyWorker.ProduceItemAndStopJobId);
+            jobs.Remove(companyWorker.ProduceItemJobId);
+            companyWorker.ProduceItemJobId = null;
 
             await ctx.SaveChangesAsync();
 
@@ -220,16 +224,38 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             return companyWorker.SpeedMultiplier;
         }
 
-
-
-        private void ScheduleProduceItemAndStopJob(CompanyWorker companyWorker, IBackgroundJobScheduler jobs)
+        public async Task<EmptyGameResult> ScheduleProduceItem([FromBody] string json, [FromServices] IBackgroundJobScheduler jobs)
         {
-            string jobId = jobs.Schedule<ProduceItemAndStopJob, ProduceItemAndStopJobParams>(new ProduceItemAndStopJobParams
+            var pars = new
             {
-                CompanyWorkerId = companyWorker.Id
+                modelId = default(long),
+                repeatedly = default(bool)
+            };
+
+            var d = JsonConvert.DeserializeAnonymousType(json, pars);
+
+            var companyWorker = await ctx.CompanyWorkers.FindAsync(d.modelId);
+            if (companyWorker == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
+
+
+            ScheduleProduceItem(companyWorker, d.repeatedly, jobs);
+
+            await ctx.SaveChangesAsync();
+
+            return new EmptyGameResult();
+        }
+
+
+
+        private void ScheduleProduceItem(CompanyWorker companyWorker, bool repeatedly, IBackgroundJobScheduler jobs)
+        {
+            string jobId = jobs.Schedule<ProduceItemJob, ProduceItemJobParams>(new ProduceItemJobParams
+            {
+                CompanyWorkerId = companyWorker.Id,
+                Repeatedly = repeatedly
             }, TimeSpan.FromSeconds(companyWorker.Recipe.LeadTimeInSeconds));
 
-            companyWorker.ProduceItemAndStopJobId = jobId;
+            companyWorker.ProduceItemJobId = jobId;
         }
     }
 }

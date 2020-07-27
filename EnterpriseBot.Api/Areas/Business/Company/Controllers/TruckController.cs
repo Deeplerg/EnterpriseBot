@@ -123,7 +123,7 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             return new EmptyGameResult();
         }
 
-        public async Task<EmptyGameResult> Return([FromBody] string json)
+        public async Task<EmptyGameResult> Return([FromBody] string json, [FromServices] IBackgroundJobScheduler jobs)
         {
             var pars = new
             {
@@ -135,15 +135,20 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             var truck = await ctx.Trucks.FindAsync(d.modelId);
             if (truck == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
+            
+
             var actionResult = truck.Return();
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            jobs.Remove(truck.ReturnTruckJobId);
+            truck.ReturnTruckJobId = null;
 
             await ctx.SaveChangesAsync();
 
             return new EmptyGameResult();
         }
 
-        public async Task<EmptyGameResult> Unload([FromBody] string json)
+        public async Task<EmptyGameResult> Unload([FromBody] string json, [FromServices] IBackgroundJobScheduler jobs)
         {
             var pars = new
             {
@@ -166,6 +171,9 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
             var actionResult = truck.Unload(companyStorage, contract);
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            jobs.Remove(truck.UnloadTruckJobId);
+            truck.UnloadTruckJobId = null;
 
             await ctx.SaveChangesAsync();
 

@@ -110,6 +110,14 @@ namespace EnterpriseBot.ApiWrapper.Categories.Essences
             });
         }
 
+        public async Task<Player> SearchByExactName(string name)
+        {
+            return await api.Call<Player>(RequestInfo(nameof(SearchByExactName)), new
+            {
+                name = name
+            });
+        }
+
         public async Task<Player> GetByVK(long vkId)
         {
             return await GetByPlatform(BotPlatform.VK, vkId.ToString());

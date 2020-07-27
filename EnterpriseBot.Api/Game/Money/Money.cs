@@ -17,7 +17,7 @@ namespace EnterpriseBot.Api.Game.Money
         {
             ErrorSeverity = ErrorSeverity.Normal,
             EnglishMessage = "Money amount cannot be lower than or equal to 0",
-            RussianMessage = "Количество денег не может быть ниже или равно 0"
+            RussianMessage = "Количество денег не может быть меньше или равно 0"
         };
         #endregion
         #endregion
@@ -25,14 +25,9 @@ namespace EnterpriseBot.Api.Game.Money
         #region actions
         public static GameResult<Money> Create(MoneyCreationParams pars)
         {
-            if (!(pars.Amount > 0))
+            if (pars.Amount < 0)
             {
-                return new LocalizedError
-                {
-                    ErrorSeverity = ErrorSeverity.Critical,
-                    EnglishMessage = $"Money amount cannot be lower than or equal to 0, but was: {pars.Amount}",
-                    RussianMessage = $"Количество денег не может быть ниже или равно 0, но было: {pars.Amount}"
-                };
+                return MoneyAmountLowerThan0Error(pars.Amount);
             }
 
             return new Money
@@ -44,7 +39,7 @@ namespace EnterpriseBot.Api.Game.Money
 
         public GameResult<decimal> Add(decimal amount)
         {
-            if (!(amount > 0))
+            if (amount <= 0)
             {
                 return amountLowerOrEqualToZero;
             }
@@ -55,7 +50,7 @@ namespace EnterpriseBot.Api.Game.Money
 
         public GameResult<decimal> Reduce(decimal amount)
         {
-            if (!(amount > 0))
+            if (amount <= 0)
             {
                 return amountLowerOrEqualToZero;
             }
@@ -74,6 +69,17 @@ namespace EnterpriseBot.Api.Game.Money
 
             Amount -= amount;
             return Amount;
+        }
+
+
+        private static LocalizedError MoneyAmountLowerThan0Error(decimal butWas)
+        {
+            return new LocalizedError
+            {
+                ErrorSeverity = ErrorSeverity.Critical,
+                EnglishMessage = $"Money amount cannot be lower than 0, but was: {butWas}",
+                RussianMessage = $"Количество денег не может быть ниже 0, но было: {butWas}"
+            };
         }
         #endregion
     }

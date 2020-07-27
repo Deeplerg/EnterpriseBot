@@ -6,5 +6,5 @@ namespace EnterpriseBot.BackgroundJobs.Abstractions
     public interface IReturnTruckJob : IJob<ReturnTruckJobParams> { }
     public interface IContractCheckJob : IJob<ContractCheckJobParams> { }
     public interface IPaySalaryJob : IJob<PaySalaryJobParams> { }
-    public interface IProduceItemAndStopJob : IJob<ProduceItemAndStopJobParams> { }
+    public interface IProduceItemJob : IJob<ProduceItemJobParams> { }
 }

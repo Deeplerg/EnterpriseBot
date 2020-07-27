@@ -23,7 +23,17 @@ namespace EnterpriseBot.Api.Game.Reputation
 
         public int Rating
         {
-            get => (int)Reviews.Average(r => r.Rating);
+            get
+            {
+                if (Reviews.Any())
+                {
+                    return (int)Reviews.Average(r => r.Rating);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
         }
         #endregion
 

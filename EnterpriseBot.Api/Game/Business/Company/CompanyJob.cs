@@ -48,10 +48,10 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public bool IsWorkingNow { get => Worker.IsWorkingNow; }
 
         [JsonIgnore]
-        public string ProduceItemAndStopJobId
+        public string ProduceItemJobId
         {
-            get => Worker.ProduceItemAndStopJobId;
-            set => Worker.ProduceItemAndStopJobId = value;
+            get => Worker.ProduceItemJobId;
+            set => Worker.ProduceItemJobId = value;
         }
 
         [JsonIgnore]

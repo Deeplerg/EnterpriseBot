@@ -139,14 +139,14 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             var actionResult = companyJob.StartWorking();
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
-            ScheduleProduceItemAndStopJob(companyJob, jobs);
+            ScheduleProduceItemJob(companyJob, jobs);
 
             await ctx.SaveChangesAsync();
 
             return new EmptyGameResult();
         }
 
-        public async Task<EmptyGameResult> ProduceItem([FromBody] string json)
+        public async Task<EmptyGameResult> ProduceItem([FromBody] string json, [FromServices] IBackgroundJobScheduler jobs)
         {
             var pars = new
             {
@@ -161,6 +161,9 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
             var actionResult = companyJob.ProduceItem();
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            jobs.Remove(companyJob.ProduceItemJobId);
+            companyJob.ProduceItemJobId = null;
 
             await ctx.SaveChangesAsync();
 
@@ -183,7 +186,8 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             var actionResult = companyJob.StopWorking();
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
-            jobs.Remove(companyJob.ProduceItemAndStopJobId);
+            jobs.Remove(companyJob.ProduceItemJobId);
+            companyJob.ProduceItemJobId = null;
 
             await ctx.SaveChangesAsync();
 
@@ -326,7 +330,10 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
             jobs.Remove(companyJob.PaySalaryJobId);
-            jobs.Remove(companyJob.ProduceItemAndStopJobId);
+            jobs.Remove(companyJob.ProduceItemJobId);
+
+            companyJob.PaySalaryJobId = null;
+            companyJob.ProduceItemJobId = null;
 
             await ctx.SaveChangesAsync();
 
@@ -402,7 +409,8 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
             if (d.permissionsToRemove.HasFlag(CompanyJobPermissions.ProduceItems))
             {
-                jobs.Remove(companyJob.ProduceItemAndStopJobId);
+                jobs.Remove(companyJob.ProduceItemJobId);
+                companyJob.ProduceItemJobId = null;
             }
 
             await ctx.SaveChangesAsync();
@@ -445,7 +453,8 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
 
             if (stopWorkingNeeded)
             {
-                jobs.Remove(companyJob.ProduceItemAndStopJobId);
+                jobs.Remove(companyJob.ProduceItemJobId);
+                companyJob.ProduceItemJobId = null;
             }
 
             await ctx.SaveChangesAsync();
@@ -517,14 +526,15 @@ namespace EnterpriseBot.Api.Areas.Business.Company.Controllers
         }
 
 
-        private void ScheduleProduceItemAndStopJob(CompanyJob companyJob, IBackgroundJobScheduler jobs)
+        private void ScheduleProduceItemJob(CompanyJob companyJob, IBackgroundJobScheduler jobs)
         {
-            string jobId = jobs.Schedule<ProduceItemAndStopJob, ProduceItemAndStopJobParams>(new ProduceItemAndStopJobParams
+            string jobId = jobs.Schedule<ProduceItemJob, ProduceItemJobParams>(new ProduceItemJobParams
             {
-                CompanyWorkerId = companyJob.CompanyWorkerId
+                CompanyWorkerId = companyJob.CompanyWorkerId,
+                Repeatedly = false
             }, TimeSpan.FromSeconds(companyJob.Recipe.LeadTimeInSeconds));
 
-            companyJob.ProduceItemAndStopJobId = jobId;
+            companyJob.ProduceItemJobId = jobId;
         }
 
         private void SchedulePaySalaryJob(CompanyJob companyJob, IBackgroundJobScheduler jobs)

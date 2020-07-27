@@ -17,10 +17,12 @@ using EnterpriseBot.VK.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using VkNet.Abstractions;
 using VkNet.Enums.SafetyEnums;
@@ -131,6 +133,8 @@ namespace EnterpriseBot.VK.Services
                 }
             }
 
+            bool success = false;
+
             var message = messageNew.Message;
             long peerId = message.PeerId.Value;
 
@@ -161,35 +165,36 @@ namespace EnterpriseBot.VK.Services
                 }
                 #endregion     
 
-                IMenuResult result;
+                IMenuResult result = null;
+                NextAction next = null;
 
                 try
                 {
-                    var next = menuMapper.MapAction(context);
+                    next = menuMapper.MapAction(context);
                     result = await menuMapper.InvokeAction(next, context, menuRouter,
                                                            context);
+
+                    success = true;
                 }
                 #region Exception handling
                 catch (ApiNormalException ex)
                 {
                     LogExceptionWithPeerId(ex, peerId);
 
-                    if (context.LocalPlayer?.PreviousResult != null)
+                    if (context.LocalPlayer?.PreviousAction != null)
                     {
-                        var exResult = new ReturnBackKeyboardResult(ex.Message, context.LocalPlayer.PreviousResult);
-                        context.LocalPlayer.PreviousResult = exResult;
-
-                        messages.Send(exResult.GetMessage().ToMessagesSendParams(vkSettings, peerId, messageNew.ClientInfo));
+                        result = new ReturnBackKeyboardResult(ex.Message, context.LocalPlayer.PreviousAction);
                     }
                     else
                     {
                         messages.Send(peerId, ex.Message);
+                        return new HandleUpdateResult(success: false);
                     }
 
-                    return new HandleUpdateResult(success: true);
+                    success = false;
                 }
 
-                //trying to return the user to the previous menu at any costs
+                //trying to return the user to the previous menu at all costs
                 catch (Exception ex)
                 {
                     Guid? errorId = await TrySaveExceptionAsync(ex);
@@ -213,40 +218,54 @@ namespace EnterpriseBot.VK.Services
                     }
 
                     // Send error info
-                    if (context.LocalPlayer?.PreviousResult != null)
+                    if (context.LocalPlayer?.PreviousAction != null)
                     {
-                        var exResult = new ReturnBackKeyboardResult(errorMessage, context.LocalPlayer.PreviousResult);
-                        context.LocalPlayer.PreviousResult = exResult;
-
-                        messages.Send(exResult.GetMessage().ToMessagesSendParams(vkSettings, peerId, messageNew.ClientInfo));
+                        result = new ReturnBackKeyboardResult(errorMessage, context.LocalPlayer.PreviousAction);
                     }
                     else
                     {
                         messages.Send(peerId, errorMessage);
+                        return new HandleUpdateResult(success: false);
                     }
 
-                    return new HandleUpdateResult(success: false);
+                    success = false;
                 }
                 #endregion
 
-                var resultMessage = result.GetMessage();
-                if (resultMessage.Keyboard != null && !resultMessage.Keyboard.IsEmpty)
+                finally
                 {
-                    context.LocalPlayer.CurrentKeyboard = resultMessage.Keyboard;
+                    context.LocalPlayer.PreviousAction = next;
+                    context.LocalPlayer.PreviousResult = result;
+
+                    var resultMessage = result.GetMessage();
+                    if (resultMessage.Keyboard != null && !resultMessage.Keyboard.IsEmpty)
+                    {
+                        context.LocalPlayer.CurrentKeyboard = resultMessage.Keyboard;
+                    }
+
+                    var messageSendParams = resultMessage.ToMessagesSendParams(vkSettings, peerId, messageNew.ClientInfo);
+
+                    messages.Send(messageSendParams);
+
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(JsonConvert.SerializeObject(context, new JsonSerializerSettings
+                    {
+                        Formatting = Formatting.Indented,
+                        PreserveReferencesHandling = PreserveReferencesHandling.All,
+                        ContractResolver = new DefaultContractResolver
+                        {
+                            NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: true,
+                                                                         overrideSpecifiedNames: false)
+                        },
+                        TypeNameHandling = TypeNameHandling.Auto
+                    }));
+                    sb.Append(string.Join("", Enumerable.Repeat("-", 10)));
+                    sb.Append(Environment.NewLine);
+
+                    logger.LogInformation(sb.ToString());
                 }
 
-                var messageSendParams = resultMessage.ToMessagesSendParams(vkSettings, peerId, messageNew.ClientInfo);
-
-                context.LocalPlayer.PreviousResult = result; //this statement gets called way after result.GetMessage, 
-                                                             //so that if something goes wrong up here ^^^ , 
-                                                             //'a previous action exception loop' (I call it so personally) won't start
-                                                             //(when the result of invoked
-                                                             //previousResult.GetNextAction
-                                                             //throws an exception while calling
-                                                             //result.GetMessage)
-
-                messages.Send(messageSendParams);
-                return new HandleUpdateResult(success: true);
+                return new HandleUpdateResult(success);
             }
             catch (Exception ex)
             {
@@ -316,7 +335,7 @@ namespace EnterpriseBot.VK.Services
             var localPlayer = playerManager.Get(peerId, PlayerManagerFilter.VkId);
             if (localPlayer == null)
             {
-                var player = await api.Essences.Player.GetByPlatform(peerId, BotPlatform.Vk);
+                var player = await api.Essences.Player.GetByVK(peerId);
                 if (player == null)
                 {
                     localPlayer = playerManager.AddNonAuthorized(peerId);

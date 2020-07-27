@@ -8,9 +8,9 @@ namespace EnterpriseBot.VK.Extensions
 {
     public static class VkMessageExtensions
     {
-        public static MessagesSendParams ToMessagesSendParams(this VkMessage message, VkSettings settings, long peerId, ClientInfo clientInfo)
+        public static MessagesSendParams ToMessagesSendParams(this VkMessage message, VkSettings settings, long peerId, ClientInfo clientInfo, bool isInline = false)
         {
-            return MessageUtils.VkMessageToMessagesSendParams(message, settings, peerId, clientInfo);
+            return MessageUtils.VkMessageToMessagesSendParams(message, settings, peerId, clientInfo, isInline);
         }
     }
 }

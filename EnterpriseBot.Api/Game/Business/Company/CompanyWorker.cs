@@ -27,7 +27,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         public decimal SpeedMultiplier { get; protected set; }
 
         [JsonIgnore]
-        public string ProduceItemAndStopJobId { get; set; }
+        public string ProduceItemJobId { get; set; }
 
         public int LeadTimeInSeconds
         {

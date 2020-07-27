@@ -17,7 +17,7 @@ namespace EnterpriseBot.VK.Infrastructure
 
         public const int MaxButtonsPerLine = 4;
         public const int MaxButtonLines = 10;
-        public const int MaxButtons = 25; //= max payload / max payload size of 1 button
+        public const int MaxButtons = 20;
 
         public int CurrentButtonsCount
         {
@@ -29,14 +29,9 @@ namespace EnterpriseBot.VK.Infrastructure
 
         public LocalKeyboardBuilder AddButton(LocalKeyboardButton button)
         {
-            if (button.ButtonAction == null && button.Text != null)
-                button.ButtonAction = KeyboardButtonActionType.Text;
-            else
-                throw new ArgumentNullException(nameof(button.ButtonAction));
-
-            if (button.ButtonAction == KeyboardButtonActionType.Text && string.IsNullOrWhiteSpace(button.Text))
+            if (string.IsNullOrWhiteSpace(button.Text))
             {
-                throw new ArgumentNullException("Button type is text, but the text is empty or consists exclusively of white-space characters.");
+                throw new ArgumentNullException(nameof(button), "The text must not be empty or consist exclusively of white-space characters");
             }
 
             if (CurrentButtonsCount + 1 > MaxButtons)
@@ -70,13 +65,7 @@ namespace EnterpriseBot.VK.Infrastructure
             return AddButton(new LocalKeyboardButton
             {
                 Text = text,
-                Next = new NextAction
-                {
-                    Menu = nextMenu,
-                    MenuAction = nextMenuAction,
-                    Parameters = menuParameters
-                },
-                ButtonAction = KeyboardButtonActionType.Text,
+                Next = new NextAction(nextMenu, nextMenuAction, menuParameters),
                 Color = KeyboardButtonColor.Default
             });
         }

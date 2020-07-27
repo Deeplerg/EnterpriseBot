@@ -27,7 +27,7 @@ namespace EnterpriseBot.Api.Game.Money
         public static GameResult<Purse> Create(PurseCreationParams pars)
         {
             var units = Game.Money.Money.Create(new MoneyCreationParams(pars.UnitsAmount, Currency.Units));
-            var businessCoins = Game.Money.Money.Create(new MoneyCreationParams(pars.UnitsAmount, Currency.BusinessCoins));
+            var businessCoins = Game.Money.Money.Create(new MoneyCreationParams(pars.BusinessCoinsAmount, Currency.BusinessCoins));
 
             if (units.LocalizedError != null) return units.LocalizedError;
             if (businessCoins.LocalizedError != null) return businessCoins.LocalizedError;

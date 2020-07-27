@@ -10,6 +10,5 @@ namespace EnterpriseBot.VK.Models.Keyboard
         public NextAction Next { get; set; }
 
         public KeyboardButtonColor Color { get; set; }
-        public KeyboardButtonActionType ButtonAction { get; set; }
     }
 }

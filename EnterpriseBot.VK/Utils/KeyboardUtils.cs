@@ -1,5 +1,7 @@
 ﻿using EnterpriseBot.VK.Models.Keyboard;
+using EnterpriseBot.VK.Models.MenuRelated;
 using System;
+using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Keyboard;
 
 namespace EnterpriseBot.VK.Utils
@@ -18,7 +20,7 @@ namespace EnterpriseBot.VK.Utils
                     builder.AddButton(label: button.Text,
                                       extra: CreatePayload(buttonCount),
                                       color: button.Color,
-                                      type: button.ButtonAction.ToString());
+                                      type: KeyboardButtonActionType.Text.ToString());
 
                     buttonCount++;
                 }
@@ -53,6 +55,23 @@ namespace EnterpriseBot.VK.Utils
             }
 
             return true;
+        }
+
+        public static NextAction GetNextActionFromKeyboard(MenuContext context, LocalKeyboard keyboard = null)
+        {
+            if (keyboard == null) keyboard = context.LocalPlayer.CurrentKeyboard;
+
+            if (context.Message.PressedButton == null)
+            {
+                return new NextAction(Constants.PayloadEmptyMenu, Constants.PayloadEmptyMenuAction);
+            }
+
+            if (context.Message.PressedButton >= keyboard.ButtonCount || context.Message.PressedButton < 0)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(context.Message.PressedButton)} must not be more than or equal to button count or be lower than 0");
+            }
+
+            return keyboard[context.Message.PressedButton.Value].Next;
         }
     }
 }

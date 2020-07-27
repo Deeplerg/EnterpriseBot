@@ -1,7 +1,8 @@
 ﻿namespace EnterpriseBot.BackgroundJobs.Params
 {
-    public class ProduceItemAndStopJobParams
+    public class ProduceItemJobParams
     {
         public long CompanyWorkerId { get; set; }
+        public bool Repeatedly { get; set; }
     }
 }

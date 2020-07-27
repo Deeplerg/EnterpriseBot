@@ -241,7 +241,7 @@ namespace EnterpriseBot.Api.Models.Contexts
 
                 b.Ignore(m => m.IsWorkingNow);
 
-                b.Ignore(m => m.ProduceItemAndStopJobId);
+                b.Ignore(m => m.ProduceItemJobId);
 
                 b.Ignore(m => m.PaySalaryJobId);
 

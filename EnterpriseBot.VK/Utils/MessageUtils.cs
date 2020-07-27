@@ -10,23 +10,25 @@ namespace EnterpriseBot.VK.Utils
 {
     public static class MessageUtils
     {
-        public static MessagesSendParams VkMessageToMessagesSendParams(VkMessage message, VkSettings settings, long peerId, ClientInfo clientInfo)
+        public static MessagesSendParams VkMessageToMessagesSendParams(VkMessage message, VkSettings settings, long peerId, ClientInfo clientInfo, bool isInline = false)
         {
-            MessagesSendParams pars = new MessagesSendParams();
-
             if (string.IsNullOrWhiteSpace(message.Text))
             {
                 throw new ArgumentException($"Text shouldn't be null, empty or consist exclusively of white-space characters");
             }
-            pars.RandomId = 0;
-            pars.PeerId = peerId;
-            pars.Message = message.Text;
+
+            MessagesSendParams pars = new MessagesSendParams
+            {
+                RandomId = 0,
+                PeerId = peerId,
+                Message = message.Text
+            };
 
             if (message.Keyboard != null)
             {
                 if (clientInfo.Keyboard)
                 {
-                    pars.Keyboard = message.Keyboard.ToVkKeyboard(isInline: clientInfo.InlineKeyboard);
+                    pars.Keyboard = message.Keyboard.ToVkKeyboard(isInline);
                 }
                 else
                 {

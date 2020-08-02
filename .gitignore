@@ -341,3 +341,9 @@ healthchecksdb
 
 #SQLite database files
 *.db
+
+# Local configuration files
+EnterpriseBot.Api/appsettings.Local.json
+EnterpriseBot.Api/GameSettings.Local.json
+EnterpriseBot.Background/appsettings.Local.json
+EnterpriseBot.VK/appsettings.Local.json

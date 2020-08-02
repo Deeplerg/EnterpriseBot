@@ -66,16 +66,15 @@ namespace EnterpriseBot.VK.Services
 
         public async Task<HandleUpdateResult> HandleUpdateAsync(GroupUpdate update)
         {
-            VkGroupSetting group = vkSettings.Groups.FirstOrDefault(g => g.GroupId == update.GroupId.Value);
-            if (group is null)
+            if (vkSettings is null)
             {
                 logger.LogWarning($"Unable to find group {update.GroupId.Value}, can't handle {update.Type.ToString()} update");
                 return new HandleUpdateResult(success: false);
             }
 
-            if (update.Secret != group.SecretKey)
+            if (update.Secret != vkSettings.SecretKey)
             {
-                string trueKey = group.SecretKey;
+                string trueKey = vkSettings.SecretKey;
                 string hiddenTrueKey = HideKey(trueKey, trueKey.Length / 3);
 
                 logger.LogWarning($"Wrong secret key! Excepted: {hiddenTrueKey}, but was: {update.Secret}");
@@ -86,16 +85,12 @@ namespace EnterpriseBot.VK.Services
             switch (update.Type)
             {
                 case var _ when update.Type == GroupUpdateType.MessageNew:
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
                     var result = await MessageNew(update.MessageNew);
-                    sw.Stop();
-                    logger.LogInformation($"{update.Type.ToString()} took {sw.Elapsed} to complete");
 
                     return result;
 
                 case var _ when update.Type == GroupUpdateType.Confirmation:
-                    return await Confirmation(update.GroupId.Value);
+                    return await Confirmation();
 
                 default:
                     return new HandleUpdateResult(success: false);
@@ -245,24 +240,9 @@ namespace EnterpriseBot.VK.Services
 
                     var messageSendParams = resultMessage.ToMessagesSendParams(vkSettings, peerId, messageNew.ClientInfo);
 
+                    playerManager.Update(context.LocalPlayer);
+
                     messages.Send(messageSendParams);
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append(JsonConvert.SerializeObject(context, new JsonSerializerSettings
-                    {
-                        Formatting = Formatting.Indented,
-                        PreserveReferencesHandling = PreserveReferencesHandling.All,
-                        ContractResolver = new DefaultContractResolver
-                        {
-                            NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: true,
-                                                                         overrideSpecifiedNames: false)
-                        },
-                        TypeNameHandling = TypeNameHandling.Auto
-                    }));
-                    sb.Append(string.Join("", Enumerable.Repeat("-", 10)));
-                    sb.Append(Environment.NewLine);
-
-                    logger.LogInformation(sb.ToString());
                 }
 
                 return new HandleUpdateResult(success);
@@ -296,14 +276,12 @@ namespace EnterpriseBot.VK.Services
             }
         }
 
-        private Task<HandleUpdateResult> Confirmation(ulong groupId)
+        private Task<HandleUpdateResult> Confirmation()
         {
-            VkGroupSetting group = vkSettings.Groups.Single(g => g.GroupId == groupId);
-
             return Task.FromResult(new HandleUpdateResult
             {
                 Successful = true,
-                Result = group.Confirmation
+                Result = vkSettings.Confirmation
             });
         }
 
@@ -332,7 +310,7 @@ namespace EnterpriseBot.VK.Services
 
         private async Task<LocalPlayer> AuthByVkIdAsync(long peerId, ILocalPlayerManager playerManager, EntbotApi api)
         {
-            var localPlayer = playerManager.Get(peerId, PlayerManagerFilter.VkId);
+            var localPlayer = playerManager.Get(peerId);
             if (localPlayer == null)
             {
                 var player = await api.Essences.Player.GetByVK(peerId);

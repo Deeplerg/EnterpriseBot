@@ -7,10 +7,9 @@ namespace EnterpriseBot.VK.Models.Player
 {
     public class LocalPlayer : ICloneable
     {
-        public string Id { get; set; }
+        public long VkId { get; set; }
 
         public long PlayerId { get; set; }
-        public long VkId { get; set; }
 
         public LocalKeyboard CurrentKeyboard { get; set; }
 
@@ -26,9 +25,8 @@ namespace EnterpriseBot.VK.Models.Player
         {
             return new LocalPlayer
             {
-                Id = Id,
-                PlayerId = PlayerId,
                 VkId = VkId,
+                PlayerId = PlayerId,
                 CurrentKeyboard = (LocalKeyboard)CurrentKeyboard.Clone(),
                 IsAuthorized = IsAuthorized,
                 PreviousAction = (NextAction)PreviousAction.Clone()

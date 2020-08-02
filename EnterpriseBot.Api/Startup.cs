@@ -24,18 +24,12 @@ namespace EnterpriseBot.Api
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-
-            builder.AddConfiguration(configuration);
-
-            builder.AddJsonFile("GameSettings.json", optional: false, reloadOnChange: true);
-
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -64,6 +58,17 @@ namespace EnterpriseBot.Api
 
             #region Hangfire
             string hangfireConnection = Configuration.GetConnectionString("Hangfire");
+
+            // Is used only for the creation of the database since Hangfire doesn't do it.
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            services.AddDbContext<HangfireContext>(opt =>
+#pragma warning restore CS0618 // Type or member is obsolete
+            {
+                opt.UseNpgsql(hangfireConnection);
+            });
+
+
             services.AddHangfire(configuration => configuration
                                  .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                                  .UseDefaultActivator()

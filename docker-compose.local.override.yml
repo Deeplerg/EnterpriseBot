@@ -1,0 +1,106 @@
+version: '3.4'
+
+services:
+  enterprisebot.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Local
+      - ASPNETCORE_URLS=http://+:80
+
+      - ConnectionStrings__Game=Host=db.postgres;Port=5432;Database=EnterpriseBot.Api.GameDb;Username=${POSTGRES_USERNAME};Password=${POSTGRES_PASSWORD};
+      - ConnectionStrings__Hangfire=Host=db.postgres;Port=5432;Database=EnterpriseBot.Background.HangfireDb;Username=${POSTGRES_USERNAME};Password=${POSTGRES_PASSWORD};
+
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq.api:5341
+    ports:
+      - "5100:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+
+  enterprisebot.background:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Local
+      - ASPNETCORE_URLS=http://+:80
+      
+      - ConnectionStrings__HangfireDb=Host=db.postgres;Port=5432;Database=EnterpriseBot.Background.HangfireDb;Username=${POSTGRES_USERNAME};Password=${POSTGRES_PASSWORD};
+
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq.background:5341
+    ports:
+      - "5101:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+
+  enterprisebot.vk:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Local
+      - ASPNETCORE_URLS=http://+:80
+
+      - ConnectionStrings__ErrorsPostgres=Host=db.postgres;Port=5432;Database=EnterpriseBot.VK.Errors;Username=${POSTGRES_USERNAME};Password=${POSTGRES_PASSWORD};
+      - ConnectionStrings__Redis=db.redis:6379,password=${REDIS_PASSWORD}
+
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq.vk:5341
+
+      - VkSettings__GroupId=${VK_GROUPID}
+      - VkSettings__AccessToken=${VK_ACCESS_TOKEN}
+      - VkSettings__SecretKey=${VK_SECRETKEY}
+      - VkSettings__Confirmation=${VK_CONFIRMATION}
+
+      - ApiSettings__ApiServerUrl=http://enterprisebot.api:80
+    ports:
+      - "5102:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+
+  seq.api:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5350:80"
+      - "5351:5341"
+    volumes:
+      - seq-api-data:/data
+
+  seq.background:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5360:80"
+      - "5361:5341"
+    volumes:
+      - seq-background-data:/data
+
+  seq.vk:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5370:80"
+      - "5371:5341"
+    volumes:
+      - seq-vk-data:/data
+  
+
+  db.postgres:
+    environment:
+      - POSTGRES_USERNAME=${POSTGRES_USERNAME-}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5442:5432"
+    volumes:
+      - db-postgres-data:/var/lib/postgresql/data
+
+  db.redis:
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379"
+
+volumes:
+  seq-api-data:
+  seq-background-data:
+  seq-vk-data:
+
+  db-postgres-data:

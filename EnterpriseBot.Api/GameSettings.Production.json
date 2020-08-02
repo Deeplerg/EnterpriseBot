@@ -1,0 +1,406 @@
+﻿{
+  "GameSettings": {
+
+
+    "BusinessPrices": {
+      "CompanyFeatures": {
+        "Base": 25,
+        "CanSignContracts": 10,
+
+        "CanBuyStorages": 15,
+        "CanUpgradeStorages": 10,
+        "CanHaveShowcase": 40,
+        "NewStoragePrices": {
+          "Company": 15,
+          "Showcase": 50,
+          "Income": 35
+        },
+
+
+        "CanHire": 50,
+
+        "CanHaveTruckGarage": 250,
+        "CanExtendTruckGarage": 100,
+        "NewTruckSetup": 250,
+
+        "CanHaveRobots": 250,
+        "NewRobotSetup": 100,
+        "CanUpgradeRobots": 50,
+        "CanExtendRobots": 100,
+
+        "WorkerModifierUpgrade": {
+          "Price": 5,
+          "Step": 0.1
+        },
+
+        "TruckUpgrade": {
+          "Price": 1,
+          "StepInSeconds": 60
+        },
+
+        "GarageUpgrade": {
+          "Price": 50,
+          "StepInSlots": 1
+        }
+      }
+    },
+
+
+
+
+
+    "Business": {
+      "Company": {
+        "DefaultUnits": 0,
+        "DefaultBusinessCoins": 0,
+
+        "Job": {
+          "MinSalary": 50000
+        },
+
+        "Truck": {
+          "MinTime": 300,
+          "DefaultTime": 3600
+        },
+
+        "TruckGarage": {
+          "MaxCapacity": 30,
+          "DefaultCapacity": 2
+        },
+
+        "Worker": {
+          "MaxMultiplier": 0.1,
+          "DefaultMultiplier": 1
+        },
+
+        "Contract": {
+          "MaxContracts": 3,
+          "MaxTimeInDays": 7
+        }
+      }
+    },
+
+
+
+
+
+    "Donation": {
+      "BusinessPriceMultipliers": {
+        "NoDonation": 1,
+        "Pro": 0.95,
+        "VIP": 0.9,
+        "Premium": 0.8,
+        "Mega": 0.65,
+        "Gold": 0.5
+      },
+
+      "MaxContracts": {
+        "NoDonation": null,
+        "Pro": null,
+        "VIP": null,
+        "Premium": 5,
+        "Mega": 10,
+        "Gold": 30
+      },
+
+      "ContractMaxTimeInDays": {
+        "NoDonation": null,
+        "Pro": null,
+        "VIP": null,
+        "Premium": 14,
+        "Mega": 30,
+        "Gold": 60
+      }
+    },
+
+
+
+
+
+    "Gameplay": {
+      "Player": {
+        "DefaultUnits": 10000,
+        "DefaultBusinessCoins": 0
+      },
+
+      "Storage": {
+        "Inventory": {
+          "MaxCapacity": 100,
+          "DefaultCapacity": 10,
+          "UpgradePrice": {
+            "Currency": "Units",
+            "Amount": 100
+          },
+          "UpgradeStep": 10
+        },
+
+        "Trunk": {
+          "MaxCapacity": 2500,
+          "DefaultCapacity": 100,
+          "UpgradePrice": {
+            "Currency": "BusinessCoins",
+            "Amount": 0.1
+          },
+          "UpgradeStep": 10
+        },
+
+        "Company": {
+          "MaxCapacity": 10000,
+          "DefaultCapacity": 500,
+          "UpgradePrice": {
+            "Currency": "BusinessCoins",
+            "Amount": 0.1
+          },
+          "UpgradeStep": 10
+        }
+      },
+
+      "Government": {
+        "CompanyPrice": 1000000,
+        "PlotCellPrice": 1000,
+        "BasePlotPrice": 5000
+      },
+
+      "Plot": {
+        "MaxWidth": 100,
+        "MaxHeight": 100,
+        "DefaultWidth": 2,
+        "DefaultHeight": 2
+      }
+    },
+
+
+
+
+
+    "Market": {
+      "BusinessCoinPricePerUnit": 1000
+    },
+
+
+
+
+
+    "Localization": {
+      "UserInputRequirements": {
+        "Name": {
+          "English": "The name should not be empty or contain only spaces, and the length should not exceed {0}",
+          "Russian": "Имя или название не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        },
+
+        "BusinessName": {
+          "English": "The facility name should not be empty or contain only spaces, and the length should not exceed {0}",
+          "Russian": "Название предприятия не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        },
+
+        "Description": {
+          "English": "The description should not be empty or contain only spaces, and the length should not exceed {0}",
+          "Russian": "Описание не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        },
+
+        "ReviewText": {
+          "English": "The review text should not be empty or contain only spaces, and the length should not exceed {0}",
+          "Russian": "Текст отзыва не должен быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        },
+
+        "Resume": {
+          "English": "The resume should not be empty or contain only spaces, and the length should not exceed {0}",
+          "Russian": "Резюме не должно быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        },
+
+        "Password": {
+          "English": "The password must not be empty or contain only spaces, its length must not be lower than {0} and it must contain at least one digit",
+          "Russian": "Пароль не должен быть пустым или содержать только пробелы, его длина не должна быть ниже {0} и он должен содержать как минимум одну цифру"
+        },
+
+        "PlayerStatus": {
+          "English": "The status should not be empty or contain only spaces, and the length should not exceed {0}",
+          "Russian": "Статус не должен быть пустым или содержать только пробелы, а длина не должна превышать {0}"
+        }
+      },
+
+      "Business": {
+        "Company": {
+          "Company": {
+            "English": "Company",
+            "Russian": "Компания"
+          },
+
+          "CompanyContract": {
+            "English": "Contract",
+            "Russian": "Контракт"
+          },
+
+          "CompanyContractRequest": {
+            "English": "Contract request",
+            "Russian": "Запрос на создание контракта"
+          },
+
+          "CompanyJob": {
+            "English": "Job",
+            "Russian": "Работа"
+          },
+
+          "CompanyJobApplication": {
+            "English": "Job application",
+            "Russian": "Заявка на работу"
+          },
+
+          "CompanyWorker": {
+            "English": "Working entity",
+            "Russian": "Работающая сущность"
+          },
+
+          "ProductionRobot": {
+            "English": "Machine tool",
+            "Russian": "Станок"
+          },
+
+          "Truck": {
+            "English": "Truck",
+            "Russian": "Грузовик"
+          },
+
+          "TruckGarage": {
+            "English": "Truck garage",
+            "Russian": "Гараж для грузовиков"
+          }
+        }
+      },
+
+      "Crafting": {
+        "CraftingCategory": {
+          "English": "Item category",
+          "Russian": "Категория предметов"
+        },
+
+        "CraftingSubCategory": {
+          "English": "Item subcategory",
+          "Russian": "Подкатегория предметов"
+        },
+
+        "Ingredient": {
+          "English": "Ingredient",
+          "Russian": "Ингредиент"
+        },
+
+        "Item": {
+          "English": "Item",
+          "Russian": "Предмет"
+        },
+
+        "Recipe": {
+          "English": "Recipe",
+          "Russian": "Рецепт"
+        }
+      },
+
+      "Donation": {
+        "Donation": {
+          "English": "Donation",
+          "Russian": "Донат"
+        },
+
+        "DonationPriceCurrency": {
+          "English": "Currency",
+          "Russian": "Валюта"
+        },
+
+        "DonationPurchase": {
+          "English": "Donation purchase",
+          "Russian": "Покупка доната"
+        },
+
+        "Privilege": {
+          "English": "Privilege",
+          "Russian": "Привилегия"
+        }
+      },
+
+      "Essences": {
+        "Player": {
+          "English": "Player",
+          "Russian": "Игрок"
+        }
+      },
+
+      "Localization": {
+        "LocalizationLanguage": {
+          "English": "Translation language",
+          "Russian": "Язык перевода"
+        },
+
+        "LocalizedString": {
+          "English": "Localized string",
+          "Russian": "Локализованная строка"
+        },
+
+        "StringLocalization": {
+          "English": "String localization",
+          "Russian": "Локализация строки"
+        }
+      },
+
+      "Money": {
+        "Money": {
+          "English": "Money",
+          "Russian": "Деньги"
+        },
+
+        "Purse": {
+          "English": "Purse",
+          "Russian": "Кошелёк"
+        }
+      },
+
+      "Reputation": {
+        "Reputation": {
+          "English": "Reputation",
+          "Russian": "Репутация"
+        },
+
+        "Review": {
+          "English": "Review",
+          "Russian": "Отзыв"
+        }
+      },
+
+      "Storages": {
+        "CompanyStorage": {
+          "English": "Company storage",
+          "Russian": "Склад компании"
+        },
+
+        "InventoryStorage": {
+          "English": "Inventory",
+          "Russian": "Инвентарь"
+        },
+
+        "ItemPrice": {
+          "English": "Price for item",
+          "Russian": "Цена за предмет"
+        },
+
+        "ShowcaseStorage": {
+          "English": "Showcase",
+          "Russian": "Витрина"
+        },
+
+        "Storage": {
+          "English": "Storage",
+          "Russian": "Хранилище"
+        },
+
+        "StorageItem": {
+          "English": "Storage item",
+          "Russian": "Предмет на складе"
+        },
+
+        "TrunkStorage": {
+          "English": "Truck body",
+          "Russian": "Кузов"
+        }
+      }
+    }
+  }
+}

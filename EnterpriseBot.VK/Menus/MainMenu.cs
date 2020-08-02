@@ -60,7 +60,6 @@ namespace EnterpriseBot.VK.Menus
 
             string message = "Главное меню бота. В разработке...\n\n" +
                              "Информация:\n" +
-                            $"Id в кэше: {MenuContext.LocalPlayer.Id}\n" +
                             $"Id игрока: {MenuContext.LocalPlayer.PlayerId}\n" +
                             $"Имя игрока: {player.Name}\n" +
                             $"Дата регистрации: {player.RegistrationDate}\n" +

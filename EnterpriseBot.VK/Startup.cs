@@ -2,6 +2,7 @@ using EnterpriseBot.VK.Extensions;
 using EnterpriseBot.VK.Models.Contexts;
 using EnterpriseBot.VK.Models.Settings;
 using EnterpriseBot.VK.MvcInputFormatters;
+using EnterpriseBot.VK.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-//using VkNet.AudioBypassService.Extensions;
 
 namespace EnterpriseBot.VK
 {
@@ -36,14 +36,16 @@ namespace EnterpriseBot.VK
             services.AddMenuMapper();
             services.AddVkMessageGateway();
             services.AddMenuRouter();
-            services.AddLocalPlayerManager();
+            services.AddLocalPlayerManager<RedisLocalPlayerManager>();
+
+            services.AddConnectionMultiplexer(Configuration.GetConnectionString("Redis"));
 
             services.AddVkUpdateHandler();
 
-
             services.AddDbContext<ErrorDbContext>(options =>
             {
-                options.UseSqlite(Configuration.GetConnectionString("ErrorsSQLite"));
+                //options.UseSqlite(Configuration.GetConnectionString("ErrorsSQLite"));
+                options.UseNpgsql(Configuration.GetConnectionString("ErrorsPostgres"));
             });
 
 
@@ -57,7 +59,7 @@ namespace EnterpriseBot.VK
                     NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: true,
                                                                  overrideSpecifiedNames: false)
                 };
-                opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                opt.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All;
             });
         }
 

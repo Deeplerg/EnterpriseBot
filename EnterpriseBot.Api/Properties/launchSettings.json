@@ -19,8 +19,6 @@
     },
     "EnterpriseBot.Api": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

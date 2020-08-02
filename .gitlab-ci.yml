@@ -1,0 +1,37 @@
+image: tiangolo/docker-with-compose
+
+before_script:
+  #- docker login -u dev-entbot -p $CI_BUILD_TOKEN $CI_REGISTRY
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+stages:
+  - build
+  - deploy
+
+build-dev:
+  stage: build
+  script:
+    - docker-compose -f docker-compose.development.yml build --compress --force-rm
+  only:
+    - development
+
+deploy-dev:
+  stage: deploy
+  script:
+    - docker stack deploy --with-registry-auth -c docker-compose.development.yml dev_entbot
+  only:
+    - development
+
+build-prod:
+  stage: build
+  script:
+    - docker-compose -f docker-compose.production.yml build --compress --force-rm
+  only:
+    - production
+
+deploy-prod:
+  stage: deploy
+  script:
+    - docker stack deploy --with-registry-auth -c docker-compose.production.yml prod_entbot
+  only:
+    - production

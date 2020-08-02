@@ -6,6 +6,7 @@ using EnterpriseBot.VK.Services;
 using EnterpriseBot.VK.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using System;
 using System.Linq;
 using VkNet;
@@ -25,13 +26,12 @@ namespace EnterpriseBot.VK.Extensions
             }
             VkSettings settings = vkOptions.Value;
 
-            ulong groupId = settings.DefaultGroupId;
-            VkGroupSetting group = settings.Groups.Single(g => g.GroupId == groupId);
+            ulong groupId = settings.GroupId;
 
             VkApi api = new VkApi(services);
             api.Authorize(new ApiAuthParams
             {
-                AccessToken = group.AccessToken
+                AccessToken = settings.AccessToken
             });
 
             api.RequestsPerSecond = Constants.GroupMaxRequestsPerSecond;
@@ -87,14 +87,25 @@ namespace EnterpriseBot.VK.Extensions
             return services.AddSingleton<IVkMessageGateway, SeparateThreadVkMessageGateway>();
         }
 
-        public static IServiceCollection AddLocalPlayerManager(this IServiceCollection services)
+        public static IServiceCollection AddDefaultLocalPlayerManager(this IServiceCollection services)
         {
-            return services.AddSingleton<ILocalPlayerManager, DefaultLocalPlayerManager>();
+            return services.AddSingleton<ILocalPlayerManager, InMemoryLocalPlayerManager>();
+        }
+
+        public static IServiceCollection AddLocalPlayerManager<TImplementation>(this IServiceCollection services) where TImplementation : class, 
+                                                                                                                                          ILocalPlayerManager
+        {
+            return services.AddSingleton<ILocalPlayerManager, TImplementation>();
         }
 
         public static IServiceCollection AddMenuMapper(this IServiceCollection services)
         {
             return services.AddTransient<IMenuMapper, DefaultMenuMapper>();
+        }
+
+        public static IServiceCollection AddConnectionMultiplexer(this IServiceCollection services, string connectionString)
+        {
+            return services.AddSingleton<IConnectionMultiplexer, ConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(connectionString));
         }
     }
 }

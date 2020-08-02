@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+  enterprisebot.api:
+    image: ${DOCKER_REGISTRY-}enterprisebotapi
+    build:
+      context: .
+      dockerfile: EnterpriseBot.Api/Dockerfile
+
+  enterprisebot.background:
+    image: ${DOCKER_REGISTRY-}enterprisebotbackground
+    build:
+      context: .
+      dockerfile: EnterpriseBot.Background/Dockerfile
+
+  enterprisebot.vk:
+    image: ${DOCKER_REGISTRY-}enterprisebotvk
+    build:
+      context: .
+      dockerfile: EnterpriseBot.VK/Dockerfile
+
+
+  seq.api:
+    image: datalust/seq:latest
+
+  seq.background:
+    image: datalust/seq:latest
+
+  seq.vk:
+    image: datalust/seq:latest
+
+
+  db.postgres:
+    image: postgres
+
+  db.redis:
+    image: redis

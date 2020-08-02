@@ -1,0 +1,163 @@
+version: '3.4'
+
+services:
+  dev.enterprisebot.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+
+      - SecretsPath=/run/secrets
+
+      - Serilog__WriteTo__1__Args__serverUrl=http://dev.seq.api:5341
+    ports:
+      - "5100:80"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        window: 15s
+    tmpfs:
+      - /run/secrets
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    secrets:
+      - Development_Api_ConnectionStrings__Game
+      - Development_Api_ConnectionStrings__Hangfire
+
+
+  dev.enterprisebot.background:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+
+      - Serilog__WriteTo__1__Args__serverUrl=http://dev.seq.background:5341
+    ports:
+      - "5101:80"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        window: 15s
+    tmpfs:
+      - /run/secrets
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    secrets:
+      - Development_Background_ConnectionStrings__HangfireDb
+
+
+  dev.enterprisebot.vk:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+
+      - Serilog__WriteTo__1__Args__serverUrl=http://dev.seq.vk:5341
+
+      - ApiSettings__ApiServerUrl=http://dev.enterprisebot.api:80
+    ports:
+      - "5102:80"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        window: 15s
+    tmpfs:
+      - /run/secrets
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    secrets:
+      - Development_VK_ConnectionStrings__ErrorsPostgres
+      - Development_VK_ConnectionStrings__Redis
+      - Development_VK_VkSettings__GroupId
+      - Development_VK_VkSettings__AccessToken
+      - Development_VK_VkSettings__SecretKey
+      - Development_VK_VkSettings__Confirmation
+
+
+  dev.seq.api:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5350:80"
+      - "5351:5341"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        window: 15s
+    volumes:
+      - dev-seq-api-data:/data
+
+  dev.seq.background:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5360:80"
+      - "5361:5341"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        window: 15s
+    volumes:
+      - dev-seq-background-data:/data
+
+  dev.seq.vk:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5370:80"
+      - "5371:5341"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        window: 15s
+    volumes:
+      - dev-seq-vk-data:/data
+
+  dev.db.redis:
+    command: >
+      /run/secrets/redis.conf
+    ports:
+      - "6379"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        window: 15s
+    tmpfs:
+      - /run/secrets
+    secrets:
+      - redis.conf
+
+volumes:
+  dev-seq-api-data:
+  dev-seq-background-data:
+  dev-seq-vk-data:
+
+secrets:
+  Development_Api_ConnectionStrings__Game:
+    external: true
+  Development_Api_ConnectionStrings__Hangfire:
+    external: true
+
+  Development_Background_ConnectionStrings__HangfireDb:
+    external: true
+
+  Development_VK_ConnectionStrings__ErrorsPostgres:
+    external: true
+  Development_VK_ConnectionStrings__Redis:
+    external: true
+  Development_VK_VkSettings__GroupId:
+    external: true
+  Development_VK_VkSettings__AccessToken:
+    external: true
+  Development_VK_VkSettings__SecretKey:
+    external: true
+  Development_VK_VkSettings__Confirmation:
+    external: true
+
+  redis.conf:
+    external: true
+  

@@ -1,34 +1,34 @@
 version: '3.4'
 
 services:
-  prod.enterprisebot.api:
-    image: ${DOCKER_REGISTRY-}prodenterprisebotapi
+  prod-enterprisebot-api:
+    image: ${DOCKER_REGISTRY}prodenterprisebotapi:${DOCKER_TAG}
     build:
       context: .
       dockerfile: EnterpriseBot.Api/Dockerfile
 
-  prod.enterprisebot.background:
-    image: ${DOCKER_REGISTRY-}prodenterprisebotbackground
+  prod-enterprisebot-background:
+    image: ${DOCKER_REGISTRY}prodenterprisebotbackground:${DOCKER_TAG}
     build:
       context: .
       dockerfile: EnterpriseBot.Background/Dockerfile
 
-  prod.enterprisebot.vk:
-    image: ${DOCKER_REGISTRY-}prodenterprisebotvk
+  prod-enterprisebot-vk:
+    image: ${DOCKER_REGISTRY}prodenterprisebotvk:${DOCKER_TAG}
     build:
       context: .
       dockerfile: EnterpriseBot.VK/Dockerfile
 
 
-  prod.seq.api:
+  prod-seq-api:
     image: datalust/seq:latest
 
-  prod.seq.background:
+  prod-seq-background:
     image: datalust/seq:latest
 
-  prod.seq.vk:
+  prod-seq-vk:
     image: datalust/seq:latest
 
 
-  prod.db.redis:
+  prod-db-redis:
     image: redis

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
+using System.Linq;
 
 namespace EnterpriseBot.Background
 {
@@ -59,12 +60,8 @@ namespace EnterpriseBot.Background
                     if (!string.IsNullOrEmpty(secretsPath))
                     {
                         string prefix = $"{environment}_Background_";
-                        configBuilder.AddKeyPerFile(conf =>
-                        {
-                            conf.FileProvider = new PhysicalFileProvider(secretsPath);
-                            conf.IgnorePrefix = prefix;
-                            conf.Optional = false;
-                        });
+
+                        configBuilder.AddKeyPerFile(directoryPath: secretsPath, filePrefix: prefix);
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

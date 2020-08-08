@@ -1,70 +1,88 @@
 version: '3.4'
 
 services:
-  dev.enterprisebot.api:
+  dev-enterprisebot-api:
+
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+
+      - SecretsPath=/run/secrets
+
+      - Serilog__WriteTo__1__Args__serverUrl=http://dev-seq-api:5341
+    ports:
+      - "5000"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.dev-entbot-api-router-http.rule=Host(`api.api.entbot.tk`)
+        - traefik.http.routers.dev-entbot-api-router-http.entrypoints=http
+        - traefik.http.routers.dev-entbot-api-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.dev-entbot-api-router-https.rule=Host(`api.api.entbot.tk`)
+        - traefik.http.routers.dev-entbot-api-router-https.entrypoints=https
+        - traefik.http.routers.dev-entbot-api-router-https.tls=true
+        - traefik.http.routers.dev-entbot-api-router-https.tls.certresolver=le
+
+        - traefik.http.services.dev-entbot-api-service-https.loadbalancer.server.port=5000
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+      restart_policy:
+        condition: any
+        delay: 3s
+        window: 15s
+    tmpfs:
+      - /run/secrets
+    secrets:
+      - Development_Api_ConnectionStrings__Game
+      - Development_Api_ConnectionStrings__Hangfire
+
+
+  dev-enterprisebot-background:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
 
       - SecretsPath=/run/secrets
 
-      - Serilog__WriteTo__1__Args__serverUrl=http://dev.seq.api:5341
+      - Serilog__WriteTo__1__Args__serverUrl=http://dev-seq-background:5341
     ports:
-      - "5100:80"
+      - "80"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     tmpfs:
       - /run/secrets
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-    secrets:
-      - Development_Api_ConnectionStrings__Game
-      - Development_Api_ConnectionStrings__Hangfire
-
-
-  dev.enterprisebot.background:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-
-      - Serilog__WriteTo__1__Args__serverUrl=http://dev.seq.background:5341
-    ports:
-      - "5101:80"
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-        window: 15s
-    tmpfs:
-      - /run/secrets
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     secrets:
       - Development_Background_ConnectionStrings__HangfireDb
 
 
-  dev.enterprisebot.vk:
+  dev-enterprisebot-vk:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
 
-      - Serilog__WriteTo__1__Args__serverUrl=http://dev.seq.vk:5341
+      - SecretsPath=/run/secrets
 
-      - ApiSettings__ApiServerUrl=http://dev.enterprisebot.api:80
+      - Serilog__WriteTo__1__Args__serverUrl=http://dev-seq-vk:5341
+
+      - ApiSettings__ApiServerUrl=http://dev-enterprisebot-api:5000
     ports:
-      - "5102:80"
+      - "80"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     tmpfs:
       - /run/secrets
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     secrets:
       - Development_VK_ConnectionStrings__ErrorsPostgres
       - Development_VK_ConnectionStrings__Redis
@@ -74,56 +92,104 @@ services:
       - Development_VK_VkSettings__Confirmation
 
 
-  dev.seq.api:
+  dev-seq-api:
     environment:
       - ACCEPT_EULA=Y
     ports:
-      - "5350:80"
-      - "5351:5341"
+      - "80"
+      - "5341"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.dev-seq-api-router-http.rule=Host(`seq.api.entbot.tk`) && Path(`/api`)
+        - traefik.http.routers.dev-seq-api-router-http.entrypoints=http
+        - traefik.http.routers.dev-seq-api-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.dev-seq-api-router-https.rule=Host(`seq.api.entbot.tk`) && Path(`/api`)
+        - traefik.http.routers.dev-seq-api-router-https.entrypoints=https
+        - traefik.http.routers.dev-seq-api-router-https.tls=true
+        - traefik.http.routers.dev-seq-api-router-https.tls.certresolver=le
+
+        - traefik.http.services.dev-seq-api-service-https.loadbalancer.server.port=80
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     volumes:
       - dev-seq-api-data:/data
 
-  dev.seq.background:
+  dev-seq-background:
     environment:
       - ACCEPT_EULA=Y
     ports:
-      - "5360:80"
-      - "5361:5341"
+      - "80"
+      - "5341"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.dev-seq-background-router-http.rule=Host(`seq.api.entbot.tk`) && Path(`/background`)
+        - traefik.http.routers.dev-seq-background-router-http.entrypoints=http
+        - traefik.http.routers.dev-seq-background-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.dev-seq-background-router-https.rule=Host(`seq.api.entbot.tk`) && Path(`/background`)
+        - traefik.http.routers.dev-seq-background-router-https.entrypoints=https
+        - traefik.http.routers.dev-seq-background-router-https.tls=true
+        - traefik.http.routers.dev-seq-background-router-https.tls.certresolver=le
+
+        - traefik.http.services.dev-seq-background-service-https.loadbalancer.server.port=80
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     volumes:
       - dev-seq-background-data:/data
 
-  dev.seq.vk:
+  dev-seq-vk:
     environment:
       - ACCEPT_EULA=Y
     ports:
-      - "5370:80"
-      - "5371:5341"
+      - "80"
+      - "5341"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.dev-seq-vk-router-http.rule=Host(`seq.api.entbot.tk`) && Path(`/vk`)
+        - traefik.http.routers.dev-seq-vk-router-http.entrypoints=http
+        - traefik.http.routers.dev-seq-vk-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.dev-seq-vk-router-https.rule=Host(`seq.api.entbot.tk`) && Path(`/vk`)
+        - traefik.http.routers.dev-seq-vk-router-https.entrypoints=https
+        - traefik.http.routers.dev-seq-vk-router-https.tls=true
+        - traefik.http.routers.dev-seq-vk-router-https.tls.certresolver=le
+
+        - traefik.http.services.dev-seq-vk-service-https.loadbalancer.server.port=80
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     volumes:
       - dev-seq-vk-data:/data
 
-  dev.db.redis:
+  dev-db-redis:
     command: >
       /run/secrets/redis.conf
     ports:
       - "6379"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     tmpfs:

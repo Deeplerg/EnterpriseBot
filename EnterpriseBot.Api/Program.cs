@@ -2,9 +2,12 @@ using EnterpriseBot.Api.Extensions;
 using EnterpriseBot.Api.Models.Contexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
+using System.Linq;
 
 namespace EnterpriseBot.Api
 {
@@ -44,12 +47,8 @@ namespace EnterpriseBot.Api
                     if (!string.IsNullOrEmpty(secretsPath))
                     {
                         string prefix = $"{environment}_Api_";
-                        configBuilder.AddKeyPerFile(conf =>
-                        {
-                            conf.FileProvider = new PhysicalFileProvider(secretsPath);
-                            conf.IgnorePrefix = prefix;
-                            conf.Optional = false;
-                        });
+
+                        configBuilder.AddKeyPerFile(directoryPath: secretsPath, filePrefix: prefix);
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

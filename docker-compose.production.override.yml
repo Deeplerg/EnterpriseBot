@@ -1,70 +1,68 @@
 version: '3.4'
 
 services:
-  prod.enterprisebot.api:
+  prod-enterprisebot-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
 
       - SecretsPath=/run/secrets
 
-      - Serilog__WriteTo__1__Args__serverUrl=http://prod.seq.api:5341
+      - Serilog__WriteTo__1__Args__serverUrl=http://prod-seq-api:5341
     ports:
-      - "5100:80"
+      - "80"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     tmpfs:
       - /run/secrets
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     secrets:
       - Production_Api_ConnectionStrings__Game
       - Production_Api_ConnectionStrings__Hangfire
 
 
-  prod.enterprisebot.background:
+  prod-enterprisebot-background:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
 
-      - Serilog__WriteTo__1__Args__serverUrl=http://prod.seq.background:5341
+      - SecretsPath=/run/secrets
+
+      - Serilog__WriteTo__1__Args__serverUrl=http://prod-seq-background:5341
     ports:
-      - "5101:80"
+      - "80"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     tmpfs:
       - /run/secrets
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     secrets:
       - Production_Background_ConnectionStrings__HangfireDb
 
 
-  prod.enterprisebot.vk:
+  prod-enterprisebot-vk:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
 
-      - Serilog__WriteTo__1__Args__serverUrl=http://prod.seq.vk:5341
+      - SecretsPath=/run/secrets
 
-      - ApiSettings__ApiServerUrl=http://prod.enterprisebot.api:80
+      - Serilog__WriteTo__1__Args__serverUrl=http://prod-seq-vk:5341
+
+      - ApiSettings__ApiServerUrl=http://prod-enterprisebot-api:80
     ports:
-      - "5102:80"
+      - "80"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     tmpfs:
       - /run/secrets
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     secrets:
       - Production_VK_ConnectionStrings__ErrorsPostgres
       - Production_VK_ConnectionStrings__Redis
@@ -74,57 +72,56 @@ services:
       - Production_VK_VkSettings__Confirmation
 
 
-  prod.seq.api:
+  prod-seq-api:
     environment:
       - ACCEPT_EULA=Y
     ports:
-      - "5350:80"
-      - "5351:5341"
+      - "80"
+      - "5341"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     volumes:
       - prod-seq-api-data:/data
 
-  prod.seq.background:
+  prod-seq-background:
     environment:
       - ACCEPT_EULA=Y
     ports:
-      - "5360:80"
-      - "5361:5341"
+      - "80"
+      - "5341"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     volumes:
       - prod-seq-background-data:/data
 
-  prod.seq.vk:
+  prod-seq-vk:
     environment:
       - ACCEPT_EULA=Y
     ports:
-      - "5370:80"
-      - "5371:5341"
+      - "80"
+      - "5341"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     volumes:
       - prod-seq-vk-data:/data
 
-
-  prod.db.redis:
+  prod-db-redis:
     command: >
       /run/secrets/redis.conf
     ports:
       - "6379"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 3s
         window: 15s
     tmpfs:
@@ -132,12 +129,10 @@ services:
     secrets:
       - redis.conf
 
-
 volumes:
   prod-seq-api-data:
   prod-seq-background-data:
   prod-seq-vk-data:
-
 
 secrets:
   Production_Api_ConnectionStrings__Game:

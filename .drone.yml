@@ -1,0 +1,325 @@
+kind: pipeline
+type: docker
+name: development
+
+steps:
+- name: build
+  image: docker
+  environment:
+    REGISTRY:
+      from_secret: docker_registry
+    REGISTRY_USER:
+      from_secret: docker_user
+    REGISTRY_PASSWORD:
+      from_secret: docker_password
+  commands:
+    - apk add docker-compose --no-cache
+
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY  
+    
+    - export DOCKER_REGISTRY=$REGISTRY 
+    - export DOCKER_TAG=${DRONE_COMMIT}
+
+    - docker-compose -f docker-compose.development.yml -f docker-compose.development.override.yml build
+    - docker-compose -f docker-compose.development.yml -f docker-compose.development.override.yml push
+  volumes:
+    - name: dockersock
+      path: /var/run/docker.sock
+
+
+- name: transfer
+  image: appleboy/drone-scp
+  settings:
+    host:
+      from_secret: scp_host
+    username:
+      from_secret: scp_username
+    key:
+      from_secret: scp_key
+    port:
+      from_secret: scp_port
+    target: ~/deploy/compose/dev
+    source: 
+      - docker-compose.development.yml
+      - docker-compose.development.override.yml
+    rm: true
+    
+- name: docker-login
+  image: alpine
+  environment:
+    USER_PASSWORD:
+      from_secret: ssh_user_password
+    REGISTRY:
+      from_secret: docker_registry
+    REGISTRY_USER:
+      from_secret: docker_user
+    REGISTRY_PASSWORD:
+      from_secret: docker_password
+    SSH_HOST:
+      from_secret: ssh_host
+    SSH_USERNAME:
+      from_secret: ssh_username
+    SSH_KEY:
+      from_secret: ssh_key
+    SSH_PORT:
+      from_secret: ssh_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$SSH_KEY" > ssh.key
+    - chmod 400 ssh.key
+
+    - ssh -i ssh.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q $SSH_USERNAME@$SSH_HOST -p $SSH_PORT 
+      "echo $USER_PASSWORD | sudo -S docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY"
+
+    - rm -rf ssh.key
+
+- name: transfer-env
+  image: alpine
+  environment:
+    REGISTRY:
+      from_secret: docker_registry
+    HOST:
+      from_secret: scp_host
+    USERNAME:
+      from_secret: scp_username
+    KEY:
+      from_secret: scp_key
+    PORT:
+      from_secret: scp_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$KEY" > scp.key
+    - chmod 400 scp.key
+
+    - echo "DOCKER_REGISTRY=$REGISTRY" > .env
+    - echo "DOCKER_TAG=${DRONE_COMMIT}" >> .env
+
+    - scp -i scp.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q -P $PORT
+      .env $USERNAME@$HOST:~/deploy/compose/dev/.env
+
+    - rm -rf scp.key
+    - rm -rf .env
+
+- name: inject-values
+  image: alpine
+  environment:
+    SSH_HOST:
+      from_secret: ssh_host
+    SSH_USERNAME:
+      from_secret: ssh_username
+    SSH_KEY:
+      from_secret: ssh_key
+    SSH_PORT:
+      from_secret: ssh_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$SSH_KEY" > ssh.key
+    - chmod 400 ssh.key
+
+    - ssh -i ssh.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q $SSH_USERNAME@$SSH_HOST -p $SSH_PORT
+      'echo -e "$(docker-compose --env-file ~/deploy/compose/dev/.env -f ~/deploy/compose/dev/docker-compose.development.yml config)" > ~/deploy/compose/dev/injected.docker-compose.development.yml'
+
+    - rm -rf ssh.key
+
+- name: deploy
+  image: alpine
+  environment:
+    USER_PASSWORD:
+      from_secret: ssh_user_password
+    SSH_HOST:
+      from_secret: ssh_host
+    SSH_USERNAME:
+      from_secret: ssh_username
+    SSH_KEY:
+      from_secret: ssh_key
+    SSH_PORT:
+      from_secret: ssh_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$SSH_KEY" > ssh.key
+    - chmod 400 ssh.key
+
+    - ssh -i ssh.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q $SSH_USERNAME@$SSH_HOST -p $SSH_PORT
+      "echo $USER_PASSWORD | sudo -S docker stack deploy -c ~/deploy/compose/dev/injected.docker-compose.development.yml
+                                                         -c ~/deploy/compose/dev/docker-compose.development.override.yml 
+                                                         dev-entbot --with-registry-auth"
+      
+    - rm -rf ssh.key
+
+trigger:
+  branch:
+  - develop
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+
+image_pull_secrets:
+- dockerconfigjson
+
+
+
+
+
+---
+
+kind: pipeline
+type: docker
+name: production
+
+steps:
+- name: build
+  image: docker
+  environment:
+    REGISTRY:
+      from_secret: docker_registry
+    REGISTRY_USER:
+      from_secret: docker_user
+    REGISTRY_PASSWORD:
+      from_secret: docker_password
+  commands:
+    - apk add docker-compose --no-cache
+
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY  
+    
+    - export DOCKER_REGISTRY=$REGISTRY 
+    - export DOCKER_TAG=${DRONE_COMMIT}
+
+    - docker-compose -f docker-compose.production.yml -f docker-compose.production.override.yml build
+    - docker-compose -f docker-compose.production.yml -f docker-compose.production.override.yml push
+  volumes:
+    - name: dockersock
+      path: /var/run/docker.sock
+
+
+- name: transfer
+  image: appleboy/drone-scp
+  settings:
+    host:
+      from_secret: scp_host
+    username:
+      from_secret: scp_username
+    key:
+      from_secret: scp_key
+    port:
+      from_secret: scp_port
+    target: ~/deploy/compose/prod
+    source: 
+      - docker-compose.production.yml
+      - docker-compose.production.override.yml
+    rm: true
+    
+- name: docker-login
+  image: alpine
+  environment:
+    USER_PASSWORD:
+      from_secret: ssh_user_password
+    REGISTRY:
+      from_secret: docker_registry
+    REGISTRY_USER:
+      from_secret: docker_user
+    REGISTRY_PASSWORD:
+      from_secret: docker_password
+    SSH_HOST:
+      from_secret: ssh_host
+    SSH_USERNAME:
+      from_secret: ssh_username
+    SSH_KEY:
+      from_secret: ssh_key
+    SSH_PORT:
+      from_secret: ssh_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$SSH_KEY" > ssh.key
+    - chmod 400 ssh.key
+
+    - ssh -i ssh.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q $SSH_USERNAME@$SSH_HOST -p $SSH_PORT 
+      "echo $USER_PASSWORD | sudo -S docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY"
+
+    - rm -rf ssh.key
+
+- name: transfer-env
+  image: alpine
+  environment:
+    REGISTRY:
+      from_secret: docker_registry
+    HOST:
+      from_secret: scp_host
+    USERNAME:
+      from_secret: scp_username
+    KEY:
+      from_secret: scp_key
+    PORT:
+      from_secret: scp_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$KEY" > scp.key
+    - chmod 400 scp.key
+
+    - echo "DOCKER_REGISTRY=$REGISTRY" > .env
+    - echo "DOCKER_TAG=${DRONE_COMMIT}" >> .env
+
+    - scp -i scp.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q -P $PORT
+      .env $USERNAME@$HOST:~/deploy/compose/prod/.env
+
+    - rm -rf scp.key
+    - rm -rf .env
+
+- name: inject-values
+  image: alpine
+  environment:
+    SSH_HOST:
+      from_secret: ssh_host
+    SSH_USERNAME:
+      from_secret: ssh_username
+    SSH_KEY:
+      from_secret: ssh_key
+    SSH_PORT:
+      from_secret: ssh_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$SSH_KEY" > ssh.key
+    - chmod 400 ssh.key
+
+    - ssh -i ssh.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q $SSH_USERNAME@$SSH_HOST -p $SSH_PORT
+      'echo -e "$(docker-compose --env-file ~/deploy/compose/prod/.env -f ~/deploy/compose/prod/docker-compose.production.yml config)" > ~/deploy/compose/prod/injected.docker-compose.production.yml'
+
+    - rm -rf ssh.key
+
+- name: deploy
+  image: alpine
+  environment:
+    USER_PASSWORD:
+      from_secret: ssh_user_password
+    SSH_HOST:
+      from_secret: ssh_host
+    SSH_USERNAME:
+      from_secret: ssh_username
+    SSH_KEY:
+      from_secret: ssh_key
+    SSH_PORT:
+      from_secret: ssh_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$SSH_KEY" > ssh.key
+    - chmod 400 ssh.key
+
+    - ssh -i ssh.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q $SSH_USERNAME@$SSH_HOST -p $SSH_PORT
+      "echo $USER_PASSWORD | sudo -S docker stack deploy -c ~/deploy/compose/prod/injected.docker-compose.production.yml
+                                                         -c ~/deploy/compose/prod/docker-compose.production.override.yml 
+                                                         prod-entbot --with-registry-auth"
+      
+    - rm -rf ssh.key
+
+trigger:
+  branch:
+  - prod
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+
+image_pull_secrets:
+- dockerconfigjson

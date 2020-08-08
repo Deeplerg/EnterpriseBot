@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -98,9 +99,9 @@ namespace EnterpriseBot.Api
                 app.Run(ExceptionHandler);
             });
 
-            app.UseHttpsRedirection();
+            app.UseForwardedHeaders();
 
-            //app.UseAuthorization();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

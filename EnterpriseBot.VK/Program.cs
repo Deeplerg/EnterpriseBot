@@ -2,11 +2,14 @@ using EnterpriseBot.VK.Extensions;
 using EnterpriseBot.VK.Models.Contexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace EnterpriseBot.VK
 {
@@ -37,15 +40,12 @@ namespace EnterpriseBot.VK
 
 
                     string secretsPath = configBuilder.Build().GetValue<string>("SecretsPath");
+
                     if (!string.IsNullOrEmpty(secretsPath))
                     {
                         string prefix = $"{environment}_VK_";
-                        configBuilder.AddKeyPerFile(conf =>
-                        {
-                            conf.FileProvider = new PhysicalFileProvider(secretsPath);
-                            conf.IgnorePrefix = prefix;
-                            conf.Optional = false;
-                        });
+
+                        configBuilder.AddKeyPerFile(directoryPath: secretsPath, filePrefix: prefix);
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -56,11 +56,5 @@ namespace EnterpriseBot.VK
                 {
                     loggerConfig.ReadFrom.Configuration(hostBuilderContext.Configuration);
                 });
-
-
-        private static string ReadFile(string path)
-        {
-            return File.ReadAllText(path);
-        }
     }
 }

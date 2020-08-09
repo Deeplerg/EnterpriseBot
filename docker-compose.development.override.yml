@@ -42,6 +42,8 @@ services:
     secrets:
       - Development_Api_ConnectionStrings__Game
       - Development_Api_ConnectionStrings__Hangfire
+    networks:
+      - traefik-public
 
 
   dev-enterprisebot-background:
@@ -122,6 +124,8 @@ services:
         - traefik.constraint-label=traefik-public
     volumes:
       - dev-seq-api-data:/data
+    networks:
+      - traefik-public
 
   dev-seq-background:
     environment:
@@ -152,6 +156,8 @@ services:
         - traefik.constraint-label=traefik-public
     volumes:
       - dev-seq-background-data:/data
+    networks:
+      - traefik-public
 
   dev-seq-vk:
     environment:
@@ -182,6 +188,8 @@ services:
         - traefik.constraint-label=traefik-public
     volumes:
       - dev-seq-vk-data:/data
+    networks:
+      - traefik-public
 
   dev-db-redis:
     command: >
@@ -226,5 +234,9 @@ secrets:
     external: true
 
   redis.conf:
+    external: true
+    
+networks:
+  traefik-public:
     external: true
   

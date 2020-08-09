@@ -29,6 +29,7 @@ services:
         - traefik.http.routers.dev-entbot-api-router-https.tls.certresolver=le
 
         - traefik.http.services.dev-entbot-api-service-https.loadbalancer.server.port=80
+        - traefik.http.services.dev-entbot-api-service-https.loadbalancer.server.scheme=http
 
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public

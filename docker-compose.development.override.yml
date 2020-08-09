@@ -119,8 +119,8 @@ services:
         - traefik.http.routers.dev-seq-api-router-https.tls=true
         - traefik.http.routers.dev-seq-api-router-https.tls.certresolver=le
         
-        - traefik.http.middlewares.replacepath-seq-api.replacepathregex.regex=^/api/(.*)
-        - traefik.http.middlewares.replacepath-seq-api.replacepathregex.replacement=/$${1}
+        - traefik.http.middlewares.replacepath-seq-api.replacepathregex.regex=^/api(\/*)(.*)
+        - traefik.http.middlewares.replacepath-seq-api.replacepathregex.replacement=/$${2}
 
         - traefik.http.services.dev-seq-api-service-https.loadbalancer.server.port=80
 
@@ -155,8 +155,8 @@ services:
         - traefik.http.routers.dev-seq-background-router-https.tls=true
         - traefik.http.routers.dev-seq-background-router-https.tls.certresolver=le
         
-        - traefik.http.middlewares.replacepath-seq-background.replacepathregex.regex=^/background/(.*)
-        - traefik.http.middlewares.replacepath-seq-background.replacepathregex.replacement=/$${1}
+        - traefik.http.middlewares.replacepath-seq-background.replacepathregex.regex=^/background(\/*)(.*)
+        - traefik.http.middlewares.replacepath-seq-background.replacepathregex.replacement=/$${2}
         
         - traefik.http.services.dev-seq-background-service-https.loadbalancer.server.port=80
 
@@ -191,8 +191,8 @@ services:
         - traefik.http.routers.dev-seq-vk-router-https.tls=true
         - traefik.http.routers.dev-seq-vk-router-https.tls.certresolver=le
         
-        - traefik.http.middlewares.replacepath-seq-vk.replacepathregex.regex=^/vk/(.*)
-        - traefik.http.middlewares.replacepath-seq-vk.replacepathregex.replacement=/$${1}
+        - traefik.http.middlewares.replacepath-seq-vk.replacepathregex.regex=^/vk(\/*)(.*)
+        - traefik.http.middlewares.replacepath-seq-vk.replacepathregex.replacement=/$${2}
 
         - traefik.http.services.dev-seq-vk-service-https.loadbalancer.server.port=80
 

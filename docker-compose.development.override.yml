@@ -5,13 +5,13 @@ services:
 
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:80
 
       - SecretsPath=/run/secrets
 
       - Serilog__WriteTo__1__Args__serverUrl=http://dev-seq-api:5341
     ports:
-      - "5000"
+      - "80"
     deploy:
       placement:
         constraints:
@@ -28,7 +28,7 @@ services:
         - traefik.http.routers.dev-entbot-api-router-https.tls=true
         - traefik.http.routers.dev-entbot-api-router-https.tls.certresolver=le
 
-        - traefik.http.services.dev-entbot-api-service-https.loadbalancer.server.port=5000
+        - traefik.http.services.dev-entbot-api-service-https.loadbalancer.server.port=80
 
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
@@ -73,7 +73,7 @@ services:
 
       - Serilog__WriteTo__1__Args__serverUrl=http://dev-seq-vk:5341
 
-      - ApiSettings__ApiServerUrl=http://dev-enterprisebot-api:5000
+      - ApiSettings__ApiServerUrl=http://dev-enterprisebot-api:80
     ports:
       - "80"
     deploy:

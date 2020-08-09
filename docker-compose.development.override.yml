@@ -82,6 +82,8 @@ services:
       - /run/secrets
     secrets:
       - Development_Background_ConnectionStrings__HangfireDb
+    networks:
+      - traefik-public
 
 
   dev-enterprisebot-vk:
@@ -127,6 +129,8 @@ services:
       - Development_VK_VkSettings__AccessToken
       - Development_VK_VkSettings__SecretKey
       - Development_VK_VkSettings__Confirmation
+    networks:
+      - traefik-public
 
 
   dev-seq-api:

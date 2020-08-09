@@ -109,18 +109,14 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-seq-api-router-http.rule=Host(`seq.api.entbot.tk`) && Path(`/api`)
+        - traefik.http.routers.dev-seq-api-router-http.rule=Host(`api.seq.api.entbot.tk`) && Path(`/api`)
         - traefik.http.routers.dev-seq-api-router-http.entrypoints=http
         - traefik.http.routers.dev-seq-api-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-seq-api-router-https.rule=Host(`seq.api.entbot.tk`) && Path(`/api`)
+        - traefik.http.routers.dev-seq-api-router-https.rule=Host(`api.seq.api.entbot.tk`) && Path(`/api`)
         - traefik.http.routers.dev-seq-api-router-https.entrypoints=https
-        - traefik.http.routers.dev-seq-api-router-https.middlewares=replacepath-seq-api
         - traefik.http.routers.dev-seq-api-router-https.tls=true
         - traefik.http.routers.dev-seq-api-router-https.tls.certresolver=le
-        
-        - traefik.http.middlewares.replacepath-seq-api.replacepathregex.regex=^/api(\/*)(.*)
-        - traefik.http.middlewares.replacepath-seq-api.replacepathregex.replacement=/$${2}
 
         - traefik.http.services.dev-seq-api-service-https.loadbalancer.server.port=80
 
@@ -145,18 +141,14 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-seq-background-router-http.rule=Host(`seq.api.entbot.tk`) && Path(`/background`)
+        - traefik.http.routers.dev-seq-background-router-http.rule=Host(`background.seq.api.entbot.tk`) && Path(`/background`)
         - traefik.http.routers.dev-seq-background-router-http.entrypoints=http
         - traefik.http.routers.dev-seq-background-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-seq-background-router-https.rule=Host(`seq.api.entbot.tk`) && Path(`/background`)
+        - traefik.http.routers.dev-seq-background-router-https.rule=Host(`background.seq.api.entbot.tk`) && Path(`/background`)
         - traefik.http.routers.dev-seq-background-router-https.entrypoints=https
-        - traefik.http.routers.dev-seq-background-router-https.middlewares=replacepath-seq-background
         - traefik.http.routers.dev-seq-background-router-https.tls=true
         - traefik.http.routers.dev-seq-background-router-https.tls.certresolver=le
-        
-        - traefik.http.middlewares.replacepath-seq-background.replacepathregex.regex=^/background(\/*)(.*)
-        - traefik.http.middlewares.replacepath-seq-background.replacepathregex.replacement=/$${2}
         
         - traefik.http.services.dev-seq-background-service-https.loadbalancer.server.port=80
 
@@ -181,18 +173,14 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-seq-vk-router-http.rule=Host(`seq.api.entbot.tk`) && Path(`/vk`)
+        - traefik.http.routers.dev-seq-vk-router-http.rule=Host(`vk.seq.api.entbot.tk`) && Path(`/vk`)
         - traefik.http.routers.dev-seq-vk-router-http.entrypoints=http
         - traefik.http.routers.dev-seq-vk-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-seq-vk-router-https.rule=Host(`seq.api.entbot.tk`) && Path(`/vk`)
+        - traefik.http.routers.dev-seq-vk-router-https.rule=Host(`vk.seq.api.entbot.tk`) && Path(`/vk`)
         - traefik.http.routers.dev-seq-vk-router-https.entrypoints=https
-        - traefik.http.routers.dev-seq-vk-router-https.middlewares=replacepath-seq-vk
         - traefik.http.routers.dev-seq-vk-router-https.tls=true
         - traefik.http.routers.dev-seq-vk-router-https.tls.certresolver=le
-        
-        - traefik.http.middlewares.replacepath-seq-vk.replacepathregex.regex=^/vk(\/*)(.*)
-        - traefik.http.middlewares.replacepath-seq-vk.replacepathregex.replacement=/$${2}
 
         - traefik.http.services.dev-seq-vk-service-https.loadbalancer.server.port=80
 

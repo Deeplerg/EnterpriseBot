@@ -17,7 +17,7 @@ namespace EnterpriseBot.VK.Services
                 NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: true,
                                                                          overrideSpecifiedNames: false)
             },
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.All
         };
 
         private readonly IDatabase db;
@@ -79,7 +79,7 @@ namespace EnterpriseBot.VK.Services
 
         private LocalPlayer Deserialize(string json)
         {
-            return JsonConvert.DeserializeObject<LocalPlayer>(json);
+            return JsonConvert.DeserializeObject<LocalPlayer>(json, jsonSettings);
         }
     }
 }

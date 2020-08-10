@@ -7,11 +7,11 @@ steps:
   image: docker
   environment:
     REGISTRY:
-      from_secret: docker_registry
+      from_secret: dev_docker_registry
     REGISTRY_USER:
-      from_secret: docker_user
+      from_secret: dev_docker_user
     REGISTRY_PASSWORD:
-      from_secret: docker_password
+      from_secret: dev_docker_password
   commands:
     - apk add docker-compose --no-cache
 
@@ -31,13 +31,13 @@ steps:
   image: appleboy/drone-scp
   settings:
     host:
-      from_secret: scp_host
+      from_secret: dev_scp_host
     username:
-      from_secret: scp_username
+      from_secret: dev_scp_username
     key:
-      from_secret: scp_key
+      from_secret: dev_scp_key
     port:
-      from_secret: scp_port
+      from_secret: dev_scp_port
     target: ~/deploy/compose/dev
     source: 
       - docker-compose.development.yml
@@ -48,21 +48,21 @@ steps:
   image: alpine
   environment:
     USER_PASSWORD:
-      from_secret: ssh_user_password
+      from_secret: dev_ssh_user_password
     REGISTRY:
-      from_secret: docker_registry
+      from_secret: dev_docker_registry
     REGISTRY_USER:
-      from_secret: docker_user
+      from_secret: dev_docker_user
     REGISTRY_PASSWORD:
-      from_secret: docker_password
+      from_secret: dev_docker_password
     SSH_HOST:
-      from_secret: ssh_host
+      from_secret: dev_ssh_host
     SSH_USERNAME:
-      from_secret: ssh_username
+      from_secret: dev_ssh_username
     SSH_KEY:
-      from_secret: ssh_key
+      from_secret: dev_ssh_key
     SSH_PORT:
-      from_secret: ssh_port
+      from_secret: dev_ssh_port
   commands:
     - apk add openssh-client --no-cache
     - echo -e "$SSH_KEY" > ssh.key
@@ -77,15 +77,15 @@ steps:
   image: alpine
   environment:
     REGISTRY:
-      from_secret: docker_registry
+      from_secret: dev_docker_registry
     HOST:
-      from_secret: scp_host
+      from_secret: dev_scp_host
     USERNAME:
-      from_secret: scp_username
+      from_secret: dev_scp_username
     KEY:
-      from_secret: scp_key
+      from_secret: dev_scp_key
     PORT:
-      from_secret: scp_port
+      from_secret: dev_scp_port
   commands:
     - apk add openssh-client --no-cache
     - echo -e "$KEY" > scp.key
@@ -104,13 +104,13 @@ steps:
   image: alpine
   environment:
     SSH_HOST:
-      from_secret: ssh_host
+      from_secret: dev_ssh_host
     SSH_USERNAME:
-      from_secret: ssh_username
+      from_secret: dev_ssh_username
     SSH_KEY:
-      from_secret: ssh_key
+      from_secret: dev_ssh_key
     SSH_PORT:
-      from_secret: ssh_port
+      from_secret: dev_ssh_port
   commands:
     - apk add openssh-client --no-cache
     - echo -e "$SSH_KEY" > ssh.key
@@ -125,15 +125,15 @@ steps:
   image: alpine
   environment:
     USER_PASSWORD:
-      from_secret: ssh_user_password
+      from_secret: dev_ssh_user_password
     SSH_HOST:
-      from_secret: ssh_host
+      from_secret: dev_ssh_host
     SSH_USERNAME:
-      from_secret: ssh_username
+      from_secret: dev_ssh_username
     SSH_KEY:
-      from_secret: ssh_key
+      from_secret: dev_ssh_key
     SSH_PORT:
-      from_secret: ssh_port
+      from_secret: dev_ssh_port
   commands:
     - apk add openssh-client --no-cache
     - echo -e "$SSH_KEY" > ssh.key

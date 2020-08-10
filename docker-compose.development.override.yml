@@ -148,7 +148,7 @@ services:
         delay: 3s
         window: 15s
       update_config:
-        order: start-first
+        order: stop-first
       labels:
         - traefik.enable=true
 
@@ -183,7 +183,7 @@ services:
         delay: 3s
         window: 15s
       update_config:
-        order: start-first
+        order: stop-first
       labels:
         - traefik.enable=true
 
@@ -218,7 +218,7 @@ services:
         delay: 3s
         window: 15s
       update_config:
-        order: start-first
+        order: stop-first
       labels:
         - traefik.enable=true
 

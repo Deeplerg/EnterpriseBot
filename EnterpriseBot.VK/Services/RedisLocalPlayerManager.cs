@@ -10,7 +10,7 @@ namespace EnterpriseBot.VK.Services
     {
         private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
         {
-            Formatting = Formatting.Indented,
+            Formatting = Formatting.None,
             PreserveReferencesHandling = PreserveReferencesHandling.All,
             ContractResolver = new DefaultContractResolver
             {

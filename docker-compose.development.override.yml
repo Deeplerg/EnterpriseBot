@@ -25,11 +25,11 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-entbot-api-router-http.rule=Host(`api.api.entbot.tk`)
+        - traefik.http.routers.dev-entbot-api-router-http.rule=Host(`api.api.entbotdev.tk`)
         - traefik.http.routers.dev-entbot-api-router-http.entrypoints=http
         - traefik.http.routers.dev-entbot-api-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-entbot-api-router-https.rule=Host(`api.api.entbot.tk`)
+        - traefik.http.routers.dev-entbot-api-router-https.rule=Host(`api.api.entbotdev.tk`)
         - traefik.http.routers.dev-entbot-api-router-https.entrypoints=https
         - traefik.http.routers.dev-entbot-api-router-https.tls=true
         - traefik.http.routers.dev-entbot-api-router-https.tls.certresolver=le
@@ -67,11 +67,11 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-entbot-background-router-http.rule=Host(`background.api.entbot.tk`)
+        - traefik.http.routers.dev-entbot-background-router-http.rule=Host(`background.api.entbotdev.tk`)
         - traefik.http.routers.dev-entbot-background-router-http.entrypoints=http
         - traefik.http.routers.dev-entbot-background-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-entbot-background-router-https.rule=Host(`background.api.entbot.tk`)
+        - traefik.http.routers.dev-entbot-background-router-https.rule=Host(`background.api.entbotdev.tk`)
         - traefik.http.routers.dev-entbot-background-router-https.entrypoints=https
         - traefik.http.routers.dev-entbot-background-router-https.tls=true
         - traefik.http.routers.dev-entbot-background-router-https.tls.certresolver=le
@@ -110,11 +110,11 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-entbot-vk-router-http.rule=Host(`vk.api.entbot.tk`)
+        - traefik.http.routers.dev-entbot-vk-router-http.rule=Host(`vk.api.entbotdev.tk`)
         - traefik.http.routers.dev-entbot-vk-router-http.entrypoints=http
         - traefik.http.routers.dev-entbot-vk-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-entbot-vk-router-https.rule=Host(`vk.api.entbot.tk`)
+        - traefik.http.routers.dev-entbot-vk-router-https.rule=Host(`vk.api.entbotdev.tk`)
         - traefik.http.routers.dev-entbot-vk-router-https.entrypoints=https
         - traefik.http.routers.dev-entbot-vk-router-https.tls=true
         - traefik.http.routers.dev-entbot-vk-router-https.tls.certresolver=le
@@ -152,11 +152,11 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-seq-api-router-http.rule=Host(`api.seq.api.entbot.tk`)
+        - traefik.http.routers.dev-seq-api-router-http.rule=Host(`api.seq.api.entbotdev.tk`)
         - traefik.http.routers.dev-seq-api-router-http.entrypoints=http
         - traefik.http.routers.dev-seq-api-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-seq-api-router-https.rule=Host(`api.seq.api.entbot.tk`)
+        - traefik.http.routers.dev-seq-api-router-https.rule=Host(`api.seq.api.entbotdev.tk`)
         - traefik.http.routers.dev-seq-api-router-https.entrypoints=https
         - traefik.http.routers.dev-seq-api-router-https.tls=true
         - traefik.http.routers.dev-seq-api-router-https.tls.certresolver=le
@@ -187,11 +187,11 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-seq-background-router-http.rule=Host(`background.seq.api.entbot.tk`)
+        - traefik.http.routers.dev-seq-background-router-http.rule=Host(`background.seq.api.entbotdev.tk`)
         - traefik.http.routers.dev-seq-background-router-http.entrypoints=http
         - traefik.http.routers.dev-seq-background-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-seq-background-router-https.rule=Host(`background.seq.api.entbot.tk`)
+        - traefik.http.routers.dev-seq-background-router-https.rule=Host(`background.seq.api.entbotdev.tk`)
         - traefik.http.routers.dev-seq-background-router-https.entrypoints=https
         - traefik.http.routers.dev-seq-background-router-https.tls=true
         - traefik.http.routers.dev-seq-background-router-https.tls.certresolver=le
@@ -222,11 +222,11 @@ services:
       labels:
         - traefik.enable=true
 
-        - traefik.http.routers.dev-seq-vk-router-http.rule=Host(`vk.seq.api.entbot.tk`)
+        - traefik.http.routers.dev-seq-vk-router-http.rule=Host(`vk.seq.api.entbotdev.tk`)
         - traefik.http.routers.dev-seq-vk-router-http.entrypoints=http
         - traefik.http.routers.dev-seq-vk-router-http.middlewares=https-redirect
 
-        - traefik.http.routers.dev-seq-vk-router-https.rule=Host(`vk.seq.api.entbot.tk`)
+        - traefik.http.routers.dev-seq-vk-router-https.rule=Host(`vk.seq.api.entbotdev.tk`)
         - traefik.http.routers.dev-seq-vk-router-https.entrypoints=https
         - traefik.http.routers.dev-seq-vk-router-https.tls=true
         - traefik.http.routers.dev-seq-vk-router-https.tls.certresolver=le

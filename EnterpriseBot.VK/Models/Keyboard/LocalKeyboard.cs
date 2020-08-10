@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +14,11 @@ namespace EnterpriseBot.VK.Models.Keyboard
         public IReadOnlyCollection<IReadOnlyCollection<LocalKeyboardButton>> Buttons
         {
             get => buttons;
-            set => buttons = value.Select(collection => collection.ToList()).ToList();
+            set
+            {
+                if(value != null)
+                    buttons = value.Select(collection => collection.ToList()).ToList();
+            }
         }
         [JsonProperty]
         private List<List<LocalKeyboardButton>> buttons = new List<List<LocalKeyboardButton>>();

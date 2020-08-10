@@ -34,7 +34,11 @@ namespace EnterpriseBot.VK.Models.MenuRelated
         public MenuParameter[] Parameters
         {
             get => parameters.ToArray();
-            set => parameters = value.ToList();
+            set
+            {
+                if (value != null)
+                    parameters = value.ToList();
+            }
         }
         [JsonProperty]
         private List<MenuParameter> parameters = new List<MenuParameter>();

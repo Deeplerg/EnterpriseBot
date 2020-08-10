@@ -314,7 +314,7 @@ steps:
 
 trigger:
   branch:
-  - prod
+  - develop
 
 volumes:
   - name: dockersock

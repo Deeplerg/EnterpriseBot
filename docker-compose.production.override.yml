@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
   prod-enterprisebot-api:
+
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
@@ -12,15 +13,38 @@ services:
     ports:
       - "80"
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       restart_policy:
         condition: any
         delay: 3s
         window: 15s
-    tmpfs:
-      - /run/secrets
+      update_config:
+        order: start-first
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.prod-entbot-api-router-http.rule=Host(`api.api.entbot.tk`)
+        - traefik.http.routers.prod-entbot-api-router-http.entrypoints=http
+        - traefik.http.routers.prod-entbot-api-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.prod-entbot-api-router-https.rule=Host(`api.api.entbot.tk`)
+        - traefik.http.routers.prod-entbot-api-router-https.entrypoints=https
+        - traefik.http.routers.prod-entbot-api-router-https.tls=true
+        - traefik.http.routers.prod-entbot-api-router-https.tls.certresolver=le
+
+        - traefik.http.services.prod-entbot-api-service-https.loadbalancer.server.port=80
+        - traefik.http.services.prod-entbot-api-service-https.loadbalancer.server.scheme=http
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     secrets:
       - Production_Api_ConnectionStrings__Game
       - Production_Api_ConnectionStrings__Hangfire
+    networks:
+      - traefik-public
+      - prod-entbot-network
 
 
   prod-enterprisebot-background:
@@ -38,10 +62,30 @@ services:
         condition: any
         delay: 3s
         window: 15s
-    tmpfs:
-      - /run/secrets
+      update_config:
+        order: start-first
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.prod-entbot-background-router-http.rule=Host(`background.api.entbot.tk`)
+        - traefik.http.routers.prod-entbot-background-router-http.entrypoints=http
+        - traefik.http.routers.prod-entbot-background-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.prod-entbot-background-router-https.rule=Host(`background.api.entbot.tk`)
+        - traefik.http.routers.prod-entbot-background-router-https.entrypoints=https
+        - traefik.http.routers.prod-entbot-background-router-https.tls=true
+        - traefik.http.routers.prod-entbot-background-router-https.tls.certresolver=le
+
+        - traefik.http.services.prod-entbot-background-service-https.loadbalancer.server.port=80
+        - traefik.http.services.prod-entbot-background-service-https.loadbalancer.server.scheme=http
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     secrets:
       - Production_Background_ConnectionStrings__HangfireDb
+    networks:
+      - traefik-public
+      - prod-entbot-network
 
 
   prod-enterprisebot-vk:
@@ -61,8 +105,25 @@ services:
         condition: any
         delay: 3s
         window: 15s
-    tmpfs:
-      - /run/secrets
+      update_config:
+        order: start-first      
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.prod-entbot-vk-router-http.rule=Host(`vk.api.entbot.tk`)
+        - traefik.http.routers.prod-entbot-vk-router-http.entrypoints=http
+        - traefik.http.routers.prod-entbot-vk-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.prod-entbot-vk-router-https.rule=Host(`vk.api.entbot.tk`)
+        - traefik.http.routers.prod-entbot-vk-router-https.entrypoints=https
+        - traefik.http.routers.prod-entbot-vk-router-https.tls=true
+        - traefik.http.routers.prod-entbot-vk-router-https.tls.certresolver=le
+
+        - traefik.http.services.prod-entbot-vk-service-https.loadbalancer.server.port=80
+        - traefik.http.services.prod-entbot-vk-service-https.loadbalancer.server.scheme=http
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     secrets:
       - Production_VK_ConnectionStrings__ErrorsPostgres
       - Production_VK_ConnectionStrings__Redis
@@ -70,6 +131,9 @@ services:
       - Production_VK_VkSettings__AccessToken
       - Production_VK_VkSettings__SecretKey
       - Production_VK_VkSettings__Confirmation
+    networks:
+      - traefik-public
+      - prod-entbot-network
 
 
   prod-seq-api:
@@ -83,8 +147,29 @@ services:
         condition: any
         delay: 3s
         window: 15s
+      update_config:
+        order: stop-first
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.prod-seq-api-router-http.rule=Host(`api.seq.api.entbot.tk`)
+        - traefik.http.routers.prod-seq-api-router-http.entrypoints=http
+        - traefik.http.routers.prod-seq-api-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.prod-seq-api-router-https.rule=Host(`api.seq.api.entbot.tk`)
+        - traefik.http.routers.prod-seq-api-router-https.entrypoints=https
+        - traefik.http.routers.prod-seq-api-router-https.tls=true
+        - traefik.http.routers.prod-seq-api-router-https.tls.certresolver=le
+
+        - traefik.http.services.prod-seq-api-service-https.loadbalancer.server.port=80
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     volumes:
       - prod-seq-api-data:/data
+    networks:
+      - traefik-public
+      - prod-entbot-network
 
   prod-seq-background:
     environment:
@@ -97,8 +182,29 @@ services:
         condition: any
         delay: 3s
         window: 15s
+      update_config:
+        order: stop-first
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.prod-seq-background-router-http.rule=Host(`background.seq.api.entbot.tk`)
+        - traefik.http.routers.prod-seq-background-router-http.entrypoints=http
+        - traefik.http.routers.prod-seq-background-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.prod-seq-background-router-https.rule=Host(`background.seq.api.entbot.tk`)
+        - traefik.http.routers.prod-seq-background-router-https.entrypoints=https
+        - traefik.http.routers.prod-seq-background-router-https.tls=true
+        - traefik.http.routers.prod-seq-background-router-https.tls.certresolver=le
+        
+        - traefik.http.services.prod-seq-background-service-https.loadbalancer.server.port=80
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     volumes:
       - prod-seq-background-data:/data
+    networks:
+      - traefik-public
+      - prod-entbot-network
 
   prod-seq-vk:
     environment:
@@ -111,8 +217,29 @@ services:
         condition: any
         delay: 3s
         window: 15s
+      update_config:
+        order: stop-first
+      labels:
+        - traefik.enable=true
+
+        - traefik.http.routers.prod-seq-vk-router-http.rule=Host(`vk.seq.api.entbot.tk`)
+        - traefik.http.routers.prod-seq-vk-router-http.entrypoints=http
+        - traefik.http.routers.prod-seq-vk-router-http.middlewares=https-redirect
+
+        - traefik.http.routers.prod-seq-vk-router-https.rule=Host(`vk.seq.api.entbot.tk`)
+        - traefik.http.routers.prod-seq-vk-router-https.entrypoints=https
+        - traefik.http.routers.prod-seq-vk-router-https.tls=true
+        - traefik.http.routers.prod-seq-vk-router-https.tls.certresolver=le
+
+        - traefik.http.services.prod-seq-vk-service-https.loadbalancer.server.port=80
+
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
     volumes:
       - prod-seq-vk-data:/data
+    networks:
+      - traefik-public
+      - prod-entbot-network
 
   prod-db-redis:
     command: >
@@ -124,10 +251,12 @@ services:
         condition: any
         delay: 3s
         window: 15s
-    tmpfs:
-      - /run/secrets
+      update_config:
+        order: start-first
     secrets:
       - redis.conf
+    networks:
+      - prod-entbot-network
 
 volumes:
   prod-seq-api-data:
@@ -158,4 +287,8 @@ secrets:
 
   redis.conf:
     external: true
-  
+    
+networks:
+  traefik-public:
+    external: true
+  prod-entbot-network:

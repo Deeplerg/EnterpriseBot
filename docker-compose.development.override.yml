@@ -16,6 +16,12 @@ services:
       placement:
         constraints:
           - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 3s
+        window: 15s
+      update_config:
+        order: start-first
       labels:
         - traefik.enable=true
 
@@ -33,17 +39,12 @@ services:
 
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
-      restart_policy:
-        condition: any
-        delay: 3s
-        window: 15s
-    tmpfs:
-      - /run/secrets
     secrets:
       - Development_Api_ConnectionStrings__Game
       - Development_Api_ConnectionStrings__Hangfire
     networks:
       - traefik-public
+      - dev-entbot_default
 
 
   dev-enterprisebot-background:
@@ -57,6 +58,12 @@ services:
     ports:
       - "80"
     deploy:
+      restart_policy:
+        condition: any
+        delay: 3s
+        window: 15s
+      update_config:
+        order: start-first
       labels:
         - traefik.enable=true
 
@@ -74,16 +81,11 @@ services:
 
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
-      restart_policy:
-        condition: any
-        delay: 3s
-        window: 15s
-    tmpfs:
-      - /run/secrets
     secrets:
       - Development_Background_ConnectionStrings__HangfireDb
     networks:
       - traefik-public
+      - dev-entbot_default
 
 
   dev-enterprisebot-vk:
@@ -99,6 +101,12 @@ services:
     ports:
       - "80"
     deploy:
+      restart_policy:
+        condition: any
+        delay: 3s
+        window: 15s
+      update_config:
+        order: start-first      
       labels:
         - traefik.enable=true
 
@@ -116,12 +124,6 @@ services:
 
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
-      restart_policy:
-        condition: any
-        delay: 3s
-        window: 15s
-    tmpfs:
-      - /run/secrets
     secrets:
       - Development_VK_ConnectionStrings__ErrorsPostgres
       - Development_VK_ConnectionStrings__Redis
@@ -131,6 +133,7 @@ services:
       - Development_VK_VkSettings__Confirmation
     networks:
       - traefik-public
+      - dev-entbot_default
 
 
   dev-seq-api:
@@ -144,6 +147,8 @@ services:
         condition: any
         delay: 3s
         window: 15s
+      update_config:
+        order: start-first
       labels:
         - traefik.enable=true
 
@@ -164,6 +169,7 @@ services:
       - dev-seq-api-data:/data
     networks:
       - traefik-public
+      - dev-entbot_default
 
   dev-seq-background:
     environment:
@@ -176,6 +182,8 @@ services:
         condition: any
         delay: 3s
         window: 15s
+      update_config:
+        order: start-first
       labels:
         - traefik.enable=true
 
@@ -196,6 +204,7 @@ services:
       - dev-seq-background-data:/data
     networks:
       - traefik-public
+      - dev-entbot_default
 
   dev-seq-vk:
     environment:
@@ -208,6 +217,8 @@ services:
         condition: any
         delay: 3s
         window: 15s
+      update_config:
+        order: start-first
       labels:
         - traefik.enable=true
 
@@ -228,6 +239,7 @@ services:
       - dev-seq-vk-data:/data
     networks:
       - traefik-public
+      - dev-entbot_default
 
   dev-db-redis:
     command: >
@@ -239,8 +251,6 @@ services:
         condition: any
         delay: 3s
         window: 15s
-    tmpfs:
-      - /run/secrets
     secrets:
       - redis.conf
 

@@ -1,6 +1,9 @@
 ﻿using EnterpriseBot.VK.Abstractions;
 using EnterpriseBot.VK.Utils;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
 
@@ -26,7 +29,15 @@ namespace EnterpriseBot.VK.Models.MenuRelated
         public string MenuNamespace { get; set; }
         public string MenuTypeName { get; set; }
         public string MenuActionMethodName { get; set; }
-        public MenuParameter[] Parameters { get; set; }
+
+        [JsonIgnore]
+        public MenuParameter[] Parameters
+        {
+            get => parameters.ToArray();
+            set => parameters = value.ToList();
+        }
+        [JsonProperty]
+        private List<MenuParameter> parameters = new List<MenuParameter>();
 
         public object Clone()
         {

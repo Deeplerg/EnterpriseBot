@@ -1,4 +1,5 @@
 ﻿using EnterpriseBot.VK.Exceptions;
+using EnterpriseBot.VK.Extensions;
 using EnterpriseBot.VK.Models.Keyboard;
 using EnterpriseBot.VK.Models.MenuRelated;
 using System;
@@ -6,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using VkNet.Enums.SafetyEnums;
-using VkNet.Utils;
 
 namespace EnterpriseBot.VK.Infrastructure
 {

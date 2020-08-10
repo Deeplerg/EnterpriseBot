@@ -1,12 +1,22 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using VkNet.Utils;
 
 namespace EnterpriseBot.VK.Models.Keyboard
 {
+    [JsonObject(MemberSerialization.Fields)]
     public class LocalKeyboard : ICloneable
     {
-        public IReadOnlyCollection<IReadOnlyCollection<LocalKeyboardButton>> Buttons { get; set; }
+        [JsonIgnore]
+        public IReadOnlyCollection<IReadOnlyCollection<LocalKeyboardButton>> Buttons
+        {
+            get => buttons;
+            set => buttons = value.Select(collection => collection.ToList()).ToList();
+        }
+        private List<List<LocalKeyboardButton>> buttons = new List<List<LocalKeyboardButton>>();
 
         public bool IsEmpty
         {

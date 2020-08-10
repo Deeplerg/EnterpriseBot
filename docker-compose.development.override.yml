@@ -251,6 +251,8 @@ services:
         condition: any
         delay: 3s
         window: 15s
+      update_config:
+        order: start-first
     secrets:
       - redis.conf
 

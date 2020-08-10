@@ -7,7 +7,6 @@ using VkNet.Utils;
 
 namespace EnterpriseBot.VK.Models.Keyboard
 {
-    [JsonObject(MemberSerialization.Fields)]
     public class LocalKeyboard : ICloneable
     {
         [JsonIgnore]
@@ -16,6 +15,7 @@ namespace EnterpriseBot.VK.Models.Keyboard
             get => buttons;
             set => buttons = value.Select(collection => collection.ToList()).ToList();
         }
+        [JsonProperty]
         private List<List<LocalKeyboardButton>> buttons = new List<List<LocalKeyboardButton>>();
 
         public bool IsEmpty

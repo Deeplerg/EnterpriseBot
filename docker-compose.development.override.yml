@@ -289,4 +289,5 @@ secrets:
 networks:
   traefik-public:
     external: true
+  dev-entbot_default:
   

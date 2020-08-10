@@ -44,7 +44,6 @@ services:
       - Development_Api_ConnectionStrings__Hangfire
     networks:
       - traefik-public
-      - dev-entbot_default
 
 
   dev-enterprisebot-background:
@@ -85,7 +84,6 @@ services:
       - Development_Background_ConnectionStrings__HangfireDb
     networks:
       - traefik-public
-      - dev-entbot_default
 
 
   dev-enterprisebot-vk:
@@ -133,7 +131,6 @@ services:
       - Development_VK_VkSettings__Confirmation
     networks:
       - traefik-public
-      - dev-entbot_default
 
 
   dev-seq-api:
@@ -169,7 +166,6 @@ services:
       - dev-seq-api-data:/data
     networks:
       - traefik-public
-      - dev-entbot_default
 
   dev-seq-background:
     environment:
@@ -204,7 +200,6 @@ services:
       - dev-seq-background-data:/data
     networks:
       - traefik-public
-      - dev-entbot_default
 
   dev-seq-vk:
     environment:
@@ -239,7 +234,6 @@ services:
       - dev-seq-vk-data:/data
     networks:
       - traefik-public
-      - dev-entbot_default
 
   dev-db-redis:
     command: >
@@ -289,5 +283,4 @@ secrets:
 networks:
   traefik-public:
     external: true
-  dev-entbot_default:
   

@@ -20,7 +20,7 @@ steps:
     - export DOCKER_REGISTRY=$REGISTRY 
     - export DOCKER_TAG=${DRONE_COMMIT}
 
-    - docker-compose -f docker-compose.development.yml -f docker-compose.development.override.yml build
+    - docker-compose -f docker-compose.development.yml -f docker-compose.development.override.yml build --parallel
     - docker-compose -f docker-compose.development.yml -f docker-compose.development.override.yml push
   volumes:
     - name: dockersock
@@ -211,7 +211,7 @@ steps:
     - export DOCKER_REGISTRY=$REGISTRY 
     - export DOCKER_TAG=${DRONE_COMMIT}
 
-    - docker-compose -f docker-compose.production.yml -f docker-compose.production.override.yml build
+    - docker-compose -f docker-compose.production.yml -f docker-compose.production.override.yml build --parallel
     - docker-compose -f docker-compose.production.yml -f docker-compose.production.override.yml push
   volumes:
     - name: dockersock

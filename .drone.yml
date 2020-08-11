@@ -146,6 +146,31 @@ steps:
       
     - rm -rf ssh.key
 
+
+- name: restart-redis
+  image: alpine
+  environment:
+    USER_PASSWORD:
+      from_secret: dev_ssh_user_password
+    SSH_HOST:
+      from_secret: dev_ssh_host
+    SSH_USERNAME:
+      from_secret: dev_ssh_username
+    SSH_KEY:
+      from_secret: dev_ssh_key
+    SSH_PORT:
+      from_secret: dev_ssh_port
+  commands:
+    - apk add openssh-client --no-cache
+    - echo -e "$SSH_KEY" > ssh.key
+    - chmod 400 ssh.key
+
+    - ssh -i ssh.key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q $SSH_USERNAME@$SSH_HOST -p $SSH_PORT
+      "echo $USER_PASSWORD | sudo -S docker service update --force dev-entbot_dev-db-redis"
+      
+    - rm -rf ssh.key
+
+
 trigger:
   branch:
   - develop

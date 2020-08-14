@@ -30,5 +30,11 @@ namespace EnterpriseBot.VK.Utils
         #region menu specific
         public const string ReturnBackMenuDefaultButtonText = "Вернуться назад";
         #endregion
+        
+        #region vk
+
+        public const string VkStartButtonPayloadValue = "start";
+
+        #endregion
     }
 }

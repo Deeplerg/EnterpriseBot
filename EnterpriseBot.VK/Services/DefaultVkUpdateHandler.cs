@@ -24,6 +24,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Configuration;
 using VkNet.Abstractions;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model;
@@ -81,7 +82,7 @@ namespace EnterpriseBot.VK.Services
 
                 return new HandleUpdateResult(success: false);
             }
-
+            
             switch (update.Type)
             {
                 case var _ when update.Type == GroupUpdateType.MessageNew:
@@ -129,7 +130,7 @@ namespace EnterpriseBot.VK.Services
             }
 
             bool success = false;
-
+            
             var message = messageNew.Message;
             long peerId = message.PeerId.Value;
 
@@ -334,15 +335,25 @@ namespace EnterpriseBot.VK.Services
                 Text = message.Text,
                 VkId = peerId
             };
-
+            
             if (!string.IsNullOrEmpty(message.Payload))
             {
                 string buttonPayload = JsonConvert.DeserializeObject<VkButtonPayload>(message.Payload).Payload;
+                
+                switch (buttonPayload)
+                {
+                    case Constants.VkStartButtonPayloadValue:
+                        context.Message.PressedButton = null;
+                        break;
+                    
+                    // In any other case
+                    default:
+                        if (!KeyboardUtils.TryDecipherPayload(buttonPayload, out int pressedButton))
+                            throw new InvalidMessagePayloadException($"{peerId} is trying to change the payload: {message.Payload}");
 
-                if (!KeyboardUtils.TryDecipherPayload(buttonPayload, out int pressedButton))
-                    throw new InvalidMessagePayloadException($"{peerId} is trying to change the payload: {message.Payload}");
-
-                context.Message.PressedButton = pressedButton;
+                        context.Message.PressedButton = pressedButton;
+                        break;
+                }
             }
             var localPlayer = await AuthByVkIdAsync(peerId, localPlayerManager, api);
             context.LocalPlayer = localPlayer;

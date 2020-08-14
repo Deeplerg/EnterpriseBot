@@ -10,10 +10,13 @@ namespace EnterpriseBot.VK.Models.Keyboard
         [JsonProperty("text")]
         private string PayloadText
         {
-            set
-            {
-                Payload = value;
-            }
+            set => Payload = value;
+        }
+
+        [JsonProperty("command")]
+        private string PayloadCommand
+        {
+            set => Payload = value;
         }
     }
 }

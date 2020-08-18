@@ -21,14 +21,16 @@ namespace EnterpriseBot.VK.Models.MenuResults
         private string returnButtonText;
         private NextAction previousAction;
 
-        public ReturnBackKeyboardResult(string message, MenuContext menuContext, string returnButtonText = Constants.ReturnBackMenuDefaultButtonText)
-                                 : this(message, menuContext.LocalPlayer.PreviousAction, returnButtonText) { }
+        public bool IsSuccessfulResult { get; } = false;
 
-        public ReturnBackKeyboardResult(string message, NextAction previousAction, string returnButtonText = Constants.ReturnBackMenuDefaultButtonText)
+        public ReturnBackKeyboardResult(string message, MenuContext menuContext, string returnButtonText = Constants.ReturnBackMenuDefaultButtonText)
+                                 : this(message, menuContext.LocalPlayer.LastSuccessfulAction, returnButtonText) { }
+
+        public ReturnBackKeyboardResult(string message, NextAction toAction, string returnButtonText = Constants.ReturnBackMenuDefaultButtonText)
         {
             this.message = message;
             this.returnButtonText = returnButtonText;
-            this.previousAction = (NextAction)previousAction.Clone();
+            this.previousAction = (NextAction)toAction.Clone();
         }
 
         public VkMessage GetMessage()

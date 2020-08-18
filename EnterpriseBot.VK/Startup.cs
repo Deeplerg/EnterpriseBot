@@ -26,22 +26,31 @@ namespace EnterpriseBot.VK
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Options
             services.Configure<VkSettings>(Configuration.GetSection(nameof(VkSettings)));
             services.Configure<ApiSettings>(Configuration.GetSection(nameof(ApiSettings)));
 
+            // VK
             //services.AddAudioBypass();
             services.AddVkApi();
-
-            services.AddEntbotApi();
-            services.AddMenuMapper();
             services.AddVkMessageGateway();
+            
+            // API
+            services.AddEntbotApi();
+            
+            // Menu things
+            services.AddMenuMapper();
             services.AddMenuRouter();
-            services.AddLocalPlayerManager<RedisLocalPlayerManager>();
 
+            // Player manager
             services.AddConnectionMultiplexer(Configuration.GetConnectionString("Redis"));
+            services.AddLocalPlayerManager<RedisLocalPlayerManager>();
+            
+            // VK update handlers
+            services.AddMenuContextConfigurator();
+            services.AddVkUpdateHandlers();
 
-            services.AddVkUpdateHandler();
-
+            // Databases
             services.AddDbContext<ErrorDbContext>(options =>
             {
                 //options.UseSqlite(Configuration.GetConnectionString("ErrorsSQLite"));
@@ -49,6 +58,7 @@ namespace EnterpriseBot.VK
             });
 
 
+            // Controllers
             services.AddControllers(options =>
             {
                 options.InputFormatters.Insert(0, new GroupUpdateInputFormatter());

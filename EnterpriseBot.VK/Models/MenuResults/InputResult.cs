@@ -20,6 +20,8 @@ namespace EnterpriseBot.VK.Models.MenuResults
         private string inputStringParameterName;
         private NextAction returnBackAction;
 
+        public bool IsSuccessfulResult { get; } = true;
+        
         public InputResult(string message, NextAction nextAction, string inputStringParameterName = null, NextAction returnBackAction = null)
         {
             if (string.IsNullOrWhiteSpace(message))

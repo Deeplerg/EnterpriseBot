@@ -18,6 +18,8 @@ namespace EnterpriseBot.VK.Models.MenuResults
         private readonly LocalKeyboard localKeyboard;
         private readonly string text;
 
+        public bool IsSuccessfulResult { get; } = true;
+        
         public KeyboardResult(string text, LocalKeyboard localKeyboard)
         {
             this.localKeyboard = localKeyboard;

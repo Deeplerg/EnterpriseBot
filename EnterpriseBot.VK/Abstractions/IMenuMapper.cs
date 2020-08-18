@@ -1,4 +1,5 @@
-﻿using EnterpriseBot.VK.Models.MenuRelated;
+﻿using System;
+using EnterpriseBot.VK.Models.MenuRelated;
 using System.Threading.Tasks;
 
 namespace EnterpriseBot.VK.Abstractions
@@ -7,5 +8,6 @@ namespace EnterpriseBot.VK.Abstractions
     {
         NextAction MapAction(MenuContext context);
         Task<IMenuResult> InvokeAction(NextAction next, MenuContext context, IMenuRouter menuRouter, params object[] menuCreationParams);
+        Type GetMenuTypeForAction(NextAction action);
     }
 }

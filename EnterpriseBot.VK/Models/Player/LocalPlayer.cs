@@ -20,7 +20,10 @@ namespace EnterpriseBot.VK.Models.Player
         /// </summary>
         public IMenuResult PreviousResult { get; set; }
         public NextAction PreviousAction { get; set; }
-
+        
+        public NextAction LastSuccessfulAction { get; set; }
+        public Type LastSuccessfulMenuType { get; set; }
+        
         public object Clone()
         {
             return new LocalPlayer

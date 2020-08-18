@@ -77,11 +77,6 @@ namespace EnterpriseBot.VK.Extensions
             });
         }
 
-        public static IServiceCollection AddVkUpdateHandler(this IServiceCollection services)
-        {
-            return services.AddScoped<IVkUpdateHandler, DefaultVkUpdateHandler>();
-        }
-
         public static IServiceCollection AddVkMessageGateway(this IServiceCollection services)
         {
             return services.AddSingleton<IVkMessageGateway, SeparateThreadVkMessageGateway>();
@@ -106,6 +101,19 @@ namespace EnterpriseBot.VK.Extensions
         public static IServiceCollection AddConnectionMultiplexer(this IServiceCollection services, string connectionString)
         {
             return services.AddSingleton<IConnectionMultiplexer, ConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(connectionString));
+        }
+
+        public static IServiceCollection AddVkUpdateHandlers(this IServiceCollection services)
+        {
+            services.AddTransient<IConfirmationUpdateHandler, ConfirmationUpdateHandler>();
+            services.AddTransient<IMessageNewUpdateHandler, MessageNewUpdateHandler>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddMenuContextConfigurator(this IServiceCollection services)
+        {
+            return services.AddTransient<IMenuContextConfigurator, MenuContextConfigurator>();
         }
     }
 }

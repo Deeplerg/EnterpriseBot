@@ -13,6 +13,8 @@ namespace EnterpriseBot.VK.Models.MenuResults
         private readonly string text;
         private readonly NextAction nextAction;
 
+        public bool IsSuccessfulResult { get; } = true; 
+
         public TextResult(string text, NextAction nextAction)
         {
             if (string.IsNullOrWhiteSpace(text))

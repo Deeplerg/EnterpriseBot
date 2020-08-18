@@ -40,6 +40,35 @@ namespace EnterpriseBot.VK.Services
 
         public async Task<IMenuResult> InvokeAction(NextAction next, MenuContext context, IMenuRouter menuRouter, params object[] menuCreationParams)
         {
+            Type menu = MapMenuType(next);
+            MethodInfo action = MapMenuMethod(next, menu);
+
+            var menuInstance = menuRouter.CreateMenuOfType(menu, menuCreationParams);
+
+            return await menuRouter.InvokeMenuActionAsync(action, menuInstance, invocationParams: next.Parameters);
+        }
+
+        public Type GetMenuTypeForAction(NextAction next) => MapMenuType(next);
+
+        private NextAction CreateAction(Type menuType, MethodInfo menuAction = null, MenuParameter[] pars = null)
+        {
+            if (menuType == null)
+            {
+                throw new ArgumentNullException($"{nameof(menuType)} cannot be null");
+            }
+            if (menuType.GetInterface(nameof(IMenu)) == null)
+            {
+                throw new ArgumentException($"{menuType} is not a menu");
+            }
+
+            //var menuAction ??= TypeUtils.GetMethod(menuType, nameof(IMenu.DefaultMenuLayout));
+            if (menuAction is null) menuAction = TypeUtils.GetMethod(menuType, nameof(IMenu.DefaultMenuLayout));
+
+            return new NextAction(menuType, menuAction, pars);
+        }
+
+        private Type MapMenuType(NextAction next)
+        {
             var assembly = AppDomain.CurrentDomain
                                     .GetAssemblies()
                                     .FirstOrDefault(m => m.GetName().Name == next.MenuAssemblyName);
@@ -76,30 +105,16 @@ namespace EnterpriseBot.VK.Services
                 throw new ArgumentException($"{menu} is not a menu");
             }
 
-            var method = TypeUtils.GetMethod(menu, next.MenuActionMethodName);
-
-            MethodInfo action = method ?? TypeUtils.GetMethod(menu, nameof(IMenu.DefaultMenuLayout));
-
-            var menuInstance = menuRouter.CreateMenuOfType(menu, menuCreationParams);
-
-            return await menuRouter.InvokeMenuActionAsync(action, menuInstance, invocationParams: next.Parameters);
+            return menu;
         }
 
-        private NextAction CreateAction(Type menuType, MethodInfo menuAction = null, MenuParameter[] pars = null)
+        private MethodInfo MapMenuMethod(NextAction nextAction, Type menuType)
         {
-            if (menuType == null)
-            {
-                throw new ArgumentNullException($"{nameof(menuType)} cannot be null");
-            }
-            if (menuType.GetInterface(nameof(IMenu)) == null)
-            {
-                throw new ArgumentException($"{menuType} is not a menu");
-            }
+            var method = TypeUtils.GetMethod(menuType, nextAction.MenuActionMethodName);
 
-            //var menuAction ??= TypeUtils.GetMethod(menuType, nameof(IMenu.DefaultMenuLayout));
-            if (menuAction is null) menuAction = TypeUtils.GetMethod(menuType, nameof(IMenu.DefaultMenuLayout));
+            MethodInfo action = method ?? TypeUtils.GetMethod(menuType, nameof(IMenu.DefaultMenuLayout));
 
-            return new NextAction(menuType, menuAction, pars);
+            return action;
         }
     }
 }

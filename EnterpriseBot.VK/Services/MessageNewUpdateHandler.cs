@@ -57,42 +57,44 @@ namespace EnterpriseBot.VK.Services
 
             try
             {
-                MenuContext context = new MenuContext();
+                MenuContext context;
 
                 try
                 {
-                    await contextConfigurator.Configure(message);
+                    context = await contextConfigurator.Configure(message);
                 }
                 #region Exception handling
                 catch (InvalidMessagePayloadException ex)
                 {
                     LogExceptionWithPeerId(ex, peerId);
 
+                    string supportLink = Path.Combine(vkSettings.Links.VkDomain,
+                                                      vkSettings.Links.EntbotSupportVkName);
+                    
                     string invalidPayloadMessage = string.Format(ExceptionTemplates.InvalidMessagePayloadWarnTemplate,
-                                                                 Path.Combine(
-                                                                 vkSettings.Links.VkDomain,
-                                                                 vkSettings.Links.EntbotSupportVkName));
+                                                                 supportLink);
 
                     messages.Send(peerId, invalidPayloadMessage);
 
                     return true;
                 }
-                #endregion     
+                #endregion
 
                 IMenuResult result = null;
-                NextAction next = null;
+                NextAction action = null;
                 Type menuType = null;
                 
                 try
                 {
-                    next = menuMapper.MapAction(context);
-                    result = await menuMapper.InvokeAction(next, context, menuRouter,
-                                                           context);
+                    action = menuMapper.MapAction(context);
+                    result = await menuMapper.InvokeAction(action, context, menuRouter,
+                                       menuCreationParams: context);
                     
-                    menuType = menuMapper.GetMenuTypeForAction(next);
+                    menuType = menuMapper.GetMenuTypeForAction(action);
                     
                     success = true;
                 }
+                
                 #region Exception handling
                 catch (ApiNormalException ex)
                 {
@@ -110,8 +112,7 @@ namespace EnterpriseBot.VK.Services
 
                     success = false;
                 }
-
-                //trying to return the user to the previous menu at all costs
+                
                 catch (Exception ex)
                 {
                     Guid? errorId = await TrySaveExceptionAsync(ex);
@@ -137,18 +138,18 @@ namespace EnterpriseBot.VK.Services
 
                 finally
                 {
-                    context.LocalPlayer.PreviousAction = next;
+                    context.LocalPlayer.PreviousAction = action;
                     context.LocalPlayer.PreviousResult = result;
-
+                    
                     var resultMessage = result.GetMessage();
                     if (resultMessage.Keyboard != null && !resultMessage.Keyboard.IsEmpty)
                     {
                         context.LocalPlayer.CurrentKeyboard = resultMessage.Keyboard;
                     }
-
+                    
                     if (success && result.IsSuccessfulResult)
                     {
-                        context.LocalPlayer.LastSuccessfulAction = next;
+                        context.LocalPlayer.LastSuccessfulAction = action;
                         context.LocalPlayer.LastSuccessfulMenuType = menuType;
                     }
                     

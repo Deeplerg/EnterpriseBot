@@ -4,7 +4,7 @@ using System;
 
 namespace EnterpriseBot.VK.Models.MenuRelated
 {
-    public class MenuParameter
+    public class MenuParameter : ICloneable
     {
         public MenuParameter() { }
 
@@ -28,5 +28,25 @@ namespace EnterpriseBot.VK.Models.MenuRelated
         public object Value { get; set; }
 
         public string Name { get; set; }
+        
+        public object Clone()
+        {
+            object value;
+            
+            if (!(Value is string) && Value is ICloneable cloneable)
+            {
+                value = cloneable.Clone();
+            }
+            else
+            {
+                value = Value;
+            }
+            
+            return new MenuParameter
+            {
+                Value = value,
+                Name = Name
+            };
+        }
     }
 }

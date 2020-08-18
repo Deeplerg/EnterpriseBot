@@ -26,6 +26,12 @@ namespace EnterpriseBot.VK.Models.MenuResults
             this.text = text;
         }
 
+        public KeyboardResult(string text, LocalKeyboardButton button)
+                       : this(text, new List<LocalKeyboardButton> { button }) { }
+        
+        public KeyboardResult(string text, IEnumerable<LocalKeyboardButton> buttons)
+                       : this(text, new List<IEnumerable<LocalKeyboardButton>> { buttons }) { }
+
         public KeyboardResult(string text, IEnumerable<IEnumerable<LocalKeyboardButton>> buttons)
         {
             if (string.IsNullOrWhiteSpace(text))

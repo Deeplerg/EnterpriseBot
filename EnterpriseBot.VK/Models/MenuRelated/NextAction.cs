@@ -50,7 +50,8 @@ namespace EnterpriseBot.VK.Models.MenuRelated
                 MenuAssemblyName = MenuAssemblyName,
                 MenuNamespace = MenuNamespace,
                 MenuTypeName = MenuTypeName,
-                MenuActionMethodName = MenuActionMethodName
+                MenuActionMethodName = MenuActionMethodName,
+                Parameters = parameters.ConvertAll(parameter => (MenuParameter)parameter.Clone()).ToArray()
             };
         }
     }

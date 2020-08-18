@@ -21,6 +21,17 @@ namespace EnterpriseBot.VK.Menus
         private readonly VkLinksSetting links;
 
         private readonly Type thisType;
+        
+        private readonly IMenuResult alreadyAuthorizedResult = new KeyboardResult("😄 Авторизация прошла успешно!", 
+                                                                                  new LocalKeyboardButton
+                                                                                  {
+                                                                                      Color = KeyboardButtonColor.Positive,
+                                                                                      Next = new NextAction(menu: Constants.MainMenu, 
+                                                                                                            action: Constants.MainMenuMainAction),
+                                                                                      Text = "В главное меню"
+                                                                                  });
+        
+        private bool IsAuthorized => MenuContext.LocalPlayer.IsAuthorized;
 
         public AuthMenu(ILogger<AuthMenu> logger, IOptions<VkSettings> vkOptions)
         {
@@ -32,6 +43,8 @@ namespace EnterpriseBot.VK.Menus
 
         public async Task<IMenuResult> Auth()
         {
+            if (IsAuthorized) return alreadyAuthorizedResult;
+            
             long vkId = MenuContext.LocalPlayer.VkId;
             logger.LogInformation($"Authenticating {vkId}");
 
@@ -69,6 +82,8 @@ namespace EnterpriseBot.VK.Menus
 
         public IMenuResult Login_EnterNameOrId()
         {
+            if (IsAuthorized) return alreadyAuthorizedResult;
+
             string message = "Введи ник или id своего аккаунта:";
 
             return new InputResult(message,
@@ -79,6 +94,8 @@ namespace EnterpriseBot.VK.Menus
 
         public async Task<IMenuResult> Login_PlayerName(string input)
         {
+            if (IsAuthorized) return alreadyAuthorizedResult;
+
             var player = await BotApi.Essences.Player.SearchByExactName(input);
             if (player == null)
             {
@@ -116,6 +133,8 @@ namespace EnterpriseBot.VK.Menus
 
         public async Task<IMenuResult> Login_Password(string password, long playerId)
         {
+            if (IsAuthorized) return alreadyAuthorizedResult;
+
             var player = await BotApi.Essences.Player.Get(playerId);
 
             bool isPasswordValid = await BotApi.Essences.Player.VerifyPassword(playerId, password);
@@ -148,6 +167,8 @@ namespace EnterpriseBot.VK.Menus
 
         public IMenuResult Register_EnterName()
         {
+            if (IsAuthorized) return alreadyAuthorizedResult;
+
             string message = "Введи ник:";
 
             return new InputResult(message,
@@ -158,6 +179,8 @@ namespace EnterpriseBot.VK.Menus
 
         public IMenuResult Register_PlayerName(string name)
         {
+            if (IsAuthorized) return alreadyAuthorizedResult;
+
             string message = "Теперь нужно ввести пароль." +
                              "\n" +
                              "Все пароли хранятся только в зашифрованном виде." +
@@ -179,6 +202,8 @@ namespace EnterpriseBot.VK.Menus
 
         public async Task<IMenuResult> Register_Password(string password, string name)
         {
+            if (IsAuthorized) return alreadyAuthorizedResult;
+
             var player = await BotApi.Essences.Player.Create(new PlayerCreationParams
             {
                 Name = name,

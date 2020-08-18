@@ -20,7 +20,7 @@ namespace EnterpriseBot.VK.Utils
         public static readonly MethodInfo AuthMenuAuthAction = TypeUtils.GetMethod(AuthMenu, nameof(Menus.AuthMenu.Auth));
 
         public static readonly Type PayloadEmptyMenu = typeof(BotDoesNotSupportTextCommandsMenu);
-        public static readonly MethodInfo PayloadEmptyMenuAction = TypeUtils.GetMethod(PayloadEmptyMenu, nameof(Menus.BotDoesNotSupportTextCommandsMenu.ReturnBack));
+        public static readonly MethodInfo PayloadEmptyMenuAction = TypeUtils.GetMethod(PayloadEmptyMenu, nameof(Menus.BotDoesNotSupportTextCommandsMenu.DefaultMenuLayout));
 
         public static readonly Type ReturnBackMenu = typeof(ReturnBackMenu);
         public static readonly MethodInfo ReturnBackMenuReturnToResultAction = TypeUtils.GetMethod(ReturnBackMenu, nameof(Menus.Service.ReturnBackMenu.ReturnBackToResult));

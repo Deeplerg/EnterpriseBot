@@ -66,10 +66,7 @@ namespace EnterpriseBot.VK.Abstractions
 
         protected KeyboardResult Keyboard(string text, IEnumerable<LocalKeyboardButton> buttons)
         {
-            return new KeyboardResult(text, new List<IEnumerable<LocalKeyboardButton>>
-            {
-                buttons
-            });
+            return new KeyboardResult(text, buttons);
         }
 
         protected KeyboardResult Keyboard(string text, LocalKeyboardButton button)

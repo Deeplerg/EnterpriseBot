@@ -11,7 +11,7 @@ namespace EnterpriseBot.VK.Menus
 
             return new ReturnBackKeyboardResult(message, MenuContext);
         }
-
+        
         public override IMenuResult DefaultMenuLayout()
         {
             return ReturnBack();

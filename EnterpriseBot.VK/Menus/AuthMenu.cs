@@ -61,7 +61,7 @@ namespace EnterpriseBot.VK.Menus
                 greeting = $"Привет, {user.FirstName}!";
             }
 
-            string message = greeting + "\n" + "Для начала необходимо авторизоваться. У тебя уже есть аккаунт?";
+            string message = greeting + "\n" + "Для начала необходимо авторизоваться.";
 
             return Keyboard(message, new List<LocalKeyboardButton>
             {

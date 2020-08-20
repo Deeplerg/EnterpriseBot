@@ -77,7 +77,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
         {
             ErrorSeverity = ErrorSeverity.Normal,
             EnglishMessage = "Can't allow produce items, as working storage and/or recipe are not specified",
-            RussianMessage = "Нельзя разрешить производить предметы, так как рабочее хранилище и/или рецепт не указаны"
+            RussianMessage = "Нельзя разрешить производить предмеВы, так как рабочее хранилище и/или рецепт не указаны"
         };
         #endregion
         #endregion
@@ -166,7 +166,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 {
                     ErrorSeverity = ErrorSeverity.Normal,
                     EnglishMessage = $"You are already producing an item in company '{workingJob.Name}'",
-                    RussianMessage = $"Ты уже создаёшь предмет в компании '{workingJob.Name}'"
+                    RussianMessage = $"Вы уже создаёшь предмет в компании '{workingJob.Name}'"
                 };
             }
 
@@ -218,7 +218,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                     {
                         ErrorSeverity = ErrorSeverity.Normal,
                         EnglishMessage = "This worker can't produce items",
-                        RussianMessage = "Этот работник не может производить предметы"
+                        RussianMessage = "Этот работник не может производить предмеВы"
                     }
                 };
             }

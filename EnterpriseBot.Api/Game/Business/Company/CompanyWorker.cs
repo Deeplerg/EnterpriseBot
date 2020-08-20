@@ -195,7 +195,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
                 {
                     ErrorSeverity = ErrorSeverity.Normal,
                     EnglishMessage = "Working speed is already at the maximum",
-                    RussianMessage = "Скорость работы уже на максимуме"
+                    RussianMessage = "Скорость рабоВы уже на максимуме"
                 };
             }
 

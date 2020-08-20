@@ -112,7 +112,7 @@ namespace EnterpriseBot.Api.Game.Money
                                      $"1bc price in units: {bcPrice}",
 
                     RussianMessage = $"Недостаточно юнитов, чтобы купить {amount}bc. " +
-                                     $"У тебя есть: {units.Amount}, необходимо: {overallPrice}." +
+                                     $"У Вас есть: {units.Amount}, необходимо: {overallPrice}." +
                                      $"Стоимость 1bc в юнитах: {bcPrice}"
                 };
             }

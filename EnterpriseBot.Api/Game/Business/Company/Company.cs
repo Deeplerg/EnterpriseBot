@@ -118,7 +118,7 @@ namespace EnterpriseBot.Api.Game.Business.Company
 
                     EnglishMessage = $"Not enough money. You currently have: {currentBusinessCoinsQuantity}bc, " +
                                      $"but with options selected you need: {overallPrice}bc",
-                    RussianMessage = $"Недостаточно денег. У тебя сейчас: {currentBusinessCoinsQuantity}bc," +
+                    RussianMessage = $"Недостаточно денег. У Вас сейчас: {currentBusinessCoinsQuantity}bc," +
                                      $"но с выбранными параметрами необходимо: {overallPrice}bc"
                 };
             }

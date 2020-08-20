@@ -296,7 +296,7 @@ namespace EnterpriseBot.Api.Game.Storages
                 {
                     ErrorSeverity = ErrorSeverity.Normal,
                     EnglishMessage = "Can't transfer items to the same storage",
-                    RussianMessage = "Нельзя переместить предметы в то же самое хранилище"
+                    RussianMessage = "Нельзя переместить предмеВы в то же самое хранилище"
                 };
             }
 

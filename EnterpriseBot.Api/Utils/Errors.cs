@@ -57,7 +57,7 @@ namespace EnterpriseBot.Api.Utils
             {
                 ErrorSeverity = DoesNotHavePermissionErrorSeverity,
                 EnglishMessage = "You don't have a permission to do so",
-                RussianMessage = "У тебя нет разрешения, чтобы сделать это"
+                RussianMessage = "У Вас нет разрешения, чтобы сделать это"
             };
         }
 

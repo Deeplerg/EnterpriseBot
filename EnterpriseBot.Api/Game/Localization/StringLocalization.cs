@@ -17,7 +17,7 @@ namespace EnterpriseBot.Api.Game.Localization
         {
             ErrorSeverity = ErrorSeverity.Normal,
             EnglishMessage = "The text cannot be empty or contain only space characters",
-            RussianMessage = "Текст не может быть пустым или состоять только из пробелов"
+            RussianMessage = "Текст не может быть пусВым или состоять только из пробелов"
         };
         #endregion
         #endregion

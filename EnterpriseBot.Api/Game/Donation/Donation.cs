@@ -162,7 +162,7 @@ namespace EnterpriseBot.Api.Game.Donation
                 {
                     ErrorSeverity = ErrorSeverity.Normal,
                     EnglishMessage = "Can't upgrade to this privilege, as you already have this one",
-                    RussianMessage = "Нельзя улучшить привилегию до этой, так как она уже есть у тебя"
+                    RussianMessage = "Нельзя улучшить привилегию до этой, так как у Вас она уже есть"
                 };
             }
 

@@ -139,7 +139,7 @@ namespace EnterpriseBot.VK.Menus
                                           $"Если это Ваш аккаунт, " +
                                           $"{MessageUtils.HideVkNameIntoText(links.EntbotSupportVkName, "обратитесь в поддержку.")}";
 
-                return Keyboard($"", new LocalKeyboardButton
+                return Keyboard(messageNoPassword, new LocalKeyboardButton
                 {
                     Text = "Назад",
                     Next = new NextAction(thisType, nameof(Auth))

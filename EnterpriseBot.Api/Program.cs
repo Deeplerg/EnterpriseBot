@@ -31,7 +31,7 @@ namespace EnterpriseBot.Api
                 .ConfigureAppConfiguration((hostBuilder, configBuilder) =>
                 {
                     string environment = hostBuilder.HostingEnvironment.EnvironmentName;
-
+                    
                     configBuilder.AddJsonFile($"appsettings.{environment}.json", optional: false, reloadOnChange: true);
 
                     configBuilder.AddJsonFile($"GameSettings.{environment}.json", optional: false, reloadOnChange: true);
@@ -44,6 +44,7 @@ namespace EnterpriseBot.Api
 
 
                     string secretsPath = configBuilder.Build().GetValue<string>("SecretsPath");
+                    
                     if (!string.IsNullOrEmpty(secretsPath))
                     {
                         string prefix = $"{environment}_Api_";
@@ -57,7 +58,7 @@ namespace EnterpriseBot.Api
                 })
                 .UseSerilog((hostBuilderContext, loggerConfig) =>
                 {
-                    loggerConfig.ReadFrom.Configuration(hostBuilderContext.Configuration);
+                    //loggerConfig.ReadFrom.Configuration(hostBuilderContext.Configuration);
                 });
     }
 }

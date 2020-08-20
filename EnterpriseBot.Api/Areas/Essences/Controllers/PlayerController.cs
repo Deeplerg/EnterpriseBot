@@ -58,14 +58,13 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
 
         public async Task<GameResult<Player>> Create([FromBody] PlayerApiCreationParams pars)
         {
-            string name = pars.Name.ToLower().Trim();
-            if (await ctx.Players.AnyAsync(player => player.Name.ToLower().Trim() == name))
+            if(await IsNameAlreadyTaken(pars.Name))
             {
                 return new LocalizedError
                 {
                     ErrorSeverity = ErrorSeverity.Normal,
-                    EnglishMessage = "There already is a player with the same name",
-                    RussianMessage = "Уже есть игрок с таким именем"
+                    EnglishMessage = $"There is already a player with the same name ({pars.Name})",
+                    RussianMessage = $"Уже есть игрок с таким именем ({pars.Name})"
                 };
             }
 
@@ -74,6 +73,36 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
                 Name = pars.Name,
                 RawPassword = pars.RawPassword
             }, gameSettings);
+            if (creationResult.LocalizedError != null) return creationResult.LocalizedError;
+
+            var model = creationResult.Result;
+
+            ctx.Players.Add(model);
+            await ctx.SaveChangesAsync();
+
+            return model;
+        }
+
+        public async Task<GameResult<Player>> CreateWithNoPassword([FromBody] string json)
+        {
+            var pars = new
+            {
+                name = default(string)
+            };
+
+            var d = JsonConvert.DeserializeAnonymousType(json, pars);
+
+            if (await IsNameAlreadyTaken(d.name))
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Normal,
+                    EnglishMessage = $"There is already a player with the same name ({d.name}). Try signing up without a social network and enter your desired name",
+                    RussianMessage = $"Уже есть игрок с таким именем ({d.name}). Попробуйте зарегистрироваться не через социальную сеть и введите желаемое имя"
+                };
+            }
+
+            var creationResult = Player.CreateWithNoPassword(d.name, gameSettings);
             if (creationResult.LocalizedError != null) return creationResult.LocalizedError;
 
             var model = creationResult.Result;
@@ -165,6 +194,27 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
             if (player == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
 
             var actionResult = player.EditStatus(d.newStatus, d.language, gameSettings);
+            if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
+
+            await ctx.SaveChangesAsync();
+
+            return actionResult;
+        }
+
+        public async Task<EmptyGameResult> ChangeName([FromBody] string json)
+        {
+            var pars = new
+            {
+                modelId = default(long),
+                newName = default(string)
+            };
+
+            var d = JsonConvert.DeserializeAnonymousType(json, pars);
+
+            var player = await ctx.Players.FindAsync(d.modelId);
+            if (player == null) return Errors.DoesNotExist(d.modelId, modelLocalization);
+
+            var actionResult = player.ChangeName(d.newName, gameSettings);
             if (actionResult.LocalizedError != null) return actionResult.LocalizedError;
 
             await ctx.SaveChangesAsync();
@@ -273,7 +323,7 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
             return players;
         }
 
-        public async Task<GameResult<Player>> SearchByExactName([FromBody] string json)
+        public async Task<GameResult<Player>> GetByName([FromBody] string json)
         {
             var pars = new
             {
@@ -333,6 +383,28 @@ namespace EnterpriseBot.Api.Areas.Essences.Controllers
                 default:
                     return Errors.UnknownEnumValue(d.platform);
             }
+        }
+
+        public async Task<GameResult<bool>> CheckIsPlayerNameAlreadyTaken([FromBody] string json)
+        {
+            var pars = new
+            {
+                name = default(string)
+            };
+
+            var d = JsonConvert.DeserializeAnonymousType(json, pars);
+
+            return await IsNameAlreadyTaken(d.name);
+        }
+
+
+        [NonAction]
+        private async Task<bool> IsNameAlreadyTaken(string name)
+        {
+            name = name.ToLower().Trim();
+
+            bool isNameTaken = await ctx.Players.AnyAsync(player => player.Name.ToLower().Trim() == name);
+            return isNameTaken;
         }
     }
 }

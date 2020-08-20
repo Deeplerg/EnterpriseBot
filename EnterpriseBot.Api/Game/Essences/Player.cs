@@ -58,6 +58,9 @@ namespace EnterpriseBot.Api.Game.Essences
 
         public virtual Reputation.Reputation Reputation { get; protected set; }
 
+        public bool RegisteredWithSocialNetworkCredentials { get; protected set; }
+        public bool CanChangeNameAfterRegistrationViaSocialNetwork { get; protected set; }
+        public bool HasPassword => !(string.IsNullOrEmpty(PasswordHash) || string.IsNullOrEmpty(PasswordSaltBase64));
 
         [JsonIgnore]
         public string PasswordHash { get; protected set; }
@@ -65,8 +68,8 @@ namespace EnterpriseBot.Api.Game.Essences
         public string PasswordSaltBase64 { get; protected set; }
 
 
-        public bool HasDonation { get => Donation.HasDonation; }
-        public bool HasJob { get => CompanyJobs != null && CompanyJobs.Any(); }
+        public bool HasDonation => Donation.HasDonation;
+        public bool HasJob => CompanyJobs != null && CompanyJobs.Any();
 
         public virtual IReadOnlyCollection<CompanyJobApplication> CompanyJobApplications
         {
@@ -81,12 +84,6 @@ namespace EnterpriseBot.Api.Game.Essences
         public static GameResult<Player> Create(PlayerCreationParams pars, GameSettings gameSettings)
         {
             var req = gameSettings.Localization.UserInputRequirements;
-            var gameplaySettings = gameSettings.Gameplay;
-
-            if (!CheckName(pars.Name))
-            {
-                return Errors.IncorrectNameInput(req);
-            }
 
             if (!CheckPasswordReliability(pars.RawPassword))
             {
@@ -94,57 +91,33 @@ namespace EnterpriseBot.Api.Game.Essences
             }
 
 
-            Player player = null;
+            var playerBaseCreationResult = CreatePlayerBase(pars.Name, gameSettings);
+            if (playerBaseCreationResult.LocalizedError != null) return playerBaseCreationResult.LocalizedError;
+
+            Player player = playerBaseCreationResult;
 
 
             byte[] passwordSalt = Hash.CreateSalt();
             string passwordHash = Hash.CreateHash(pars.RawPassword, passwordSalt);
 
-            var donationCreationResult = Game.Donation.Donation.Create(new DonationCreationParams
-            {
-                Privilege = default(Privilege),
-                Player = player
-            });
-            if (donationCreationResult.LocalizedError != null) return donationCreationResult.LocalizedError;
+            player.PasswordHash = passwordHash;
+            player.PasswordSaltBase64 = Convert.ToBase64String(passwordSalt);
 
-            var purseCreationResult = Purse.Create(new PurseCreationParams
-            {
-                UnitsAmount = gameplaySettings.Player.DefaultUnits,
-                BusinessCoinsAmount = gameplaySettings.Player.DefaultBusinessCoins
-            });
-            if (purseCreationResult.LocalizedError != null) return purseCreationResult.LocalizedError;
+            player.RegisteredWithSocialNetworkCredentials = false;
+            player.CanChangeNameAfterRegistrationViaSocialNetwork = false;
 
-            var reputationCreationResult = Game.Reputation.Reputation.Create(new ReputationCreationParams
-            {
-            });
-            if (reputationCreationResult.LocalizedError != null) return reputationCreationResult.LocalizedError;
+            return player;
+        }
 
+        public static GameResult<Player> CreateWithNoPassword(string name, GameSettings gameSettings)
+        {
+            var playerBaseCreationResult = CreatePlayerBase(name, gameSettings);
+            if (playerBaseCreationResult.LocalizedError != null) return playerBaseCreationResult.LocalizedError;
 
-            player = new Player
-            {
-                Name = pars.Name,
+            Player player = playerBaseCreationResult;
 
-                Donation = donationCreationResult,
-                Purse = purseCreationResult,
-                Reputation = reputationCreationResult,
-
-                PasswordHash = passwordHash,
-                PasswordSaltBase64 = Convert.ToBase64String(passwordSalt),
-
-                VkConnected = false,
-                VkId = null,
-
-                RegistrationDate = DateTime.Now
-            };
-
-            var storageCreationResult = InventoryStorage.Create(new InventoryStorageCreationParams
-            {
-                Capacity = gameplaySettings.Storage.Inventory.DefaultCapacity,
-                OwningPlayer = player
-            });
-            if (storageCreationResult.LocalizedError != null) return storageCreationResult.LocalizedError;
-
-            player.Inventory = storageCreationResult;
+            player.RegisteredWithSocialNetworkCredentials = true;
+            player.CanChangeNameAfterRegistrationViaSocialNetwork = true;
 
             return player;
         }
@@ -199,6 +172,28 @@ namespace EnterpriseBot.Api.Game.Essences
             return editResult;
         }
 
+        public EmptyGameResult ChangeName(string newName, GameSettings gameSettings)
+        {
+            if(CanChangeNameAfterRegistrationViaSocialNetwork)
+            {
+                var setNameResult = SetName(newName, gameSettings);
+
+                if (setNameResult.LocalizedError == null)
+                    CanChangeNameAfterRegistrationViaSocialNetwork = false;
+
+                return setNameResult;
+            }
+            else
+            {
+                return new LocalizedError
+                {
+                    ErrorSeverity = ErrorSeverity.Normal,
+                    EnglishMessage = "Can't change name",
+                    RussianMessage = "Нельзя изменить ник"
+                };
+            }
+        }
+
         public EmptyGameResult ChangePassword(string newPassword, GameSettings gameSettings)
         {
             var req = gameSettings.Localization.UserInputRequirements;
@@ -221,6 +216,8 @@ namespace EnterpriseBot.Api.Game.Essences
 
         public bool VerifyPassword(string password)
         {
+            if (!HasPassword) return false;
+
             byte[] salt = Convert.FromBase64String(PasswordSaltBase64);
 
             return Hash.Verify(password, salt, PasswordHash);
@@ -240,6 +237,65 @@ namespace EnterpriseBot.Api.Game.Essences
             VkConnected = false;
 
             return new EmptyGameResult();
+        }
+
+
+        private static GameResult<Player> CreatePlayerBase(string name, GameSettings gameSettings)
+        {
+            var req = gameSettings.Localization.UserInputRequirements;
+            var gameplaySettings = gameSettings.Gameplay;
+
+            if (!CheckName(name))
+            {
+                return Errors.IncorrectNameInput(req);
+            }
+
+            Player player = null;
+
+            var donationCreationResult = Game.Donation.Donation.Create(new DonationCreationParams
+            {
+                Privilege = default(Privilege),
+                Player = player
+            });
+            if (donationCreationResult.LocalizedError != null) return donationCreationResult.LocalizedError;
+
+            var purseCreationResult = Purse.Create(new PurseCreationParams
+            {
+                UnitsAmount = gameplaySettings.Player.DefaultUnits,
+                BusinessCoinsAmount = gameplaySettings.Player.DefaultBusinessCoins
+            });
+            if (purseCreationResult.LocalizedError != null) return purseCreationResult.LocalizedError;
+
+            var reputationCreationResult = Game.Reputation.Reputation.Create(new ReputationCreationParams
+            {
+            });
+            if (reputationCreationResult.LocalizedError != null) return reputationCreationResult.LocalizedError;
+
+
+            player = new Player
+            {
+                Name = name,
+
+                Donation = donationCreationResult,
+                Purse = purseCreationResult,
+                Reputation = reputationCreationResult,
+
+                VkConnected = false,
+                VkId = null,
+
+                RegistrationDate = DateTime.Now
+            };
+
+            var storageCreationResult = InventoryStorage.Create(new InventoryStorageCreationParams
+            {
+                Capacity = gameplaySettings.Storage.Inventory.DefaultCapacity,
+                OwningPlayer = player
+            });
+            if (storageCreationResult.LocalizedError != null) return storageCreationResult.LocalizedError;
+
+            player.Inventory = storageCreationResult;
+
+            return player;
         }
         #endregion
     }

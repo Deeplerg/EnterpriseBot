@@ -1,5 +1,5 @@
-﻿using EnterpriseBot.VK.Models.MenuRelated;
-using VkNet.Enums.SafetyEnums;
+﻿using EnterpriseBot.VK.Models.Enums;
+using EnterpriseBot.VK.Models.MenuRelated;
 
 namespace EnterpriseBot.VK.Models.Keyboard
 {
@@ -9,6 +9,6 @@ namespace EnterpriseBot.VK.Models.Keyboard
 
         public NextAction Next { get; set; }
 
-        public KeyboardButtonColor Color { get; set; }
+        public LocalKeyboardButtonColor Color { get; set; }
     }
 }

@@ -27,6 +27,14 @@ namespace EnterpriseBot.ApiWrapper.Categories.Essences
             return await api.Call<Player>(RequestInfo(nameof(Create)), pars);
         }
 
+        public async Task<Player> CreateWithNoPassword(string name)
+        {
+            return await api.Call<Player>(RequestInfo(nameof(CreateWithNoPassword)), new
+            {
+                name = name
+            });
+        }
+
 
         public async Task<bool> HasPermission(long modelId, CompanyJobPermissions permission, long companyId)
         {
@@ -64,6 +72,15 @@ namespace EnterpriseBot.ApiWrapper.Categories.Essences
                 modelId = modelId,
                 newStatus = newStatus,
                 language = localizationLanguage
+            });
+        }
+
+        public async Task<string> ChangeName(long modelId, string newName)
+        {
+            return await api.Call<string>(RequestInfo(nameof(ChangeName)), new
+            {
+                modelId = modelId,
+                newName = newName
             });
         }
 
@@ -110,9 +127,9 @@ namespace EnterpriseBot.ApiWrapper.Categories.Essences
             });
         }
 
-        public async Task<Player> SearchByExactName(string name)
+        public async Task<Player> GetByName(string name)
         {
-            return await api.Call<Player>(RequestInfo(nameof(SearchByExactName)), new
+            return await api.Call<Player>(RequestInfo(nameof(GetByName)), new
             {
                 name = name
             });
@@ -121,6 +138,14 @@ namespace EnterpriseBot.ApiWrapper.Categories.Essences
         public async Task<Player> GetByVK(long vkId)
         {
             return await GetByPlatform(BotPlatform.VK, vkId.ToString());
+        }
+
+        public async Task<bool> CheckIsPlayerNameAlreadyTaken(string name)
+        {
+            return await api.Call<bool>(RequestInfo(nameof(CheckIsPlayerNameAlreadyTaken)), new
+            {
+                name = name
+            });
         }
 
 

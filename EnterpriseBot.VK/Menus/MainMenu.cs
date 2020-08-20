@@ -1,5 +1,6 @@
 ﻿using EnterpriseBot.ApiWrapper.Models.Enums;
 using EnterpriseBot.VK.Abstractions;
+using EnterpriseBot.VK.Models.Enums;
 using EnterpriseBot.VK.Models.Keyboard;
 using EnterpriseBot.VK.Models.MenuRelated;
 using EnterpriseBot.VK.Models.Settings;
@@ -9,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VkNet.Enums.SafetyEnums;
 
 namespace EnterpriseBot.VK.Menus
 {
@@ -37,7 +37,7 @@ namespace EnterpriseBot.VK.Menus
             return Keyboard(message, new LocalKeyboardButton
             {
                 Text = "В главное меню",
-                Color = KeyboardButtonColor.Default,
+                Color = LocalKeyboardButtonColor.Default,
                 Next = new NextAction(thisType)
             });
         }
@@ -91,7 +91,7 @@ namespace EnterpriseBot.VK.Menus
                     {
                         Text = "Вызвать исключение",
                         Next = new NextAction(thisType, nameof(ThrowException)),
-                        Color = KeyboardButtonColor.Negative
+                        Color = LocalKeyboardButtonColor.Negative
                     },
                     new LocalKeyboardButton
                     {

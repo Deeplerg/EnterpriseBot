@@ -32,6 +32,10 @@ namespace EnterpriseBot.ApiWrapper.Models.Game.Essences
 
         public Reputation.Reputation Reputation { get; set; }
 
+        public bool RegisteredWithSocialNetworkCredentials { get; set; }
+        public bool CanChangeNameAfterRegistrationViaSocialNetwork { get; set; }
+        public bool HasPassword { get; set; }
+
 
         public bool HasDonation { get; set; }
         public bool HasJob { get; set; }

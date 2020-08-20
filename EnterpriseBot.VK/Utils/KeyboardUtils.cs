@@ -1,4 +1,5 @@
-﻿using EnterpriseBot.VK.Models.Keyboard;
+﻿using EnterpriseBot.VK.Models.Enums;
+using EnterpriseBot.VK.Models.Keyboard;
 using EnterpriseBot.VK.Models.MenuRelated;
 using System;
 using VkNet.Enums.SafetyEnums;
@@ -19,7 +20,7 @@ namespace EnterpriseBot.VK.Utils
                 {
                     builder.AddButton(label: button.Text,
                                       extra: CreatePayload(buttonCount),
-                                      color: button.Color,
+                                      color: LocalButtonColorToVk(button.Color),
                                       type: KeyboardButtonActionType.Text.ToString());
 
                     buttonCount++;
@@ -72,6 +73,42 @@ namespace EnterpriseBot.VK.Utils
             }
 
             return keyboard[context.Message.PressedButton.Value].Next;
+        }
+
+        public static LocalKeyboardButtonColor VkButtonColorToLocal(KeyboardButtonColor vkColor)
+        {
+            switch(vkColor)
+            {
+                case var _ when vkColor == KeyboardButtonColor.Primary:
+                    return LocalKeyboardButtonColor.Primary;
+
+                case var _ when vkColor == KeyboardButtonColor.Positive:
+                    return LocalKeyboardButtonColor.Positive;
+
+                case var _ when vkColor == KeyboardButtonColor.Negative:
+                    return LocalKeyboardButtonColor.Negative;
+
+                default:
+                    return LocalKeyboardButtonColor.Default;
+            }
+        }
+
+        public static KeyboardButtonColor LocalButtonColorToVk(LocalKeyboardButtonColor localColor)
+        {
+            switch (localColor)
+            {
+                case LocalKeyboardButtonColor.Primary:
+                    return KeyboardButtonColor.Primary;
+
+                case LocalKeyboardButtonColor.Positive:
+                    return KeyboardButtonColor.Positive;
+
+                case LocalKeyboardButtonColor.Negative:
+                    return KeyboardButtonColor.Negative;
+
+                default:
+                    return KeyboardButtonColor.Default;
+            }
         }
     }
 }

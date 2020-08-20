@@ -1,5 +1,6 @@
 ﻿using EnterpriseBot.VK.Exceptions;
 using EnterpriseBot.VK.Extensions;
+using EnterpriseBot.VK.Models.Enums;
 using EnterpriseBot.VK.Models.Keyboard;
 using EnterpriseBot.VK.Models.MenuRelated;
 using System;
@@ -66,7 +67,7 @@ namespace EnterpriseBot.VK.Infrastructure
             {
                 Text = text,
                 Next = new NextAction(nextMenu, nextMenuAction, menuParameters),
-                Color = KeyboardButtonColor.Default
+                Color = LocalKeyboardButtonColor.Default
             });
         }
 

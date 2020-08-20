@@ -505,6 +505,8 @@ namespace EnterpriseBot.Api.Models.Contexts
                 b.Ignore(m => m.HasDonation);
 
                 b.Ignore(m => m.HasJob);
+                
+                b.Ignore(m => m.HasPassword);
             });
             #endregion
 

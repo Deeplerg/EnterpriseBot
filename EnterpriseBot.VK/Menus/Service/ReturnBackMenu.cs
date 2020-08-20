@@ -1,17 +1,12 @@
 ﻿using EnterpriseBot.VK.Abstractions;
+using EnterpriseBot.VK.Models.Enums;
 using EnterpriseBot.VK.Models.Keyboard;
 using EnterpriseBot.VK.Models.MenuRelated;
 using EnterpriseBot.VK.Models.Settings;
 using EnterpriseBot.VK.Utils;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using VkNet.Enums.SafetyEnums;
 
 namespace EnterpriseBot.VK.Menus.Service
 {
@@ -54,7 +49,7 @@ namespace EnterpriseBot.VK.Menus.Service
             {
                 Text = "В главное меню",
                 Next = new NextAction(Constants.MainMenu),
-                Color = KeyboardButtonColor.Primary
+                Color = LocalKeyboardButtonColor.Primary
             });
         }
     }
